@@ -2,8 +2,8 @@ Name:           mesh-community-planner
 Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Desktop web application for planning LoRa mesh network deployments
-License:        MIT
-URL:            https://github.com/mesh-community-planner
+License:        CC-BY-NC-SA-4.0
+URL:            https://github.com/PapaSierra555/MeshCommunityPlanner
 Source0:        %{name}-%{version}.tar.gz
 
 %description
