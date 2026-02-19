@@ -233,6 +233,6 @@ if sys.platform == "darwin":
             "LSMinimumSystemVersion": "11.0",
             "NSHighResolutionCapable": True,
             "LSApplicationCategoryType": "public.app-category.utilities",
-            "NSHumanReadableCopyright": "Copyright 2024-2026 Mesh Community Planner Project. MIT License.",
+            "NSHumanReadableCopyright": "Copyright 2024-2026 Mesh Community Planner Project. CC BY-NC-SA 4.0.",
         },
     )
