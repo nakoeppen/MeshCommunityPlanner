@@ -1,0 +1,72 @@
+[
+  {
+    "id": "meshtastic-us-fcc",
+    "firmware": "meshtastic",
+    "region_code": "us_fcc",
+    "default_frequency_mhz": 906.875,
+    "default_modem_preset_id": "meshtastic-long-fast"
+  },
+  {
+    "id": "meshtastic-eu-868",
+    "firmware": "meshtastic",
+    "region_code": "eu_868",
+    "default_frequency_mhz": 869.525,
+    "default_modem_preset_id": "meshtastic-long-fast"
+  },
+  {
+    "id": "meshtastic-eu-433",
+    "firmware": "meshtastic",
+    "region_code": "eu_433",
+    "default_frequency_mhz": 433.875,
+    "default_modem_preset_id": "meshtastic-long-fast"
+  },
+  {
+    "id": "meshtastic-anz",
+    "firmware": "meshtastic",
+    "region_code": "anz",
+    "default_frequency_mhz": 916.0,
+    "default_modem_preset_id": "meshtastic-long-fast"
+  },
+  {
+    "id": "meshcore-us-fcc",
+    "firmware": "meshcore",
+    "region_code": "us_fcc",
+    "default_frequency_mhz": 910.525,
+    "default_modem_preset_id": "meshcore-default"
+  },
+  {
+    "id": "meshcore-eu-868",
+    "firmware": "meshcore",
+    "region_code": "eu_868",
+    "default_frequency_mhz": 869.525,
+    "default_modem_preset_id": "meshcore-default"
+  },
+  {
+    "id": "meshcore-eu-433",
+    "firmware": "meshcore",
+    "region_code": "eu_433",
+    "default_frequency_mhz": 433.875,
+    "default_modem_preset_id": "meshcore-default"
+  },
+  {
+    "id": "meshcore-anz",
+    "firmware": "meshcore",
+    "region_code": "anz",
+    "default_frequency_mhz": 916.0,
+    "default_modem_preset_id": "meshcore-default"
+  },
+  {
+    "id": "reticulum-us-fcc",
+    "firmware": "reticulum",
+    "region_code": "us_fcc",
+    "default_frequency_mhz": 906.875,
+    "default_modem_preset_id": "reticulum-default"
+  },
+  {
+    "id": "reticulum-eu-868",
+    "firmware": "reticulum",
+    "region_code": "eu_868",
+    "default_frequency_mhz": 869.525,
+    "default_modem_preset_id": "reticulum-default"
+  }
+]

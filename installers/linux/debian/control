@@ -1,0 +1,13 @@
+Package: mesh-community-planner
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Mesh Community Planner Project <noreply@meshcommunityplanner.org>
+Description: Desktop web application for planning LoRa mesh network deployments
+ Mesh Community Planner helps users plan LoRa mesh network deployments
+ with terrain-aware RF propagation modeling, bill-of-materials generation,
+ and regulatory compliance checking. Runs as a local web application
+ that opens in your default browser.
+Installed-Size: 150000
+Homepage: https://github.com/mesh-community-planner

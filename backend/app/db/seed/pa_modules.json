@@ -1,0 +1,22 @@
+[
+  {
+    "id": "e22-900m30s",
+    "name": "Ebyte E22-900M30S",
+    "frequency_range": "850-930 MHz",
+    "max_output_power_dbm": 30.0,
+    "input_power_range": "0-22 dBm",
+    "current_draw_ma": 650.0,
+    "price_usd": 12.0,
+    "is_custom": 0
+  },
+  {
+    "id": "e22-400m30s",
+    "name": "Ebyte E22-400M30S",
+    "frequency_range": "410-493 MHz",
+    "max_output_power_dbm": 30.0,
+    "input_power_range": "0-22 dBm",
+    "current_draw_ma": 650.0,
+    "price_usd": 12.0,
+    "is_custom": 0
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "915-3dbi-omni",
+    "name": "915 MHz 3 dBi Omni",
+    "frequency_band": "915",
+    "gain_dbi": 3.0,
+    "polarization": "vertical",
+    "form_factor": "whip",
+    "connector_type": "SMA",
+    "price_usd": 8.0,
+    "is_default": 1,
+    "is_custom": 0
+  },
+  {
+    "id": "915-5dbi-omni",
+    "name": "915 MHz 5.8 dBi Omni",
+    "frequency_band": "915",
+    "gain_dbi": 5.8,
+    "polarization": "vertical",
+    "form_factor": "omni",
+    "connector_type": "N-Female",
+    "price_usd": 25.0,
+    "is_default": 0,
+    "is_custom": 0
+  },
+  {
+    "id": "915-9dbi-yagi",
+    "name": "915 MHz 9 dBi Yagi",
+    "frequency_band": "915",
+    "gain_dbi": 9.0,
+    "polarization": "vertical",
+    "form_factor": "yagi",
+    "connector_type": "N-Female",
+    "price_usd": 40.0,
+    "is_default": 0,
+    "is_custom": 0
+  },
+  {
+    "id": "915-12dbi-panel",
+    "name": "915 MHz 12 dBi Panel",
+    "frequency_band": "915",
+    "gain_dbi": 12.0,
+    "polarization": "vertical",
+    "form_factor": "panel",
+    "connector_type": "N-Female",
+    "price_usd": 55.0,
+    "is_default": 0,
+    "is_custom": 0
+  },
+  {
+    "id": "868-3dbi-omni",
+    "name": "868 MHz 3 dBi Omni",
+    "frequency_band": "868",
+    "gain_dbi": 3.0,
+    "polarization": "vertical",
+    "form_factor": "whip",
+    "connector_type": "SMA",
+    "price_usd": 8.0,
+    "is_default": 1,
+    "is_custom": 0
+  },
+  {
+    "id": "868-5dbi-omni",
+    "name": "868 MHz 5.8 dBi Omni",
+    "frequency_band": "868",
+    "gain_dbi": 5.8,
+    "polarization": "vertical",
+    "form_factor": "omni",
+    "connector_type": "N-Female",
+    "price_usd": 25.0,
+    "is_default": 0,
+    "is_custom": 0
+  },
+  {
+    "id": "868-9dbi-yagi",
+    "name": "868 MHz 9 dBi Yagi",
+    "frequency_band": "868",
+    "gain_dbi": 9.0,
+    "polarization": "vertical",
+    "form_factor": "yagi",
+    "connector_type": "N-Female",
+    "price_usd": 40.0,
+    "is_default": 0,
+    "is_custom": 0
+  },
+  {
+    "id": "433-3dbi-omni",
+    "name": "433 MHz 3 dBi Omni",
+    "frequency_band": "433",
+    "gain_dbi": 3.0,
+    "polarization": "vertical",
+    "form_factor": "whip",
+    "connector_type": "SMA",
+    "price_usd": 7.0,
+    "is_default": 1,
+    "is_custom": 0
+  },
+  {
+    "id": "433-5dbi-omni",
+    "name": "433 MHz 5 dBi Omni",
+    "frequency_band": "433",
+    "gain_dbi": 5.0,
+    "polarization": "vertical",
+    "form_factor": "omni",
+    "connector_type": "N-Female",
+    "price_usd": 20.0,
+    "is_default": 0,
+    "is_custom": 0
+  }
+]

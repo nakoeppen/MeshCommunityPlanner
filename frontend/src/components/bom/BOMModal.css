@@ -1,0 +1,499 @@
+/**
+ * BOMModal Styles
+ * Dark theme matching LinkReportModal palette.
+ */
+
+/* ---- Overlay & Modal ---- */
+
+.bom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bom-modal {
+  background: #1e2a38;
+  border: 1px solid #34495e;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  width: 1060px;
+  max-width: 92vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  color: #ecf0f1;
+}
+
+/* ---- Header ---- */
+
+.bom-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #34495e;
+  flex-shrink: 0;
+}
+
+.bom-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.bom-summary {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #95a5a6;
+}
+
+.bom-summary strong {
+  color: #2ecc71;
+}
+
+.bom-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.bom-export-btn {
+  background: #4472C4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.bom-export-btn:hover {
+  background: #3561b0;
+}
+
+.bom-export-btn.csv { background: #27ae60; }
+.bom-export-btn.csv:hover { background: #219a52; }
+
+.bom-export-btn.cards { background: #e67e22; }
+.bom-export-btn.cards:hover { background: #cf6d17; }
+
+.bom-export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bom-close {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  border-radius: 4px;
+  margin-left: 0.3rem;
+}
+
+.bom-close:hover {
+  color: #ecf0f1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Plan Selector (multi-plan) ---- */
+
+.bom-plan-selector {
+  display: flex;
+  gap: 0;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid #34495e;
+  flex-shrink: 0;
+  overflow-x: auto;
+  background: rgba(37, 52, 67, 0.4);
+}
+
+.bom-plan-tab {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bom-plan-tab:hover {
+  color: #ecf0f1;
+}
+
+.bom-plan-tab.active {
+  color: #ecf0f1;
+  border-bottom-color: #2ecc71;
+}
+
+.bom-plan-tab-count {
+  font-size: 0.65rem;
+  background: rgba(149, 165, 166, 0.2);
+  color: #bdc3c7;
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+}
+
+.bom-plan-tab.active .bom-plan-tab-count {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+
+/* ---- Tabs ---- */
+
+.bom-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #34495e;
+  flex-shrink: 0;
+  padding: 0 1.25rem;
+}
+
+.bom-tab {
+  background: none;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  color: #95a5a6;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.bom-tab:hover {
+  color: #ecf0f1;
+  background: rgba(52, 152, 219, 0.12);
+}
+
+.bom-tab.active {
+  color: #fff;
+  background: #2980b9;
+}
+
+/* ---- Body ---- */
+
+.bom-body {
+  overflow-y: auto;
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+.bom-loading,
+.bom-empty,
+.bom-error {
+  padding: 2rem 1.25rem;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.bom-loading { color: #95a5a6; }
+.bom-empty { color: #95a5a6; }
+.bom-error { color: #e74c3c; }
+
+/* ---- Table ---- */
+
+.bom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.bom-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.bom-table th {
+  background: #253443;
+  color: #95a5a6;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid #34495e;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.bom-table th.right,
+.bom-table td.right {
+  text-align: right;
+}
+
+.bom-table td {
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid rgba(52, 73, 94, 0.5);
+}
+
+.bom-table tbody tr:hover {
+  background: rgba(52, 73, 94, 0.35);
+}
+
+.bom-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Category badge */
+.bom-category {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: rgba(68, 114, 196, 0.2);
+  color: #7fb3f0;
+}
+
+.bom-category.device { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+.bom-category.antenna { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
+.bom-category.cable { background: rgba(230, 126, 34, 0.2); color: #e67e22; }
+.bom-category.connector { background: rgba(149, 165, 166, 0.2); color: #95a5a6; }
+.bom-category.pa_module { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+.bom-category.battery { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+.bom-category.solar { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+.bom-category.bec { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+.bom-category.controller { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+.bom-category.enclosure { background: rgba(149, 165, 166, 0.2); color: #bdc3c7; }
+.bom-category.mast { background: rgba(149, 165, 166, 0.2); color: #bdc3c7; }
+.bom-category.misc { background: rgba(149, 165, 166, 0.2); color: #95a5a6; }
+
+/* Price colors */
+.bom-price { color: #2ecc71; }
+.bom-price-unknown { color: #7f8c8d; font-style: italic; }
+
+/* ---- Node section (per-node tab) ---- */
+
+.bom-node-section {
+  border-bottom: 1px solid #34495e;
+}
+
+.bom-node-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  background: rgba(37, 52, 67, 0.5);
+  user-select: none;
+}
+
+.bom-node-header:hover {
+  background: rgba(37, 52, 67, 0.8);
+}
+
+.bom-node-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.bom-node-meta {
+  font-size: 0.75rem;
+  color: #95a5a6;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.bom-node-meta .bom-price {
+  font-weight: 600;
+}
+
+.bom-collapse-icon {
+  color: #95a5a6;
+  font-size: 0.8rem;
+}
+
+/* ---- Footer total ---- */
+
+.bom-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid #34495e;
+  flex-shrink: 0;
+  background: rgba(37, 52, 67, 0.5);
+}
+
+.bom-footer-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bom-footer-total {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2ecc71;
+}
+
+.bom-footer-note {
+  font-size: 0.7rem;
+  color: #7f8c8d;
+  margin-top: 0.15rem;
+}
+
+/* ---- Item name + description ---- */
+
+.bom-item-name {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.bom-item-desc {
+  font-size: 0.72rem;
+  color: #95a5a6;
+  margin-top: 0.15rem;
+}
+
+/* ---- Specs row (expandable detail under each item) ---- */
+
+.bom-specs-row td {
+  padding-top: 0 !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid rgba(52, 73, 94, 0.3) !important;
+}
+
+.bom-specs-row:hover {
+  background: none !important;
+}
+
+.bom-specs-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  padding: 0.15rem 0;
+}
+
+.bom-spec-tag {
+  font-size: 0.68rem;
+  color: #7fb3f0;
+  background: rgba(68, 114, 196, 0.12);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.bom-spec-key {
+  color: #95a5a6;
+}
+
+/* ---- Info tab ---- */
+
+.bom-info-tab {
+  padding: 1.25rem;
+}
+
+.bom-info-section {
+  margin-bottom: 1.25rem;
+}
+
+.bom-info-section h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: #ecf0f1;
+}
+
+.bom-info-section p {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #bdc3c7;
+  margin: 0 0 0.5rem;
+}
+
+.bom-info-section ul {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #bdc3c7;
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.bom-info-section li {
+  margin-bottom: 0.3rem;
+}
+
+.bom-info-section strong {
+  color: #ecf0f1;
+}
+
+.bom-info-legal {
+  border-top: 1px solid #34495e;
+  padding-top: 1rem;
+}
+
+.bom-info-legal p {
+  color: #95a5a6;
+  font-size: 0.75rem;
+}
+
+/* Info tab data tables */
+.bom-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+}
+
+.bom-info-table th {
+  background: #253443;
+  color: #95a5a6;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid #34495e;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.bom-info-table th.right,
+.bom-info-table td.right {
+  text-align: right;
+}
+
+.bom-info-table td {
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid rgba(52, 73, 94, 0.4);
+  color: #bdc3c7;
+}
+
+.bom-info-table tbody tr:hover {
+  background: rgba(52, 73, 94, 0.3);
+}
+
+.bom-info-key {
+  color: #95a5a6;
+  white-space: nowrap;
+  width: 180px;
+}
+
+/* ---- Focus-Visible (Keyboard Accessibility) ---- */
+
+.bom-close:focus-visible,
+.bom-export-btn:focus-visible,
+.bom-tab:focus-visible {
+  outline: 2px solid #7fb3f0;
+  outline-offset: 1px;
+}

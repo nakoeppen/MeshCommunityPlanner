@@ -1,0 +1,91 @@
+/**
+ * Transition Utilities
+ * Iteration 16, Priority 1, Task 6
+ */
+
+/* Transition utilities */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-colors {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.transition-opacity {
+  transition: opacity 0.2s ease;
+}
+
+.transition-fast {
+  transition-duration: 0.15s;
+}
+
+.transition-slow {
+  transition-duration: 0.5s;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-brightness {
+  transition: filter 0.2s ease;
+}
+
+.hover-brightness:hover {
+  filter: brightness(1.1);
+}
+
+/* Focus states */
+.focus-ring:focus {
+  outline: 2px solid var(--color-primary, #2563eb);
+  outline-offset: 2px;
+}
+
+.focus-ring-inset:focus {
+  outline: 2px solid var(--color-primary, #2563eb);
+  outline-offset: -2px;
+}
+
+.focus-ring-thick:focus {
+  outline: 3px solid var(--color-primary, #2563eb);
+  outline-offset: 2px;
+}
+
+/* Active states */
+.active-scale:active {
+  transform: scale(0.95);
+}
+
+.active-dim:active {
+  opacity: 0.7;
+}
+
+/* Disabled states */
+.disabled-opacity:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disabled-grayscale:disabled {
+  filter: grayscale(100%);
+  cursor: not-allowed;
+}

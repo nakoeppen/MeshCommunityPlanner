@@ -1,0 +1,46 @@
+[
+  {
+    "id": "us-fcc",
+    "name": "US FCC (915 MHz)",
+    "region_code": "us_fcc",
+    "min_frequency_mhz": 902.0,
+    "max_frequency_mhz": 928.0,
+    "max_tx_power_dbm": 30.0,
+    "max_erp_dbm": 36.0,
+    "duty_cycle_pct": 100.0,
+    "bandwidths_khz": [31.25, 62.5, 125, 250, 500]
+  },
+  {
+    "id": "eu-868",
+    "name": "EU 868 MHz",
+    "region_code": "eu_868",
+    "min_frequency_mhz": 869.4,
+    "max_frequency_mhz": 869.65,
+    "max_tx_power_dbm": 27.0,
+    "max_erp_dbm": 27.0,
+    "duty_cycle_pct": 10.0,
+    "bandwidths_khz": [31.25, 62.5, 125, 250]
+  },
+  {
+    "id": "eu-433",
+    "name": "EU 433 MHz",
+    "region_code": "eu_433",
+    "min_frequency_mhz": 433.0,
+    "max_frequency_mhz": 434.0,
+    "max_tx_power_dbm": 12.0,
+    "max_erp_dbm": 12.0,
+    "duty_cycle_pct": 10.0,
+    "bandwidths_khz": [31.25, 62.5, 125, 250]
+  },
+  {
+    "id": "anz",
+    "name": "ANZ (915 MHz)",
+    "region_code": "anz",
+    "min_frequency_mhz": 915.0,
+    "max_frequency_mhz": 928.0,
+    "max_tx_power_dbm": 30.0,
+    "max_erp_dbm": 36.0,
+    "duty_cycle_pct": 100.0,
+    "bandwidths_khz": [31.25, 62.5, 125, 250, 500]
+  }
+]

@@ -1,0 +1,64 @@
+# Worker worktrees (managed by git worktree, not tracked)
+MeshPlanner-W1/
+MeshPlanner-W2/
+MeshPlanner-W3/
+MeshPlanner-W4/
+MeshPlanner-W5/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# PyInstaller build output
+installers/build/
+installers/dist/
+installersbuild/
+installersdist/
+
+# Windows artifacts
+nul
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+frontend/coverage/
+
+# Test artifacts (root-level debug/screenshot files)
+/test_*.png
+/test_*.py
+!test_plans/
+
+# Release binaries (use GitHub Releases for distribution)
+releases/**/*.zip
+releases/**/*.exe
+releases/**/*.msi
+releases/**/*.dmg
+releases/**/*.AppImage
+releases/**/*.deb
+
+# Node
+node_modules/
+
+# Release asset backups (local only, not for public repo)
+release-assets-backup/
+
+# Environment
+.env
+.env.local

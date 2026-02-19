@@ -1,0 +1,123 @@
+[
+  {
+    "id": "meshtastic-short-turbo",
+    "name": "Short/Turbo",
+    "firmware": "meshtastic",
+    "spreading_factor": 7,
+    "bandwidth_khz": 500.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -118.0,
+    "is_default": 0,
+    "sort_order": 1
+  },
+  {
+    "id": "meshtastic-short-fast",
+    "name": "Short/Fast",
+    "firmware": "meshtastic",
+    "spreading_factor": 7,
+    "bandwidth_khz": 250.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -121.0,
+    "is_default": 0,
+    "sort_order": 2
+  },
+  {
+    "id": "meshtastic-short-slow",
+    "name": "Short/Slow",
+    "firmware": "meshtastic",
+    "spreading_factor": 8,
+    "bandwidth_khz": 250.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -124.0,
+    "is_default": 0,
+    "sort_order": 3
+  },
+  {
+    "id": "meshtastic-medium-fast",
+    "name": "Medium/Fast",
+    "firmware": "meshtastic",
+    "spreading_factor": 9,
+    "bandwidth_khz": 250.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -127.0,
+    "is_default": 0,
+    "sort_order": 4
+  },
+  {
+    "id": "meshtastic-medium-slow",
+    "name": "Medium/Slow",
+    "firmware": "meshtastic",
+    "spreading_factor": 10,
+    "bandwidth_khz": 250.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -129.0,
+    "is_default": 0,
+    "sort_order": 5
+  },
+  {
+    "id": "meshtastic-long-fast",
+    "name": "Long/Fast",
+    "firmware": "meshtastic",
+    "spreading_factor": 11,
+    "bandwidth_khz": 250.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -130.0,
+    "is_default": 1,
+    "sort_order": 6
+  },
+  {
+    "id": "meshtastic-long-moderate",
+    "name": "Long/Moderate",
+    "firmware": "meshtastic",
+    "spreading_factor": 11,
+    "bandwidth_khz": 125.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -133.0,
+    "is_default": 0,
+    "sort_order": 7
+  },
+  {
+    "id": "meshtastic-long-slow",
+    "name": "Long/Slow",
+    "firmware": "meshtastic",
+    "spreading_factor": 12,
+    "bandwidth_khz": 125.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -137.0,
+    "is_default": 0,
+    "sort_order": 8
+  },
+  {
+    "id": "meshtastic-very-long-slow",
+    "name": "Very Long/Slow",
+    "firmware": "meshtastic",
+    "spreading_factor": 12,
+    "bandwidth_khz": 62.5,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -140.0,
+    "is_default": 0,
+    "sort_order": 9
+  },
+  {
+    "id": "meshcore-default",
+    "name": "MeshCore Default",
+    "firmware": "meshcore",
+    "spreading_factor": 11,
+    "bandwidth_khz": 250.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -130.0,
+    "is_default": 1,
+    "sort_order": 1
+  },
+  {
+    "id": "reticulum-default",
+    "name": "RNode Default",
+    "firmware": "reticulum",
+    "spreading_factor": 11,
+    "bandwidth_khz": 250.0,
+    "coding_rate": "4/5",
+    "receiver_sensitivity_dbm": -130.0,
+    "is_default": 1,
+    "sort_order": 1
+  }
+]

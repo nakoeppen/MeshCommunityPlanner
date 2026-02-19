@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Mesh Community Planner
+Comment=Desktop web application for planning LoRa mesh network deployments
+Exec=mesh-community-planner
+Icon=mesh-community-planner
+Terminal=false
+Type=Application
+Categories=Utility;Network;Science;
+Keywords=LoRa;mesh;network;radio;planning;
+StartupNotify=true

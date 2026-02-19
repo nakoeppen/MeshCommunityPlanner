@@ -1,0 +1,538 @@
+/**
+ * FloodingSimModal Styles
+ * Dark theme matching ChannelCapacityModal / existing UI palette.
+ */
+
+/* ---- Overlay & Modal ---- */
+
+.flood-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.flood-modal {
+  pointer-events: auto;
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  background: #1e2a38;
+  border: 1px solid #34495e;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  width: 700px;
+  max-width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  color: #ecf0f1;
+}
+
+/* ---- Header ---- */
+
+.flood-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #34495e;
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.flood-header:active {
+  cursor: grabbing;
+}
+
+.flood-header .flood-drag-hint {
+  font-size: 0.65rem;
+  color: #5d6d7e;
+  margin-top: 0.15rem;
+}
+
+.flood-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.flood-summary {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #95a5a6;
+}
+
+.flood-close {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  border-radius: 4px;
+}
+
+.flood-close:hover {
+  color: #ecf0f1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.flood-close:focus-visible {
+  outline: 2px solid #7fb3f0;
+  outline-offset: 1px;
+}
+
+/* ---- Body ---- */
+
+.flood-body {
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---- Inputs ---- */
+
+.flood-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.flood-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.flood-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.flood-field select,
+.flood-field input[type="number"] {
+  background: #253443;
+  border: 1px solid #34495e;
+  color: #ecf0f1;
+  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.flood-field select:focus,
+.flood-field input:focus {
+  outline: 2px solid #4472C4;
+  outline-offset: -1px;
+}
+
+.flood-slider-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flood-slider-group input[type="range"] {
+  flex: 1;
+  accent-color: #4472C4;
+}
+
+.flood-number-sm {
+  width: 60px;
+  text-align: center;
+}
+
+/* ---- Simulate Button ---- */
+
+.flood-btn-primary {
+  background: #1abc9c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.flood-btn-primary:hover {
+  background: #16a085;
+}
+
+.flood-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Transport Controls ---- */
+
+.flood-transport {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flood-btn-sm {
+  background: #253443;
+  color: #ecf0f1;
+  border: 1px solid #34495e;
+  border-radius: 4px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.flood-btn-sm:hover {
+  background: #34495e;
+}
+
+.flood-btn-sm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---- Results ---- */
+
+.flood-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.flood-section-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flood-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+.flood-result-card {
+  background: #253443;
+  border: 1px solid #34495e;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.flood-result-card.flood-card-danger {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.flood-result-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ecf0f1;
+  line-height: 1.2;
+}
+
+.flood-result-value.flood-value-danger {
+  color: #e74c3c;
+}
+
+.flood-result-label {
+  font-size: 0.7rem;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Wave Detail List ---- */
+
+.flood-wave-list {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border: 1px solid #34495e;
+  border-radius: 6px;
+  padding: 0.5rem;
+  background: rgba(37, 52, 67, 0.5);
+}
+
+.flood-wave-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  background: #253443;
+  border: 1px solid #34495e;
+}
+
+.flood-wave-item:hover {
+  background: rgba(52, 73, 94, 0.6);
+}
+
+.flood-wave-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.flood-wave-badge.hop-0 { background: #1abc9c; }
+.flood-wave-badge.hop-1 { background: #3498db; }
+.flood-wave-badge.hop-2 { background: #9b59b6; }
+.flood-wave-badge.hop-3 { background: #e67e22; }
+.flood-wave-badge.hop-4 { background: #e74c3c; }
+.flood-wave-badge.hop-5 { background: #f39c12; }
+.flood-wave-badge.hop-default { background: #7f8c8d; }
+
+.flood-wave-nodes {
+  flex: 1;
+  color: #ecf0f1;
+  font-size: 0.8rem;
+}
+
+.flood-wave-meta {
+  color: #95a5a6;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+/* ---- Speed Slider ---- */
+
+.flood-speed-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #95a5a6;
+  margin-left: auto;
+}
+
+.flood-speed-slider {
+  width: 80px;
+  accent-color: #4472C4;
+}
+
+.flood-speed-value {
+  font-size: 0.7rem;
+  color: #7f8c8d;
+  min-width: 42px;
+  text-align: right;
+}
+
+/* ---- Network Health Score ---- */
+
+.flood-health-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.flood-health-badge {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid;
+}
+
+.flood-health-badge.flood-grade-a { border-color: #2ecc71; background: rgba(46, 204, 113, 0.12); }
+.flood-health-badge.flood-grade-b { border-color: #27ae60; background: rgba(39, 174, 96, 0.12); }
+.flood-health-badge.flood-grade-c { border-color: #f1c40f; background: rgba(241, 196, 15, 0.12); }
+.flood-health-badge.flood-grade-d { border-color: #e67e22; background: rgba(230, 126, 34, 0.12); }
+.flood-health-badge.flood-grade-f { border-color: #e74c3c; background: rgba(231, 76, 60, 0.12); }
+
+.flood-health-score {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ecf0f1;
+  line-height: 1;
+}
+
+.flood-health-grade {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.flood-health-cards {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.flood-health-card {
+  background: #253443;
+  border: 1px solid #34495e;
+  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.flood-health-card-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ecf0f1;
+}
+
+.flood-health-card-label {
+  font-size: 0.65rem;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Critical Nodes ---- */
+
+.flood-critical-title {
+  color: #e74c3c;
+}
+
+.flood-critical-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.flood-critical-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(231, 76, 60, 0.12);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.78rem;
+  color: #ecf0f1;
+}
+
+.flood-critical-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.flood-bridge-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #95a5a6;
+  margin-top: 0.25rem;
+}
+
+.flood-bridge-label {
+  font-weight: 600;
+  color: #7f8c8d;
+}
+
+.flood-bridge-item {
+  background: rgba(230, 126, 34, 0.12);
+  border: 1px solid rgba(230, 126, 34, 0.4);
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  color: #ecf0f1;
+}
+
+/* ---- Node Failure Test ---- */
+
+.flood-failure-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.flood-failure-select {
+  background: #253443;
+  border: 1px solid #34495e;
+  color: #ecf0f1;
+  border-radius: 4px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  min-width: 160px;
+}
+
+.flood-failure-select:focus {
+  outline: 2px solid #4472C4;
+  outline-offset: -1px;
+}
+
+.flood-failure-delta {
+  font-size: 0.8rem;
+  color: #ecf0f1;
+}
+
+/* ---- Spinner ---- */
+
+.flood-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: flood-spin 0.6s linear infinite;
+}
+
+@keyframes flood-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 600px) {
+  .flood-inputs-row {
+    grid-template-columns: 1fr;
+  }
+  .flood-results-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,80 @@
+/* ---- Shared Error Dialog ---- */
+
+.error-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-dialog {
+  background: #1e2a38;
+  border: 1px solid #c0392b;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  width: 440px;
+  max-width: 90vw;
+  color: #ecf0f1;
+  overflow: hidden;
+}
+
+.error-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(192, 57, 43, 0.12);
+  border-bottom: 1px solid rgba(192, 57, 43, 0.3);
+}
+
+.error-dialog-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.error-dialog-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ecf0f1;
+}
+
+.error-dialog-body {
+  padding: 1rem;
+  font-size: 0.82rem;
+  color: #bdc3c7;
+  line-height: 1.6;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-line;
+}
+
+.error-dialog-footer {
+  padding: 0.6rem 1rem;
+  border-top: 1px solid #2c3e50;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error-dialog-ok {
+  background: #2c3e50;
+  color: #ecf0f1;
+  border: 1px solid #4a6a8a;
+  border-radius: 4px;
+  padding: 0.35rem 1.2rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.error-dialog-ok:hover {
+  background: #34495e;
+  border-color: #7fb3f0;
+}
+
+.error-dialog-ok:focus-visible {
+  outline: 2px solid #7fb3f0;
+  outline-offset: 1px;
+}

@@ -1,0 +1,229 @@
+.layer-control {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.layer-control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.layer-control-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.layer-control-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+}
+
+.layer-control-header button:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.layer-preset-selector {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.layer-preset-selector label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.layer-preset-selector select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.layer-preset-selector select:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.layer-preset-selector button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.layer-preset-selector button:hover {
+  background: #f5f5f5;
+}
+
+.layer-preset-selector button:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.preset-creation {
+  display: flex;
+  gap: 8px;
+}
+
+.preset-creation input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.preset-creation input:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.preset-creation button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.layer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background: white;
+}
+
+.layer-item:focus-within {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.layer-drag-handle {
+  cursor: grab;
+  color: #666;
+  font-size: 16px;
+  user-select: none;
+}
+
+.layer-drag-handle:active {
+  cursor: grabbing;
+}
+
+.layer-visibility-toggle {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.layer-visibility-toggle:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.layer-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.layer-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.layer-type {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.opacity-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.opacity-slider {
+  width: 80px;
+  height: 4px;
+  cursor: pointer;
+}
+
+.opacity-slider:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+.opacity-value {
+  font-size: 12px;
+  color: #666;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .layer-control {
+    width: calc(100vw - 20px);
+    max-width: 350px;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 768px) {
+  .layer-control {
+    top: 5px;
+    right: 5px;
+    width: 250px;
+    padding: 12px;
+  }
+
+  .layer-list {
+    max-height: 200px;
+  }
+}

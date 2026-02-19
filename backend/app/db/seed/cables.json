@@ -1,0 +1,35 @@
+[
+  {
+    "id": "lmr-195",
+    "name": "LMR-195",
+    "cable_type": "LMR-195",
+    "loss_per_m_915mhz": 0.344,
+    "loss_per_m_868mhz": 0.330,
+    "loss_per_m_433mhz": 0.230,
+    "connector_types": "SMA, N-Type",
+    "price_per_m_usd": 1.50,
+    "is_custom": 0
+  },
+  {
+    "id": "lmr-400",
+    "name": "LMR-400",
+    "cable_type": "LMR-400",
+    "loss_per_m_915mhz": 0.131,
+    "loss_per_m_868mhz": 0.126,
+    "loss_per_m_433mhz": 0.088,
+    "connector_types": "N-Type",
+    "price_per_m_usd": 3.00,
+    "is_custom": 0
+  },
+  {
+    "id": "rg-58",
+    "name": "RG-58",
+    "cable_type": "RG-58",
+    "loss_per_m_915mhz": 0.540,
+    "loss_per_m_868mhz": 0.520,
+    "loss_per_m_433mhz": 0.360,
+    "connector_types": "BNC, SMA",
+    "price_per_m_usd": 0.80,
+    "is_custom": 0
+  }
+]

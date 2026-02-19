@@ -1,0 +1,360 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  /* WCAG 2.2 AA touch target size: minimum 44x44px */
+  min-height: 44px;
+  min-width: 44px;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Touch target size for all interactive elements */
+/* WCAG 2.2 AA Level - Criterion 2.5.8: Target Size (Minimum) */
+/* Sidebar checkboxes use compact 11px sizing — excluded here */
+a,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="radio"],
+select {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Checkboxes get 44px ONLY outside the sidebar */
+input[type="checkbox"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.app-sidebar input[type="checkbox"] {
+  min-height: auto;
+  min-width: auto;
+}
+
+/* For smaller text inputs, ensure adequate vertical touch target */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea {
+  min-height: 44px;
+}
+
+/* Small buttons/icons can use padding to reach 44x44px */
+.btn-small,
+.icon-button {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure adequate spacing between adjacent touch targets */
+.btn-group > *:not(:last-child),
+.form-actions > *:not(:last-child) {
+  margin-right: 8px;
+}
+
+/* ========================================
+   TRANSITIONS & MICRO-INTERACTIONS
+   ======================================== */
+
+/* Button transitions - smooth hover and active states */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover:not(:disabled),
+input[type="button"]:hover:not(:disabled),
+input[type="submit"]:hover:not(:disabled),
+input[type="reset"]:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:active:not(:disabled),
+input[type="button"]:active:not(:disabled),
+input[type="submit"]:active:not(:disabled),
+input[type="reset"]:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Form input focus transitions */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.1);
+}
+
+/* Checkbox and radio transitions */
+input[type="checkbox"],
+input[type="radio"] {
+  transition: transform 0.1s ease-in-out;
+}
+
+input[type="checkbox"]:hover,
+input[type="radio"]:hover {
+  transform: scale(1.1);
+}
+
+/* Sidebar checkboxes: no hover scale */
+.app-sidebar input[type="checkbox"]:hover {
+  transform: none;
+}
+
+/* Dialog/Modal fade-in animation */
+.dialog-overlay {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dialog-content {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Tooltip fade-in */
+[role="tooltip"] {
+  position: absolute;
+  z-index: 9999;
+  animation: tooltipFadeIn 0.2s ease-in-out;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Progress bar smooth animation */
+.progress-fill {
+  transition: width 0.3s ease-out;
+}
+
+/* Spinner rotation animation */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Notification slide-in */
+.notification {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Link hover effect with underline growth */
+a {
+  position: relative;
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.3s ease-in-out;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #646cff;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Smooth opacity transitions for disabled elements */
+:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Table row hover effect */
+tbody tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+tbody tr:hover {
+  background-color: rgba(100, 108, 255, 0.05);
+}
+
+/* Card/panel hover effect */
+.card,
+.panel {
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.card:hover,
+.panel:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   LANDSCAPE MODE OPTIMIZATIONS
+   ======================================== */
+
+/* Mobile landscape mode: optimize for limited vertical space */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* Reduce minimum heights to fit in limited vertical space */
+  body {
+    min-height: 100vh;
+  }
+
+  /* Maintain WCAG 2.2 AA touch target requirements (44x44px) */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Adjust form inputs for landscape */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  textarea {
+    min-height: 44px;
+  }
+
+  /* Optimize header/footer spacing */
+  h1 {
+    font-size: 2em;
+    line-height: 1;
+    margin: 0.5em 0;
+  }
+
+  /* Reduce vertical padding for better space utilization */
+  .card,
+  .panel {
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

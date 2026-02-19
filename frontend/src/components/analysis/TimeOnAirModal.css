@@ -1,0 +1,407 @@
+/**
+ * TimeOnAirModal Styles
+ * Dark theme matching existing UI palette (LinkReportModal pattern).
+ */
+
+/* ---- Overlay & Modal ---- */
+
+.toa-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.toa-modal {
+  pointer-events: auto;
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  background: #1e2a38;
+  border: 1px solid #34495e;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  width: 900px;
+  max-width: 92vw;
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  color: #ecf0f1;
+}
+
+/* ---- Header ---- */
+
+.toa-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #34495e;
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.toa-header:active {
+  cursor: grabbing;
+}
+
+.toa-header .toa-drag-hint {
+  font-size: 0.65rem;
+  color: #5d6d7e;
+  margin-top: 0.15rem;
+}
+
+.toa-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.toa-summary {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #95a5a6;
+}
+
+.toa-close {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  border-radius: 4px;
+}
+
+.toa-close:hover {
+  color: #ecf0f1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Body ---- */
+
+.toa-body {
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---- Inputs ---- */
+
+.toa-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toa-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.toa-inputs-row-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.toa-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.toa-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.toa-field select,
+.toa-field input[type="number"] {
+  background: #253443;
+  border: 1px solid #34495e;
+  color: #ecf0f1;
+  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.toa-field select:focus,
+.toa-field input:focus {
+  outline: 2px solid #4472C4;
+  outline-offset: -1px;
+}
+
+.toa-slider-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toa-slider-group input[type="range"] {
+  flex: 1;
+  accent-color: #4472C4;
+}
+
+.toa-number-sm {
+  width: 60px;
+  text-align: center;
+}
+
+.toa-field-check label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #ecf0f1;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
+  cursor: pointer;
+  padding-top: 0.6rem;
+}
+
+.toa-field-check input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px !important;
+  height: 11px !important;
+  min-width: 11px !important;
+  min-height: 11px !important;
+  max-width: 11px !important;
+  max-height: 11px !important;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #5d6d7e;
+  border-radius: 2px;
+  background-color: #2c3e50;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transform: none !important;
+}
+
+.toa-field-check input[type="checkbox"]:checked {
+  background-color: #4472C4;
+  border-color: #4472C4;
+}
+
+.toa-field-check input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0px;
+  width: 4px;
+  height: 7px;
+  border: solid #fff;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+/* ---- Advanced Toggle ---- */
+
+.toa-advanced-toggle {
+  background: none;
+  border: none;
+  color: #4472C4;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  text-align: left;
+  width: fit-content;
+}
+
+.toa-advanced-toggle:hover {
+  color: #7fb3f0;
+  text-decoration: underline;
+}
+
+.toa-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(37, 52, 67, 0.5);
+  border-radius: 6px;
+  border: 1px solid rgba(52, 73, 94, 0.5);
+}
+
+/* ---- Results ---- */
+
+.toa-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toa-section-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.toa-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.toa-result-card {
+  background: #253443;
+  border: 1px solid #34495e;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toa-result-primary {
+  border-color: #4472C4;
+  background: rgba(68, 114, 196, 0.15);
+}
+
+.toa-result-highlight {
+  border-color: #f1c40f;
+  background: rgba(241, 196, 15, 0.08);
+}
+
+.toa-result-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ecf0f1;
+  line-height: 1.2;
+}
+
+.toa-result-primary .toa-result-value {
+  color: #7fb3f0;
+}
+
+.toa-result-highlight .toa-result-value {
+  color: #f1c40f;
+}
+
+.toa-result-label {
+  font-size: 0.7rem;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.toa-device-note {
+  text-transform: none;
+  font-style: italic;
+}
+
+.toa-detail-line {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #7f8c8d;
+}
+
+/* ---- Comparison Table ---- */
+
+.toa-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toa-table-wrap {
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #34495e;
+}
+
+.toa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.toa-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.toa-table th {
+  background: #253443;
+  color: #95a5a6;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid #34495e;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.toa-table td {
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid rgba(52, 73, 94, 0.5);
+  white-space: nowrap;
+}
+
+.toa-table tbody tr:hover {
+  background: rgba(52, 73, 94, 0.35);
+}
+
+.toa-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.toa-row-active {
+  background: rgba(68, 114, 196, 0.2) !important;
+}
+
+.toa-row-active td {
+  color: #7fb3f0;
+  font-weight: 600;
+}
+
+.toa-preset-name {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Value colors (shared with LinkReportModal) ---- */
+
+.toa-table .value-warn { color: #f1c40f; }
+.toa-table .value-good { color: #2ecc71; }
+.toa-table .value-bad  { color: #e74c3c; }
+
+/* ---- Focus-Visible (Keyboard Accessibility) ---- */
+
+.toa-close:focus-visible,
+.toa-advanced-toggle:focus-visible {
+  outline: 2px solid #7fb3f0;
+  outline-offset: 1px;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 600px) {
+  .toa-inputs-row {
+    grid-template-columns: 1fr;
+  }
+  .toa-inputs-row-3 {
+    grid-template-columns: 1fr;
+  }
+  .toa-results-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
