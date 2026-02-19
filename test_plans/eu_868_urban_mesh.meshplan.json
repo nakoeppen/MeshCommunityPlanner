@@ -1,6 +1,8 @@
 {
-  "version": "0.1.0",
-  "exported_at": "2026-02-12T00:00:00Z",
+  "format": "meshplan",
+  "schema_version": 1,
+  "app_version": "1.0.0",
+  "created_at": "2026-02-12T00:00:00Z",
   "plan": {
     "name": "(Sample) EU 868 Urban Mesh - Berlin",
     "description": "European 868 MHz mesh network across central Berlin neighborhoods. Features 4 nodes with EU region settings and mixed devices including rooftop, window mount, solar relay, and portable tracker configurations.",

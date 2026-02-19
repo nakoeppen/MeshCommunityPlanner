@@ -1,6 +1,8 @@
 {
-  "version": "0.1.0",
-  "exported_at": "2026-02-12T00:00:00Z",
+  "format": "meshplan",
+  "schema_version": 1,
+  "app_version": "1.0.0",
+  "created_at": "2026-02-12T00:00:00Z",
   "plan": {
     "name": "(Sample) SF Bay Area Mixed Mesh",
     "description": "6-node mesh network across the San Francisco Bay Area with varying power levels, antenna heights, and devices. Covers hilly urban terrain (Twin Peaks, Marin Headlands), over-water propagation (Bay crossings), and mixed suburban/urban environments.",

@@ -1,6 +1,8 @@
 {
-  "version": "0.1.0",
-  "exported_at": "2026-02-12T00:00:00Z",
+  "format": "meshplan",
+  "schema_version": 1,
+  "app_version": "1.0.0",
+  "created_at": "2026-02-12T00:00:00Z",
   "plan": {
     "name": "(Sample) Suburban Neighborhood Mesh",
     "description": "Simple 3-node suburban mesh network near Boulder, CO. Close-range nodes approximately 1-2 km apart in a residential area with home base, park relay, and school rooftop configurations.",
