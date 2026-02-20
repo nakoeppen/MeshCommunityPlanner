@@ -128,20 +128,36 @@ rm -f "${DMG_PATH}"
 
 if command -v create-dmg &> /dev/null; then
     echo "[INFO] Using create-dmg..."
-    ICON_ARGS=""
+    # create-dmg has a bug with spaces in paths;
+    # copy source .app and icon to /tmp to avoid space issues
+    TMP_SRC="/tmp/MeshPlannerDmgBuild"
+    rm -rf "${TMP_SRC}"
+    mkdir -p "${TMP_SRC}"
+    cp -R "${PYINSTALLER_APP}" "${TMP_SRC}/MeshCommunityPlanner.app"
+
     VOLUME_ICON="${RESOURCES_DIR}/AppIcon.icns"
     if [ -f "${VOLUME_ICON}" ]; then
-        ICON_ARGS="--volicon ${VOLUME_ICON}"
+        cp "${VOLUME_ICON}" "${TMP_SRC}/volicon.icns"
+        create-dmg \
+            --volname "${APP_NAME}" \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "MeshCommunityPlanner.app" 150 200 \
+            --app-drop-link 450 200 \
+            --volicon "${TMP_SRC}/volicon.icns" \
+            "${DMG_PATH}" \
+            "${TMP_SRC}/MeshCommunityPlanner.app"
+    else
+        create-dmg \
+            --volname "${APP_NAME}" \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "MeshCommunityPlanner.app" 150 200 \
+            --app-drop-link 450 200 \
+            "${DMG_PATH}" \
+            "${TMP_SRC}/MeshCommunityPlanner.app"
     fi
-    create-dmg \
-        --volname "${APP_NAME}" \
-        --window-size 600 400 \
-        --icon-size 100 \
-        --icon "${APP_BUNDLE}" 150 200 \
-        --app-drop-link 450 200 \
-        ${ICON_ARGS} \
-        "${DMG_PATH}" \
-        "${PYINSTALLER_APP}"
+    rm -rf "${TMP_SRC}"
 else
     echo "[INFO] create-dmg not found, using hdiutil..."
     STAGING="${INSTALLERS_DIR}/dist/dmg_staging"
