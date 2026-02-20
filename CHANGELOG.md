@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.1.0] — 2026-02
+
+### Added
+- **Elevation Heatmap** — Toggle a terrain elevation overlay on the map (Tools → Elevation Heatmap)
+  - Hypsometric color ramp: blue (sea level) → green → yellow → orange → terracotta → gray → white (snow)
+  - On-demand SRTM tile download from AWS S3 (no auth required)
+  - Rendered 256×256 PNG tiles cached to disk for instant subsequent loads
+  - Adjustable opacity slider (0–100%) in the map legend panel
+  - Zoom levels 9–15 (matched to SRTM 30m resolution)
+  - Pure-Python PNG encoder (no Pillow dependency)
+  - Auth bypass for tile GET requests (query param token for Leaflet compatibility)
+- **Elevation Tile Streaming Guide** — `ELEVATION-TILE-STREAMING.md` developer documentation for adapting the tile pipeline to other servers (e.g., ATAK)
+- **Test suite** — First automated tests for the project
+  - 24 backend Python tests (pytest): PNG encoder, tile renderer, color ramp, API endpoints, auth middleware
+  - 15 frontend unit tests (Vitest): Zustand store, ElevationLegend component, Toolbar integration
+  - 6 Playwright integration tests: end-to-end elevation heatmap UI
+  - Accessibility tests using axe-core (WCAG violation scanning)
+
+### Fixed
+- Elevation legend opacity slider now has `aria-label` for screen reader accessibility
+
+---
+
 ## [1.0.0] — 2026-02
 
 First production release.

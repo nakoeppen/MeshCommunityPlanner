@@ -134,13 +134,13 @@ sudo dnf install fuse fuse-libs
 **Solution:**
 ```bash
 sudo apt --fix-broken install
-sudo dpkg -i mesh-community-planner_1.0.0_amd64.deb
+sudo dpkg -i mesh-community-planner_1.1.0_amd64.deb
 ```
 
 **Alternative:** Use `gdebi` to auto-resolve dependencies:
 ```bash
 sudo apt install gdebi
-sudo gdebi mesh-community-planner_1.0.0_amd64.deb
+sudo gdebi mesh-community-planner_1.1.0_amd64.deb
 ```
 
 ---
@@ -865,7 +865,7 @@ When filing a bug report, use this template:
 ```markdown
 **Environment**
 - OS: [e.g., Windows 11, macOS 13.2, Ubuntu 22.04]
-- App Version: [e.g., v1.0.0]
+- App Version: [e.g., v1.1.0]
 - RAM: [e.g., 8 GB]
 - CPU: [e.g., Intel Core i5-8250U]
 

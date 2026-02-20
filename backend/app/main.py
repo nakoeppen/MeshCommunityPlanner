@@ -120,7 +120,7 @@ def _register_w3_router(app: FastAPI, ticket_manager: TicketManager) -> None:
     srtm_manager = SRTMManager(srtm_dir=srtm_dir, sdf_dir=sdf_dir)
     logger.info("SRTM manager initialized (srtm=%s, sdf=%s)", srtm_dir, sdf_dir)
 
-    w3_router = create_w3_router(ws_handler=ws_handler, srtm_manager=srtm_manager)
+    w3_router = create_w3_router(ws_handler=ws_handler, auth_token=_app_token, srtm_manager=srtm_manager)  # auth_token for tile query-param auth
     app.include_router(w3_router)
 
 

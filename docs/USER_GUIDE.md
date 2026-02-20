@@ -1,6 +1,6 @@
 # Mesh Community Planner — User Guide
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Last Updated:** February 2026
 
 ---
@@ -530,6 +530,41 @@ Find the shortest multi-hop path between two nodes:
    - Per-link quality along each route
    - Total distance and hop count
 
+### Elevation Heatmap
+
+Overlay a terrain elevation layer on the map to visualize the topography of your deployment area:
+
+1. Open the **Tools** menu
+2. Click **Elevation Heatmap** to toggle it on (a checkmark appears when active)
+3. The map shows colored terrain overlaid on the base map tiles
+
+**Color scale** (blue → green → yellow → orange → red → white):
+
+| Color | Elevation | Terrain |
+|-------|-----------|---------|
+| Steel blue | Below sea level | Valleys, depressions |
+| Forest green | 0 m (sea level) | Coastal areas |
+| Medium green | 50 m | Lowland plains |
+| Yellow-green | 200 m | Low hills |
+| Bright yellow | 500 m | Uplands |
+| Amber | 800 m | Foothills |
+| Deep orange | 1,200 m | Lower mountains |
+| Terracotta | 2,000 m | Mid-altitude mountains |
+| Gray | 3,000 m | Alpine, above treeline |
+| White | 4,500 m+ | Snow and glacier |
+
+**Opacity control:** When the elevation layer is active, a legend panel appears in the bottom-right corner of the map with a slider to adjust transparency (0–100%). Lower opacity lets the base map show through more clearly.
+
+**Zoom range:** Elevation tiles render at zoom levels 9–15. Below zoom 9 the view is too wide for meaningful detail; above zoom 15 you exceed the 30 m resolution of the SRTM data.
+
+**Data source:** Elevation data comes from NASA's Shuttle Radar Topography Mission (SRTM1) at 1 arc-second (~30 m) resolution. Tiles are downloaded automatically from AWS when you pan to a new area — no API key or account required. Downloaded tiles are cached locally so subsequent views load instantly.
+
+**Use cases:**
+- Identify ridgelines and valleys before placing nodes
+- Understand why certain line-of-sight links are blocked
+- Find high-ground locations for relay nodes
+- Visualize terrain context when presenting plans to stakeholders
+
 ### Save Screenshot
 
 Capture the current map view as a PNG image: Tools menu → **Save Screenshot**. Useful for reports and presentations.
@@ -790,4 +825,4 @@ For technical terms, see the [Technical Glossary](TECHNICAL-GLOSSARY.md).
 For answers to common questions, see the [FAQ](FAQ.md).
 
 *Last Updated: February 2026*
-*Version: 1.0.0*
+*Version: 1.1.0*

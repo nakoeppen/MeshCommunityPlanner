@@ -42,7 +42,7 @@ chmod +x installers/macos/build_dmg.sh
 ./installers/macos/build_dmg.sh
 ```
 
-Output: `installers/dist/MeshCommunityPlanner-1.0.0.dmg`
+Output: `installers/dist/MeshCommunityPlanner-1.1.0.dmg`
 
 The DMG script:
 1. Takes the PyInstaller `.app` bundle from `dist/`

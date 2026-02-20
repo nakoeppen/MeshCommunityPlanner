@@ -180,5 +180,5 @@ After viewing an area online (map tiles cache) and running propagation once (ter
 
 For detailed documentation, see the [User Guide](USER_GUIDE.md). For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Last Updated:** February 2026

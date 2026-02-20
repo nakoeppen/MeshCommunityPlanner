@@ -1,9 +1,9 @@
-# Known Issues — v1.0.0
+# Known Issues — v1.1.0
 
 **Last Updated:** February 2026
-**Release:** v1.0.0
+**Release:** v1.1.0
 
-This document tracks known issues, limitations, and workarounds for Mesh Community Planner v1.0.0.
+This document tracks known issues, limitations, and workarounds for Mesh Community Planner v1.1.0.
 
 ---
 
@@ -107,5 +107,5 @@ For security vulnerabilities, see [SECURITY.md](../SECURITY.md).
 
 ---
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Last Updated:** February 2026

@@ -329,6 +329,8 @@ export function AppLayout() {
   const terrainCoverageOverlays = useMapStore((s) => s.terrain_coverage_overlays);
   const viewshedOverlays = useMapStore((s) => s.viewshed_overlays);
   const routePathOverlays = useMapStore((s) => s.route_path_overlays);
+  const elevationLayerEnabled = useMapStore((s) => s.elevation_layer_enabled);
+  const setElevationLayerEnabled = useMapStore((s) => s.setElevationLayerEnabled);
   const dirty = usePlanStore((s) => s.dirty);
   const clearDirty = usePlanStore((s) => s.clearDirty);
 
@@ -2316,6 +2318,8 @@ export function AppLayout() {
         onFloodSim={() => setShowFloodingSim(true)}
         onSuggestPlacement={() => setShowPlacementSuggest(true)}
         onSaveScreenshot={handleSaveScreenshot}
+        onToggleElevation={() => setElevationLayerEnabled(!elevationLayerEnabled)}
+        elevationEnabled={elevationLayerEnabled}
         hasOverlays={losOverlays.length > 0 || coverageOverlays.length > 0 || terrainCoverageOverlays.length > 0 || viewshedOverlays.length > 0 || routePathOverlays.length > 0}
         hasLOSOverlays={losOverlays.length > 0}
         selectedCount={selectedNodeIds.length}

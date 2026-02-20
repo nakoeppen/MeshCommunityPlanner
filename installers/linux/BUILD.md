@@ -50,7 +50,7 @@ This creates `dist/MeshCommunityPlanner/` with the standalone executable.
 bash installers/linux/build_appimage.sh
 ```
 
-Output: `dist/MeshCommunityPlanner-1.0.0-x86_64.AppImage`
+Output: `dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage`
 
 ### 4b. Build .deb package (Debian/Ubuntu)
 
@@ -58,9 +58,9 @@ Output: `dist/MeshCommunityPlanner-1.0.0-x86_64.AppImage`
 bash installers/linux/build_deb.sh
 ```
 
-Output: `dist/mesh-community-planner_1.0.0_amd64.deb`
+Output: `dist/mesh-community-planner_1.1.0_amd64.deb`
 
-Install with: `sudo dpkg -i dist/mesh-community-planner_1.0.0_amd64.deb`
+Install with: `sudo dpkg -i dist/mesh-community-planner_1.1.0_amd64.deb`
 
 ## Verification
 

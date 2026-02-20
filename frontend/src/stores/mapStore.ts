@@ -155,6 +155,10 @@ export interface MapState {
   placement_coverage_radius_m: number;
   placement_search_bounds: { min_lat: number; min_lon: number; max_lat: number; max_lon: number } | null;
 
+  // Elevation heatmap layer
+  elevation_layer_enabled: boolean;
+  elevationOpacity: number;
+
   // Coverage heatmap opacity (0..1)
   coverageOpacity: number;
 
@@ -197,6 +201,8 @@ export interface MapState {
   setPlacementSearchBounds: (bounds: { min_lat: number; min_lon: number; max_lat: number; max_lon: number }) => void;
   clearPlacementSearchBounds: () => void;
   setCoverageOpacity: (opacity: number) => void;
+  setElevationLayerEnabled: (enabled: boolean) => void;
+  setElevationOpacity: (opacity: number) => void;
 }
 
 // ============================================================================
@@ -230,6 +236,8 @@ const initialState = {
   placement_suggestions: [] as PlacementSuggestion[],
   placement_coverage_radius_m: 1000,
   placement_search_bounds: null as { min_lat: number; min_lon: number; max_lat: number; max_lon: number } | null,
+  elevation_layer_enabled: false,
+  elevationOpacity: 0.6,
   coverageOpacity: 0.7,
   map_invalidate_counter: 0,
   fit_bounds_counter: 0,
@@ -330,4 +338,6 @@ export const useMapStore = create<MapState>((set) => ({
   setPlacementSearchBounds: (bounds) => set({ placement_search_bounds: bounds }),
   clearPlacementSearchBounds: () => set({ placement_search_bounds: null }),
   setCoverageOpacity: (opacity) => set({ coverageOpacity: opacity }),
+  setElevationLayerEnabled: (enabled) => set({ elevation_layer_enabled: enabled }),
+  setElevationOpacity: (opacity) => set({ elevationOpacity: opacity }),
 }));

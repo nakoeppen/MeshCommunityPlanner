@@ -5,7 +5,7 @@
 #   - PyInstaller output in dist/MeshCommunityPlanner/
 #   - appimagetool (https://github.com/AppImage/AppImageKit)
 #
-# Output: dist/MeshCommunityPlanner-1.0.0-x86_64.AppImage
+# Output: dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
 
 set -euo pipefail
 
@@ -14,7 +14,7 @@ INSTALLERS_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_ROOT="$(dirname "$INSTALLERS_DIR")"
 
 APP_NAME="MeshCommunityPlanner"
-APP_VERSION="1.0.0"
+APP_VERSION="1.1.0"
 PYINSTALLER_DIST="${PROJECT_ROOT}/dist/MeshCommunityPlanner"
 APPDIR="${PROJECT_ROOT}/dist/${APP_NAME}.AppDir"
 

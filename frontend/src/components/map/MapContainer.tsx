@@ -11,6 +11,7 @@ import { usePlanStore } from '../../stores/planStore';
 import { useMapStore } from '../../stores/mapStore';
 import type { TerrainCoverageOverlay, ViewshedOverlay, RoutePathOverlay, FloodingOverlay, PlacementSuggestion } from '../../stores/mapStore';
 import { CoverageLegend } from './CoverageLegend';
+import { ElevationLegend } from './ElevationLegend';
 import { getAPIClient } from '../../services/api';
 
 // Inline SVG marker icons - no external images needed
@@ -54,6 +55,8 @@ export function MapContainer({ className = '' }: MapContainerProps) {
   const routePathLayerRef = useRef<L.LayerGroup | null>(null);
   const floodingLayerRef = useRef<L.LayerGroup | null>(null);
   const placementLayerRef = useRef<L.LayerGroup | null>(null);
+  const elevationTileLayerRef = useRef<L.TileLayer | null>(null);
+  const elevationEnsureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragStartPosRef = useRef<L.LatLng | null>(null);
 
   // Read store values
@@ -74,6 +77,8 @@ export function MapContainer({ className = '' }: MapContainerProps) {
   const placementCoverageRadiusM = useMapStore((s) => s.placement_coverage_radius_m);
   const placementSearchBounds = useMapStore((s) => s.placement_search_bounds);
   const coverageOpacity = useMapStore((s) => s.coverageOpacity);
+  const elevationLayerEnabled = useMapStore((s) => s.elevation_layer_enabled);
+  const elevationOpacity = useMapStore((s) => s.elevationOpacity);
   const mapInvalidateCounter = useMapStore((s) => s.map_invalidate_counter);
   const fitBoundsCounter = useMapStore((s) => s.fit_bounds_counter);
   const fitBounds = useMapStore((s) => s.fit_bounds);
@@ -791,6 +796,80 @@ export function MapContainer({ className = '' }: MapContainerProps) {
     return () => clearInterval(timer);
   }, [floodingOverlay?.isPlaying, floodingOverlay?.waves.length, floodingOverlay?.animationSpeedMs]);
 
+  // Elevation heatmap tile layer — create/destroy when toggled, update opacity
+  useEffect(() => {
+    const map = leafletMapRef.current;
+    if (!map) return;
+
+    if (elevationLayerEnabled) {
+      if (!elevationTileLayerRef.current) {
+        const authToken = (window as any).__MESH_PLANNER_AUTH__ || '';
+        const tileLayer = L.tileLayer(
+          `/api/elevation/tile/{z}/{x}/{y}.png?token=${encodeURIComponent(authToken)}`,
+          {
+            minZoom: 9,
+            maxZoom: 15,
+            opacity: elevationOpacity,
+            errorTileUrl: '',  // suppress broken tile images
+          }
+        );
+        tileLayer.addTo(map);
+        elevationTileLayerRef.current = tileLayer;
+
+        // Ensure SRTM tiles are available for the visible area, then redraw
+        const ensureAndRedraw = () => {
+          if (elevationEnsureTimerRef.current) clearTimeout(elevationEnsureTimerRef.current);
+          elevationEnsureTimerRef.current = setTimeout(async () => {
+            const bounds = map.getBounds();
+            try {
+              await fetch('/api/elevation/ensure-tiles', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${authToken}`,
+                },
+                body: JSON.stringify({
+                  min_lat: bounds.getSouth(),
+                  min_lon: bounds.getWest(),
+                  max_lat: bounds.getNorth(),
+                  max_lon: bounds.getEast(),
+                }),
+              });
+              elevationTileLayerRef.current?.redraw();
+            } catch (err) {
+              console.warn('Failed to ensure elevation tiles:', err);
+            }
+          }, 500);
+        };
+
+        map.on('moveend', ensureAndRedraw);
+        // Store handler for cleanup
+        (tileLayer as any)._ensureHandler = ensureAndRedraw;
+
+        // Initial ensure for current view
+        ensureAndRedraw();
+      }
+    } else {
+      if (elevationTileLayerRef.current) {
+        const handler = (elevationTileLayerRef.current as any)._ensureHandler;
+        if (handler) leafletMapRef.current?.off('moveend', handler);
+        leafletMapRef.current?.removeLayer(elevationTileLayerRef.current);
+        elevationTileLayerRef.current = null;
+      }
+      if (elevationEnsureTimerRef.current) {
+        clearTimeout(elevationEnsureTimerRef.current);
+        elevationEnsureTimerRef.current = null;
+      }
+    }
+  }, [elevationLayerEnabled]);
+
+  // Update elevation tile layer opacity
+  useEffect(() => {
+    if (elevationTileLayerRef.current) {
+      elevationTileLayerRef.current.setOpacity(elevationOpacity);
+    }
+  }, [elevationOpacity]);
+
   // Draw placement suggestion ghost markers
   useEffect(() => {
     if (!placementLayerRef.current) return;
@@ -955,6 +1034,7 @@ export function MapContainer({ className = '' }: MapContainerProps) {
         </div>
       )}
       <CoverageLegend />
+      <ElevationLegend />
     </div>
   );
 }

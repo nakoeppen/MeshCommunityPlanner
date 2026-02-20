@@ -36,9 +36,9 @@ No. There is no analytics, no telemetry, no user accounts, and no cloud services
 
 Download the installer for your platform from the [GitHub Releases page](https://github.com/PapaSierra555/MeshCommunityPlanner/releases):
 
-- **Windows:** Run `MeshCommunityPlanner-1.0.0-Setup.exe`
-- **macOS:** Open `MeshCommunityPlanner-1.0.0.dmg` and drag to Applications
-- **Linux:** Make `MeshCommunityPlanner-1.0.0-x86_64.AppImage` executable and run it
+- **Windows:** Run `MeshCommunityPlanner-1.1.0-Setup.exe`
+- **macOS:** Open `MeshCommunityPlanner-1.1.0.dmg` and drag to Applications
+- **Linux:** Make `MeshCommunityPlanner-1.1.0-x86_64.AppImage` executable and run it
 
 ### macOS says the app is from an unidentified developer. What do I do?
 
@@ -183,4 +183,4 @@ For more troubleshooting help, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 ---
 
 **Last Updated:** February 2026
-**Version:** 1.0.0
+**Version:** 1.1.0

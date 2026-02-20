@@ -82,6 +82,9 @@ class BruteForceProtection:
 # Path prefixes that bypass auth
 _AUTH_BYPASS_PATHS = frozenset({"/api/health"})
 
+# Path prefixes that bypass Bearer header auth (use query param token instead)
+_AUTH_BYPASS_PREFIXES = ("/api/elevation/tile/",)
+
 
 class AuthMiddleware(BaseHTTPMiddleware):
     """Validate Bearer token on all API requests except health.
@@ -103,6 +106,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         # Allow health endpoint without auth
         if path in _AUTH_BYPASS_PATHS:
+            return await call_next(request)
+
+        # Allow tile endpoints that use query param auth instead of Bearer header
+        if any(path.startswith(prefix) for prefix in _AUTH_BYPASS_PREFIXES):
             return await call_next(request)
 
         # Only check auth for /api/ routes (skip static files)

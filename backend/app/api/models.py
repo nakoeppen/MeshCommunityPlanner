@@ -246,6 +246,14 @@ class NetworkReportRequest(BaseModel):
 # ===========================================================================
 
 
+class ElevationEnsureTilesRequest(BaseModel):
+    """Request to ensure SRTM tiles are available for a bounding box."""
+    min_lat: float = Field(..., ge=-90, le=90)
+    min_lon: float = Field(..., ge=-180, le=180)
+    max_lat: float = Field(..., ge=-90, le=90)
+    max_lon: float = Field(..., ge=-180, le=180)
+
+
 class TerrainCoverageGridRequest(BaseModel):
     """Terrain-aware coverage grid request (radial sweep with SRTM)."""
     node_id: str = "node"

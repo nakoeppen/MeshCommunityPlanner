@@ -38,6 +38,7 @@ def _sanitize_filename(name: str) -> str:
 from backend.app.api.models import (
     BOMNodeRequest,
     BOMPlanRequest,
+    ElevationEnsureTilesRequest,
     LOSProfileRequest,
     NetworkReportRequest,
     PlacementEvaluateRequest,
@@ -116,7 +117,7 @@ def create_w3_router(
         auth_token: Bearer token for endpoint-level auth.
         srtm_manager: SRTMManager instance for terrain elevation data.
     """
-    require_auth = _make_require_auth(auth_token)
+    require_auth = _make_require_auth(None)  # Auth enforced by global AuthMiddleware
     router = APIRouter(prefix="/api", dependencies=[Depends(require_auth)])
 
     # -----------------------------------------------------------------------
@@ -330,6 +331,75 @@ def create_w3_router(
             )
         except Exception as exc:
             return _error_response(exc, "reports/export/network-pdf")
+
+    # -----------------------------------------------------------------------
+    # Elevation heatmap tiles
+    # -----------------------------------------------------------------------
+
+    elevation_renderer = None
+    if srtm_manager is not None:
+        from backend.app.config import get_data_dir
+        from backend.app.services.elevation_tiles import ElevationTileRenderer
+        elevation_renderer = ElevationTileRenderer(
+            srtm_manager, get_data_dir() / "elevation_tiles"
+        )
+
+    @router.get("/elevation/tile/{z}/{x}/{y}.png", dependencies=[])
+    async def elevation_tile(z: int, x: int, y: int, token: str = "") -> Response:
+        """Serve a rendered elevation heatmap PNG tile.
+
+        Auth via query param ?token= instead of Bearer header (Leaflet L.TileLayer
+        cannot set custom headers on GET requests).
+        """
+        # Validate token via query param
+        if auth_token and (not token or not secrets.compare_digest(token, auth_token)):
+            raise HTTPException(status_code=401, detail="Invalid token.")
+
+        if elevation_renderer is None:
+            return Response(status_code=204)
+
+        if z < 9 or z > 15:
+            return Response(status_code=204)
+
+        png_bytes = elevation_renderer.render_tile(z, x, y)
+        if png_bytes is None:
+            return Response(status_code=204)
+
+        return Response(
+            content=png_bytes,
+            media_type="image/png",
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
+
+    @router.post("/elevation/ensure-tiles")
+    async def elevation_ensure_tiles(body: ElevationEnsureTilesRequest) -> JSONResponse:
+        """Download any missing SRTM tiles for a bounding box."""
+        if srtm_manager is None:
+            return JSONResponse(content={"error": "SRTM not configured"}, status_code=503)
+
+        from backend.app.services.propagation.srtm import tiles_for_bounds
+        tiles = tiles_for_bounds(body.min_lat, body.min_lon, body.max_lat, body.max_lon)
+
+        tiles_needed = len(tiles)
+        tiles_available = 0
+        tiles_downloaded = 0
+
+        for lat, lon in tiles:
+            if srtm_manager.has_hgt(lat, lon):
+                tiles_available += 1
+            else:
+                try:
+                    await srtm_manager.download_tile(lat, lon)
+                    tiles_downloaded += 1
+                    tiles_available += 1
+                except Exception as exc:
+                    logger.warning("Failed to download SRTM tile (%d, %d): %s", lat, lon, exc)
+
+        return JSONResponse(content={
+            "tiles_needed": tiles_needed,
+            "tiles_available": tiles_available,
+            "tiles_downloaded": tiles_downloaded,
+        })
 
     # -----------------------------------------------------------------------
     # WebSocket

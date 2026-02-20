@@ -256,7 +256,7 @@ Current version of Mesh Community Planner.
 Check for updates at github.com/project/releases
 ```
 
-**Format:** v1.0.0 (MAJOR.MINOR.PATCH)
+**Format:** v1.1.0 (MAJOR.MINOR.PATCH)
 
 ---
 

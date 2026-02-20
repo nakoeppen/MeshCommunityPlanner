@@ -1,5 +1,5 @@
 Name:           mesh-community-planner
-Version:        1.0.0
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        Desktop web application for planning LoRa mesh network deployments
 License:        CC-BY-NC-SA-4.0
@@ -42,5 +42,5 @@ cp %{_sourcedir}/mesh-community-planner.desktop %{buildroot}/usr/share/applicati
 /usr/share/applications/%{name}.desktop
 
 %changelog
-* Thu Jan 01 2026 Mesh Community Planner Project <noreply@meshcommunityplanner.org> - 1.0.0-1
+* Thu Jan 01 2026 Mesh Community Planner Project <noreply@meshcommunityplanner.org> - 1.1.0-1
 - Initial release

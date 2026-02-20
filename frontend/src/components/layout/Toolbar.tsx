@@ -45,6 +45,8 @@ interface ToolbarProps {
   onFloodSim?: () => void;
   onSuggestPlacement?: () => void;
   onSaveScreenshot?: () => void;
+  onToggleElevation?: () => void;
+  elevationEnabled?: boolean;
   hasOverlays?: boolean;
   hasLOSOverlays?: boolean;
   selectedCount?: number;
@@ -91,6 +93,8 @@ export function Toolbar({
   onFloodSim,
   onSuggestPlacement,
   onSaveScreenshot,
+  onToggleElevation,
+  elevationEnabled = false,
   hasOverlays = false,
   hasLOSOverlays = false,
   selectedCount = 0,
@@ -460,6 +464,15 @@ export function Toolbar({
                   </button>
                   <div className="toolbar-dropdown-separator" />
                   <button
+                    className="toolbar-dropdown-item"
+                    type="button"
+                    onClick={() => handleItemClick(onToggleElevation)}
+                    title="Toggle an elevation heatmap layer showing terrain height (requires SRTM data download)"
+                  >
+                    {elevationEnabled ? '\u2713 ' : ''}Elevation Heatmap
+                  </button>
+                  <div className="toolbar-dropdown-separator" />
+                  <button
                     className={`toolbar-dropdown-item${!hasLOSOverlays ? ' disabled' : ''}`}
                     type="button"
                     onClick={() => hasLOSOverlays && handleItemClick(onLinkReport)}
@@ -538,7 +551,7 @@ export function Toolbar({
           </div>
         </div>
         <nav className="toolbar-actions">
-          <span className="toolbar-version">v0.1.0</span>
+          <span className="toolbar-version">v1.1.0</span>
         </nav>
       </div>
       {/* Help Modal */}
@@ -548,7 +561,7 @@ export function Toolbar({
             <div className="appinfo-modal-header">
               <div>
                 <div className="appinfo-title">Mesh Community Planner</div>
-                <div className="appinfo-version">Version 0.1.0</div>
+                <div className="appinfo-version">Version 1.1.0</div>
               </div>
               <button className="appinfo-close" type="button" onClick={() => setOpenMenu(null)} title="Close">&times;</button>
             </div>
@@ -594,6 +607,7 @@ export function Toolbar({
                       <li><strong>CoT/TAK Export</strong> &mdash; Export node positions in Cursor-on-Target XML format for interoperability with ATAK and tactical mapping systems</li>
                       <li><strong>GeoJSON Export</strong> &mdash; Export plan data as GeoJSON for use in GIS tools, web maps, and data analysis workflows</li>
                       <li><strong>Viewshed Analysis</strong> &mdash; Analyze terrain visibility from any node to determine which other nodes have clear line-of-sight</li>
+                      <li><strong>Elevation Heatmap</strong> &mdash; Toggle a terrain elevation overlay on the map using NASA SRTM 30m data; colors range from blue (sea level) through green, yellow, and orange to white (snow); includes adjustable opacity slider</li>
                     </ul>
                   </div>
                 )}
