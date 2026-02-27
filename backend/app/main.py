@@ -272,9 +272,18 @@ app = create_app()
 
 
 if __name__ == "__main__":
+    import os
     import sys
     import traceback
     import uvicorn
+
+    # ---- Windowless mode (console=False on Windows) ----
+    # When PyInstaller builds with console=False, sys.stdout/stderr are None.
+    # Redirect them to devnull so logging, uvicorn, and print() don't crash.
+    if sys.stdout is None:
+        sys.stdout = open(os.devnull, "w", encoding="utf-8")
+    if sys.stderr is None:
+        sys.stderr = open(os.devnull, "w", encoding="utf-8")
 
     # ---- Crash log setup ----
     # Write a persistent crash log so errors survive console window closing
@@ -366,8 +375,10 @@ if __name__ == "__main__":
 
         production = is_production_mode()
 
-        # Auto-open browser once server is ready (production/PyInstaller only)
-        if production:
+        # Auto-open browser once server is ready (production/PyInstaller only).
+        # macOS .app and Linux launcher scripts open the browser themselves,
+        # so they set MESH_PLANNER_NO_BROWSER=1 to prevent a duplicate tab.
+        if production and not os.environ.get("MESH_PLANNER_NO_BROWSER"):
             import threading
             import webbrowser
             import urllib.request

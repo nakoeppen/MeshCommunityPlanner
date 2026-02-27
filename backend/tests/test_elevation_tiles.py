@@ -11,6 +11,7 @@ import pytest
 from backend.app.services.elevation_tiles import (
     ElevationTileRenderer,
     _elev_to_rgb,
+    _elev_to_rgb_ranged,
     tile_bounds,
 )
 
@@ -53,6 +54,52 @@ class TestColorRamp:
         assert _elev_to_rgb(10000) == (245, 245, 252)
 
 
+class TestColorRampRanged:
+    """Tests for ranged elevation-to-color mapping."""
+
+    def test_bottom_of_range(self):
+        """Elevation at range minimum maps to first color stop (steel blue)."""
+        r, g, b = _elev_to_rgb_ranged(100, 100, 400)
+        assert (r, g, b) == (70, 130, 180)
+
+    def test_top_of_range(self):
+        """Elevation at range maximum maps to last color stop (snow white)."""
+        r, g, b = _elev_to_rgb_ranged(400, 100, 400)
+        assert (r, g, b) == (245, 245, 252)
+
+    def test_mid_range(self):
+        """Elevation at midpoint maps to a middle color (not first or last)."""
+        r, g, b = _elev_to_rgb_ranged(250, 100, 400)
+        # Should be somewhere in the middle of the ramp, not the endpoints
+        assert (r, g, b) != (70, 130, 180)
+        assert (r, g, b) != (245, 245, 252)
+
+    def test_clamp_below_min(self):
+        """Elevation below range min clamps to first color stop."""
+        r, g, b = _elev_to_rgb_ranged(0, 100, 400)
+        assert (r, g, b) == (70, 130, 180)
+
+    def test_clamp_above_max(self):
+        """Elevation above range max clamps to last color stop."""
+        r, g, b = _elev_to_rgb_ranged(1000, 100, 400)
+        assert (r, g, b) == (245, 245, 252)
+
+    def test_inverted_range_returns_first_stop(self):
+        """When max <= min, returns first color stop (degenerate range)."""
+        r, g, b = _elev_to_rgb_ranged(200, 400, 100)
+        assert (r, g, b) == (70, 130, 180)
+
+    def test_full_default_range_bottom(self):
+        """Using the full default range, bottom matches static LUT."""
+        r, g, b = _elev_to_rgb_ranged(-500, -500, 9000)
+        assert (r, g, b) == (70, 130, 180)
+
+    def test_full_default_range_top(self):
+        """Using the full default range, top matches static LUT."""
+        r, g, b = _elev_to_rgb_ranged(9000, -500, 9000)
+        assert (r, g, b) == (245, 245, 252)
+
+
 class TestElevationTileRenderer:
     """Tests for ElevationTileRenderer."""
 
@@ -93,3 +140,33 @@ class TestElevationTileRenderer:
         assert count >= 1
         # Cache dir should have no PNGs left
         assert list(tmp_cache_dir.rglob("*.png")) == []
+
+    def test_tile_path_default(self, mock_srtm_manager, tmp_cache_dir):
+        """Default tile path uses z/x/y.png format."""
+        renderer = ElevationTileRenderer(mock_srtm_manager, tmp_cache_dir)
+        path = renderer._tile_path(10, 163, 395)
+        assert path.name == "395.png"
+
+    def test_tile_path_with_range(self, mock_srtm_manager, tmp_cache_dir):
+        """Custom range tile path includes min/max in filename."""
+        renderer = ElevationTileRenderer(mock_srtm_manager, tmp_cache_dir)
+        path = renderer._tile_path(10, 163, 395, elev_min=100, elev_max=400)
+        assert path.name == "395_min100_max400.png"
+
+    def test_render_with_range_returns_png(self, mock_srtm_manager, tmp_cache_dir):
+        """render_tile with custom range returns valid PNG bytes."""
+        renderer = ElevationTileRenderer(mock_srtm_manager, tmp_cache_dir)
+        result = renderer.render_tile(10, 163, 395, elev_min=100, elev_max=400)
+        assert result is not None
+        assert result[:8] == b"\x89PNG\r\n\x1a\n"
+
+    def test_render_range_cached_separately(self, mock_srtm_manager, tmp_cache_dir):
+        """Default and ranged tiles produce separate cache files."""
+        renderer = ElevationTileRenderer(mock_srtm_manager, tmp_cache_dir)
+        default_result = renderer.render_tile(10, 163, 395)
+        ranged_result = renderer.render_tile(10, 163, 395, elev_min=100, elev_max=400)
+        assert default_result is not None
+        assert ranged_result is not None
+        # Both cache files should exist
+        assert renderer._tile_path(10, 163, 395).exists()
+        assert renderer._tile_path(10, 163, 395, elev_min=100, elev_max=400).exists()

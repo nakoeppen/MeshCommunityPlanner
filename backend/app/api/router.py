@@ -345,11 +345,19 @@ def create_w3_router(
         )
 
     @router.get("/elevation/tile/{z}/{x}/{y}.png", dependencies=[])
-    async def elevation_tile(z: int, x: int, y: int, token: str = "") -> Response:
+    async def elevation_tile(
+        z: int, x: int, y: int,
+        token: str = "",
+        elev_min: int | None = None,
+        elev_max: int | None = None,
+    ) -> Response:
         """Serve a rendered elevation heatmap PNG tile.
 
         Auth via query param ?token= instead of Bearer header (Leaflet L.TileLayer
         cannot set custom headers on GET requests).
+
+        Optional elev_min/elev_max query params stretch the full color ramp
+        across a custom elevation range for better contrast in flat areas.
         """
         # Validate token via query param
         if auth_token and (not token or not secrets.compare_digest(token, auth_token)):
@@ -361,7 +369,7 @@ def create_w3_router(
         if z < 9 or z > 15:
             return Response(status_code=204)
 
-        png_bytes = elevation_renderer.render_tile(z, x, y)
+        png_bytes = elevation_renderer.render_tile(z, x, y, elev_min=elev_min, elev_max=elev_max)
         if png_bytes is None:
             return Response(status_code=204)
 

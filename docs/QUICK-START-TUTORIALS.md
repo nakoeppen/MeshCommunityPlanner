@@ -157,6 +157,59 @@ Categories include devices, antennas, cables, power supplies, enclosures, and mo
 
 ---
 
+## Tutorial 4: Using the Elevation Heatmap with Range Sliders
+
+**Goal:** Visualize terrain in a flat area using the elevation range controls.
+
+**Prerequisite:** A plan with nodes placed in a relatively flat area (see Tutorial 1).
+
+### Step 1: Enable the Elevation Heatmap
+
+1. Open the **Tools** menu
+2. Click **Elevation Heatmap** (a checkmark appears)
+3. The map shows colored terrain — but if your area is flat, it may look like one solid color
+
+### Step 2: Narrow the Elevation Range
+
+The default color range spans -500m to 9000m. In flat areas (e.g., the Midwest US at ~200m–400m), the entire view falls within a tiny slice of that range.
+
+1. Look at the elevation legend panel in the bottom-right corner
+2. Set the **Min** value to just below your area's lowest point (e.g., 150m):
+   - Drag the slider, **or**
+   - Click the number field and type `150`, then press **Enter**, **or**
+   - Focus the slider and use the mouse wheel to scroll up to 150
+3. Set the **Max** value to just above your area's highest point (e.g., 450m) using the same methods
+4. Watch the legend swatches and labels update in real time
+
+The terrain now shows vivid colors across the full spectrum — ridges, valleys, and slopes become clearly visible.
+
+### Step 3: Read the Updated Legend
+
+The 10 color swatches now represent evenly-spaced elevations within your custom range. For example, with Min=150 and Max=450:
+
+- Top swatch (white): 450m
+- Middle swatch (yellow-green): ~300m
+- Bottom swatch (blue): 150m
+
+### Step 4: Save the Range for Future Sessions (Optional)
+
+Check the **"Remember range"** checkbox in the legend panel. Your Min/Max values are saved in local storage and will be restored automatically every time you open the app — no need to re-enter them.
+
+To stop saving the range, uncheck the box.
+
+### Step 5: Reset When Done
+
+Click the **Reset** button next to "Elevation" to restore the full -500m to 9000m default range.
+
+### Tips
+
+- **Keyboard users:** Tab to a slider, then use arrow keys (±10m) or Page Up/Down (±100m) for hands-free control
+- The tiles re-render when you release the slider or commit a typed value, not during drag, to avoid excessive server requests
+- Different ranges are cached separately — switching between ranges you've already viewed is instant
+- This feature is especially useful for: plains, coastal areas, river valleys, and suburban areas where elevations vary by less than 500m
+
+---
+
 ## Common Tips
 
 ### Auto-Save
@@ -180,5 +233,5 @@ After viewing an area online (map tiles cache) and running propagation once (ter
 
 For detailed documentation, see the [User Guide](USER_GUIDE.md). For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Last Updated:** February 2026

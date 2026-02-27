@@ -79,8 +79,11 @@ class BruteForceProtection:
         return True
 
 
-# Path prefixes that bypass auth
-_AUTH_BYPASS_PATHS = frozenset({"/api/health"})
+# Path prefixes that bypass auth.
+# /api/shutdown is included because the browser's sendBeacon API (used on
+# tab close) cannot set custom headers like Authorization.
+# Safe because the server only listens on 127.0.0.1 (not externally reachable).
+_AUTH_BYPASS_PATHS = frozenset({"/api/health", "/api/shutdown"})
 
 # Path prefixes that bypass Bearer header auth (use query param token instead)
 _AUTH_BYPASS_PREFIXES = ("/api/elevation/tile/",)

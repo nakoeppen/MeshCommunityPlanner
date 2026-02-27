@@ -77,14 +77,14 @@ bash installers/linux/build_appimage.sh
 ## 10. Verify output
 
 ```bash
-ls -lh dist/mesh-community-planner_1.1.0_amd64.deb
-ls -lh dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
+ls -lh dist/mesh-community-planner_1.2.0_amd64.deb
+ls -lh dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage
 ```
 
 ## 11. Test the .deb
 
 ```bash
-sudo dpkg -i dist/mesh-community-planner_1.1.0_amd64.deb
+sudo dpkg -i dist/mesh-community-planner_1.2.0_amd64.deb
 mesh-community-planner
 # Should launch server + open browser to http://127.0.0.1:8321
 ```
@@ -92,16 +92,16 @@ mesh-community-planner
 ## 12. Test the AppImage
 
 ```bash
-chmod +x dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
-./dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
+chmod +x dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage
+./dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage
 ```
 
 ## 13. Upload to release
 
 ```bash
-gh release upload v1.1.0 \
-  dist/mesh-community-planner_1.1.0_amd64.deb \
-  dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
+gh release upload v1.2.0 \
+  dist/mesh-community-planner_1.2.0_amd64.deb \
+  dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage
 ```
 
 ## How It Works

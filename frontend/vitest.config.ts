@@ -11,7 +11,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['tests/integration/**'], // Exclude Playwright integration tests (run via npm run test:integration)
+    exclude: ['tests/integration/**', 'node_modules/**'], // Exclude Playwright integration tests (run via npm run test:integration)
     server: {
       deps: {
         inline: ['vitest-canvas-mock'],

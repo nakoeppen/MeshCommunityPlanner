@@ -1,3 +1,7 @@
+/* =========================================================
+   ElevationLegend
+   ========================================================= */
+
 .elevation-legend {
   position: absolute;
   bottom: 32px;
@@ -9,12 +13,16 @@
   padding: 10px 12px;
   font-size: 12px;
   color: #e0e0e0;
-  min-width: 160px;
+  min-width: 200px;
   pointer-events: auto;
   backdrop-filter: blur(6px);
 }
 
+/* ── Title row ─────────────────────────────────────────── */
+
 .elevation-legend-title {
+  display: flex;
+  align-items: center;
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
@@ -22,6 +30,26 @@
   margin-bottom: 6px;
   color: #aaa;
 }
+
+.elevation-legend-reset {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #4dd0e1;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 0 2px;
+  text-decoration: underline;
+}
+
+.elevation-legend-reset:hover  { color: #80deea; }
+.elevation-legend-reset:focus-visible {
+  outline: 2px solid #4dd0e1;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Color swatches ────────────────────────────────────── */
 
 .elevation-legend-items {
   display: flex;
@@ -32,8 +60,8 @@
 .elevation-legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
+  gap: 5px;
+  font-size: 11px;
   line-height: 1.4;
 }
 
@@ -45,11 +73,264 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Fixed-width elevation label so terrain labels align */
+.elevation-legend-elev {
+  min-width: 44px;
+  font-variant-numeric: tabular-nums;
+  color: #e0e0e0;
+  font-size: 11px;
+}
+
+/* Terrain-type label fills remaining space, right-aligned */
+.elevation-legend-terrain {
+  flex: 1;
+  text-align: right;
+  color: #777;
+  font-size: 10px;
+  font-style: italic;
+}
+
+/* ── Separator ─────────────────────────────────────────── */
+
 .elevation-legend-separator {
   height: 1px;
   background: rgba(255, 255, 255, 0.1);
   margin: 6px 0;
 }
+
+/* ── Dual range slider ─────────────────────────────────── */
+
+.elevation-legend-range { display: flex; flex-direction: column; gap: 4px; }
+
+/* SR-only group label */
+.elevation-legend-range-group-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Track container — both thumbs overlay this */
+.elevation-dual-range {
+  position: relative;
+  height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+/* Background track + coloured fill */
+.elevation-dual-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.elevation-dual-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: #4dd0e1;
+  border-radius: 2px;
+}
+
+/* Both range inputs overlay the track */
+.elevation-dual-range input[type="range"] {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  pointer-events: none; /* only thumbs are interactive */
+  margin: 0;
+  padding: 0;
+}
+
+.elevation-dual-range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: all;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #4dd0e1;
+  border: 2px solid rgba(30, 30, 36, 0.8);
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.elevation-dual-range input[type="range"]::-moz-range-thumb {
+  pointer-events: all;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #4dd0e1;
+  border: 2px solid rgba(30, 30, 36, 0.8);
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+/* Hover glow on thumb */
+.elevation-dual-range input[type="range"]:hover::-webkit-slider-thumb {
+  background: #80deea;
+  box-shadow: 0 0 0 4px rgba(77, 208, 225, 0.2);
+}
+.elevation-dual-range input[type="range"]:hover::-moz-range-thumb {
+  background: #80deea;
+  box-shadow: 0 0 0 4px rgba(77, 208, 225, 0.2);
+}
+
+/* Focus ring on thumb */
+.elevation-dual-range input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(77, 208, 225, 0.55);
+  background: #80deea;
+}
+.elevation-dual-range input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(77, 208, 225, 0.55);
+  background: #80deea;
+}
+/* Suppress browser default focus outline — we use thumb box-shadow instead */
+.elevation-dual-range input[type="range"]:focus-visible {
+  outline: none;
+}
+
+/* Number inputs row below the dual slider */
+.elevation-dual-inputs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3px;
+}
+
+.elevation-dual-side {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.elevation-dual-side-right {
+  flex-direction: row-reverse; /* label on the right for max */
+}
+
+.elevation-dual-side-label {
+  font-size: 10px;
+  color: #777;
+  user-select: none;
+}
+
+/* Number input */
+input.elevation-legend-range-value {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 40px;
+  height: 16px !important;
+  min-height: 0 !important;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 3px;
+  color: #e0e0e0;
+  font-size: 10px;
+  font-family: inherit;
+  text-align: right;
+  padding: 0 3px;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  line-height: 16px;
+  /* Hide browser spinner arrows */
+  -moz-appearance: textfield;
+}
+
+input.elevation-legend-range-value::-webkit-inner-spin-button,
+input.elevation-legend-range-value::-webkit-outer-spin-button {
+  display: none;
+}
+
+input.elevation-legend-range-value:focus-visible {
+  outline: 2px solid #4dd0e1;
+  outline-offset: 1px;
+}
+
+/* "m" unit label */
+.elevation-legend-range-value-wrap {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.elevation-legend-unit {
+  font-size: 10px;
+  color: #777;
+  user-select: none;
+}
+
+/* ── Lock checkbox ──────────────────────────────────────── */
+
+.elevation-legend-lock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #aaa;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+  min-height: 0;
+}
+
+.elevation-legend-lock:hover { color: #e0e0e0; }
+
+/* Custom 11×11 checkbox — overrides browser defaults */
+.elevation-legend-lock input[type="checkbox"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 11px !important;
+  height: 11px !important;
+  max-width: 11px;
+  max-height: 11px;
+  min-width: 11px;
+  min-height: 0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.elevation-legend-lock input[type="checkbox"]:checked {
+  background: #4dd0e1;
+  border-color: #4dd0e1;
+}
+
+/* Checkmark drawn with a pseudo-element */
+.elevation-legend-lock input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0px;
+  width: 4px;
+  height: 7px;
+  border: 1.5px solid rgba(30, 30, 36, 0.9);
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.elevation-legend-lock input[type="checkbox"]:focus-visible {
+  outline: 2px solid #4dd0e1;
+  outline-offset: 2px;
+}
+
+/* ── Opacity slider ─────────────────────────────────────── */
 
 .elevation-legend-slider {
   display: flex;
@@ -77,7 +358,9 @@
   height: 12px;
   border-radius: 50%;
   background: #4dd0e1;
+  border: 2px solid rgba(30, 30, 36, 0.8);
   cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
 .elevation-legend-slider input[type="range"]::-moz-range-thumb {
@@ -85,6 +368,31 @@
   height: 12px;
   border-radius: 50%;
   background: #4dd0e1;
+  border: 2px solid rgba(30, 30, 36, 0.8);
   cursor: pointer;
   border: none;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+/* Hover glow */
+.elevation-legend-slider input[type="range"]:hover::-webkit-slider-thumb {
+  background: #80deea;
+  box-shadow: 0 0 0 4px rgba(77, 208, 225, 0.2);
+}
+.elevation-legend-slider input[type="range"]:hover::-moz-range-thumb {
+  background: #80deea;
+  box-shadow: 0 0 0 4px rgba(77, 208, 225, 0.2);
+}
+
+/* Focus ring */
+.elevation-legend-slider input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(77, 208, 225, 0.55);
+  background: #80deea;
+}
+.elevation-legend-slider input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(77, 208, 225, 0.55);
+  background: #80deea;
+}
+.elevation-legend-slider input[type="range"]:focus-visible {
+  outline: none;
 }

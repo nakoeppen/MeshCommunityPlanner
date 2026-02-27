@@ -51,6 +51,8 @@ interface ToolbarProps {
   hasLOSOverlays?: boolean;
   selectedCount?: number;
   analysisLoading?: boolean;
+  // App lifecycle
+  onExitApp?: () => void;
   // Catalog
   onOpenCatalog?: () => void;
   // Tours
@@ -99,6 +101,7 @@ export function Toolbar({
   hasLOSOverlays = false,
   selectedCount = 0,
   analysisLoading = false,
+  onExitApp,
   onOpenCatalog,
   onShowTour,
   onShowCatalogTour,
@@ -551,7 +554,16 @@ export function Toolbar({
           </div>
         </div>
         <nav className="toolbar-actions">
-          <span className="toolbar-version">v1.1.0</span>
+          <span className="toolbar-version">v1.2.0</span>
+          <button
+            className="toolbar-exit-btn"
+            type="button"
+            onClick={onExitApp}
+            title="Close the Mesh Community Planner application"
+            aria-label="Exit application"
+          >
+            Exit
+          </button>
         </nav>
       </div>
       {/* Help Modal */}
@@ -561,7 +573,7 @@ export function Toolbar({
             <div className="appinfo-modal-header">
               <div>
                 <div className="appinfo-title">Mesh Community Planner</div>
-                <div className="appinfo-version">Version 1.1.0</div>
+                <div className="appinfo-version">Version 1.2.0</div>
               </div>
               <button className="appinfo-close" type="button" onClick={() => setOpenMenu(null)} title="Close">&times;</button>
             </div>
@@ -607,7 +619,7 @@ export function Toolbar({
                       <li><strong>CoT/TAK Export</strong> &mdash; Export node positions in Cursor-on-Target XML format for interoperability with ATAK and tactical mapping systems</li>
                       <li><strong>GeoJSON Export</strong> &mdash; Export plan data as GeoJSON for use in GIS tools, web maps, and data analysis workflows</li>
                       <li><strong>Viewshed Analysis</strong> &mdash; Analyze terrain visibility from any node to determine which other nodes have clear line-of-sight</li>
-                      <li><strong>Elevation Heatmap</strong> &mdash; Toggle a terrain elevation overlay on the map using NASA SRTM 30m data; colors range from blue (sea level) through green, yellow, and orange to white (snow); includes adjustable opacity slider</li>
+                      <li><strong>Elevation Heatmap</strong> &mdash; Toggle a terrain elevation overlay using NASA SRTM 30m data. The hypsometric color scale runs from steel-blue (below sea level) through greens, yellows, and oranges to snow-white (high peaks), with terrain-type labels (Coastal, Lowland, Mountain, Alpine&hellip;) shown beside each color swatch. Use the dual-handle range slider to stretch the full color spectrum across your local elevation band for maximum contrast in flat terrain &mdash; drag the Min/Max thumbs, type values directly into the number fields (press Enter to apply), or scroll the mouse wheel on a focused thumb for fine 10m adjustments. Page&nbsp;Up/Down moves a focused slider ±100m. Check <em>Remember range</em> to persist your Min/Max settings across browser sessions via localStorage. The opacity slider controls overlay transparency (0&thinsp;%&ndash;100&thinsp;%).</li>
                     </ul>
                   </div>
                 )}

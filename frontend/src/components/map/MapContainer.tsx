@@ -79,6 +79,8 @@ export function MapContainer({ className = '' }: MapContainerProps) {
   const coverageOpacity = useMapStore((s) => s.coverageOpacity);
   const elevationLayerEnabled = useMapStore((s) => s.elevation_layer_enabled);
   const elevationOpacity = useMapStore((s) => s.elevationOpacity);
+  const elevationMin = useMapStore((s) => s.elevationMin);
+  const elevationMax = useMapStore((s) => s.elevationMax);
   const mapInvalidateCounter = useMapStore((s) => s.map_invalidate_counter);
   const fitBoundsCounter = useMapStore((s) => s.fit_bounds_counter);
   const fitBounds = useMapStore((s) => s.fit_bounds);
@@ -796,72 +798,75 @@ export function MapContainer({ className = '' }: MapContainerProps) {
     return () => clearInterval(timer);
   }, [floodingOverlay?.isPlaying, floodingOverlay?.waves.length, floodingOverlay?.animationSpeedMs]);
 
-  // Elevation heatmap tile layer — create/destroy when toggled, update opacity
+  // Elevation heatmap tile layer — create/destroy when toggled or range changes
   useEffect(() => {
     const map = leafletMapRef.current;
     if (!map) return;
 
-    if (elevationLayerEnabled) {
-      if (!elevationTileLayerRef.current) {
-        const authToken = (window as any).__MESH_PLANNER_AUTH__ || '';
-        const tileLayer = L.tileLayer(
-          `/api/elevation/tile/{z}/{x}/{y}.png?token=${encodeURIComponent(authToken)}`,
-          {
-            minZoom: 9,
-            maxZoom: 15,
-            opacity: elevationOpacity,
-            errorTileUrl: '',  // suppress broken tile images
-          }
-        );
-        tileLayer.addTo(map);
-        elevationTileLayerRef.current = tileLayer;
-
-        // Ensure SRTM tiles are available for the visible area, then redraw
-        const ensureAndRedraw = () => {
-          if (elevationEnsureTimerRef.current) clearTimeout(elevationEnsureTimerRef.current);
-          elevationEnsureTimerRef.current = setTimeout(async () => {
-            const bounds = map.getBounds();
-            try {
-              await fetch('/api/elevation/ensure-tiles', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${authToken}`,
-                },
-                body: JSON.stringify({
-                  min_lat: bounds.getSouth(),
-                  min_lon: bounds.getWest(),
-                  max_lat: bounds.getNorth(),
-                  max_lon: bounds.getEast(),
-                }),
-              });
-              elevationTileLayerRef.current?.redraw();
-            } catch (err) {
-              console.warn('Failed to ensure elevation tiles:', err);
-            }
-          }, 500);
-        };
-
-        map.on('moveend', ensureAndRedraw);
-        // Store handler for cleanup
-        (tileLayer as any)._ensureHandler = ensureAndRedraw;
-
-        // Initial ensure for current view
-        ensureAndRedraw();
-      }
-    } else {
-      if (elevationTileLayerRef.current) {
-        const handler = (elevationTileLayerRef.current as any)._ensureHandler;
-        if (handler) leafletMapRef.current?.off('moveend', handler);
-        leafletMapRef.current?.removeLayer(elevationTileLayerRef.current);
-        elevationTileLayerRef.current = null;
-      }
-      if (elevationEnsureTimerRef.current) {
-        clearTimeout(elevationEnsureTimerRef.current);
-        elevationEnsureTimerRef.current = null;
-      }
+    // Always remove existing layer first (range may have changed)
+    if (elevationTileLayerRef.current) {
+      const handler = (elevationTileLayerRef.current as any)._ensureHandler;
+      if (handler) map.off('moveend', handler);
+      map.removeLayer(elevationTileLayerRef.current);
+      elevationTileLayerRef.current = null;
     }
-  }, [elevationLayerEnabled]);
+    if (elevationEnsureTimerRef.current) {
+      clearTimeout(elevationEnsureTimerRef.current);
+      elevationEnsureTimerRef.current = null;
+    }
+
+    if (elevationLayerEnabled) {
+      const authToken = (window as any).__MESH_PLANNER_AUTH__ || '';
+      // Append range params only when they differ from defaults
+      const isCustomRange = elevationMin !== -500 || elevationMax !== 9000;
+      const rangeParams = isCustomRange
+        ? `&elev_min=${elevationMin}&elev_max=${elevationMax}`
+        : '';
+      const tileLayer = L.tileLayer(
+        `/api/elevation/tile/{z}/{x}/{y}.png?token=${encodeURIComponent(authToken)}${rangeParams}`,
+        {
+          minZoom: 9,
+          maxZoom: 15,
+          opacity: elevationOpacity,
+          errorTileUrl: '',  // suppress broken tile images
+        }
+      );
+      tileLayer.addTo(map);
+      elevationTileLayerRef.current = tileLayer;
+
+      // Ensure SRTM tiles are available for the visible area, then redraw
+      const ensureAndRedraw = () => {
+        if (elevationEnsureTimerRef.current) clearTimeout(elevationEnsureTimerRef.current);
+        elevationEnsureTimerRef.current = setTimeout(async () => {
+          const bounds = map.getBounds();
+          try {
+            await fetch('/api/elevation/ensure-tiles', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`,
+              },
+              body: JSON.stringify({
+                min_lat: bounds.getSouth(),
+                min_lon: bounds.getWest(),
+                max_lat: bounds.getNorth(),
+                max_lon: bounds.getEast(),
+              }),
+            });
+            elevationTileLayerRef.current?.redraw();
+          } catch (err) {
+            console.warn('Failed to ensure elevation tiles:', err);
+          }
+        }, 500);
+      };
+
+      map.on('moveend', ensureAndRedraw);
+      (tileLayer as any)._ensureHandler = ensureAndRedraw;
+
+      // Initial ensure for current view
+      ensureAndRedraw();
+    }
+  }, [elevationLayerEnabled, elevationMin, elevationMax]);
 
   // Update elevation tile layer opacity
   useEffect(() => {

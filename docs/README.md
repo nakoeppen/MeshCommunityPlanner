@@ -8,6 +8,7 @@ Mesh Community Planner helps community groups, emergency preparedness teams, and
 
 **Key Features:**
 - Interactive map interface with coverage visualization and connectivity analysis
+- Elevation heatmap with adjustable min/max range sliders for local terrain contrast
 - Terrain-aware RF propagation (Longley-Rice/ITWOM)
 - Hardware catalog with 11+ LoRa devices (Meshtastic, MeshCore, Reticulum/RNode)
 - Regulatory presets for US FCC, EU 868 MHz, EU 433 MHz, and ANZ

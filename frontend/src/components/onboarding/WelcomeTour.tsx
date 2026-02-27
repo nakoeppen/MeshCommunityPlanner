@@ -259,10 +259,10 @@ const STEPS: TourStep[] = [
     bullets: [
       'Line of Sight: Calculates signal viability between all node pairs using real elevation data',
       'Coverage Analysis: Generates terrain-aware heat maps showing signal reach',
+      'Elevation Heatmap: Terrain overlay with min/max range sliders, direct number entry, mouse-wheel fine-tuning, and a "Remember range" checkbox to persist your settings',
       'Link Report: Detailed table of all links with signal strength, distance, and Fresnel clearance',
-      'Color-coded LOS lines: Green = strong, Yellow = marginal, Orange = NLOS, Red = not viable',
     ],
-    tip: 'Multi-select specific nodes first to run analysis on just those nodes instead of the entire network.',
+    tip: 'In flat areas, narrow the elevation range to your local min/max — type values directly, drag sliders, or use the mouse wheel for fine-tuning. Check "Remember range" to keep your settings across sessions.',
     icon: <IconAnalysis />,
   },
   {

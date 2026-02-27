@@ -36,9 +36,9 @@ No. There is no analytics, no telemetry, no user accounts, and no cloud services
 
 Download the installer for your platform from the [GitHub Releases page](https://github.com/PapaSierra555/MeshCommunityPlanner/releases):
 
-- **Windows:** Run `MeshCommunityPlanner-1.1.0-Setup.exe`
-- **macOS:** Open `MeshCommunityPlanner-1.1.0.dmg` and drag to Applications
-- **Linux:** Make `MeshCommunityPlanner-1.1.0-x86_64.AppImage` executable and run it
+- **Windows:** Run `MeshCommunityPlanner-1.2.0-Setup.exe`
+- **macOS:** Open `MeshCommunityPlanner-1.2.0.dmg` and drag to Applications
+- **Linux:** Make `MeshCommunityPlanner-1.2.0-x86_64.AppImage` executable and run it
 
 ### macOS says the app is from an unidentified developer. What do I do?
 
@@ -110,6 +110,31 @@ Click **BOM** in the toolbar. The BOM table shows all hardware needed for your p
 - **Templates:** `.meshtemplate`
 - **Import:** CSV, `.meshplan`
 - **Export:** CSV, PDF, KML, `.meshplan`, `.meshnode`, `.meshtemplate`
+
+### The elevation heatmap looks like one solid color in my area. How do I fix it?
+
+Your area likely has a narrow elevation range (e.g., 160m–360m) that is invisible within the default -500m to 9000m color scale. Use the **elevation range sliders** in the legend panel to narrow the range:
+
+1. Enable the elevation heatmap (Tools → Elevation Heatmap)
+2. In the legend panel, drag the **Min** slider up to just below your area's lowest elevation
+3. Drag the **Max** slider down to just above your area's highest elevation
+4. The full color spectrum now stretches across your local range, revealing terrain detail
+
+Click **Reset** to restore the full default range at any time.
+
+### Can I control the elevation sliders with the keyboard?
+
+Yes. All elevation legend controls are fully keyboard-accessible:
+
+- **Tab** moves between each slider, number input, the "Remember range" checkbox, and the opacity slider.
+- **Arrow keys** on a focused slider adjust the value by 10m.
+- **Page Up / Page Down** on a focused slider adjust the value by 100m — useful for quickly spanning large ranges.
+- **Mouse wheel** on a focused slider nudges the value by 10m per scroll tick.
+- The number fields next to each slider accept typed values directly. Press **Enter** to apply or **Escape** to cancel.
+
+### How do I save my elevation range so it's the same every time I open the app?
+
+Check the **"Remember range"** checkbox in the elevation legend panel. Your current Min and Max values are written to local storage and restored automatically on every subsequent launch. Uncheck the box to stop persisting the range.
 
 ### Can I use it for non-LoRa networks?
 
@@ -183,4 +208,4 @@ For more troubleshooting help, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 ---
 
 **Last Updated:** February 2026
-**Version:** 1.1.0
+**Version:** 1.2.0

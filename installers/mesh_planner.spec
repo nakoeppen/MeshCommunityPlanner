@@ -193,7 +193,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True,  # Always console — .app launcher handles GUI integration
+    console=(sys.platform != "win32"),  # Windows: hide console (user closes via browser); macOS/Linux: keep for launcher scripts
     disable_windowed_traceback=False,
     argv_emulation=False,  # DISABLED — causes hangs/crashes on macOS 12+
     target_arch=None,
@@ -228,8 +228,8 @@ if sys.platform == "darwin":
         bundle_identifier="com.meshcommunityplanner.app",
         info_plist={
             "CFBundleDisplayName": "Mesh Community Planner",
-            "CFBundleVersion": "1.1.0",
-            "CFBundleShortVersionString": "1.1.0",
+            "CFBundleVersion": "1.2.0",
+            "CFBundleShortVersionString": "1.2.0",
             "LSMinimumSystemVersion": "11.0",
             "NSHighResolutionCapable": True,
             "LSApplicationCategoryType": "public.app-category.utilities",

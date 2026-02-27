@@ -1,6 +1,6 @@
 # Mesh Community Planner -- Build & Installation Guide
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Date:** 2026-02-18
 
 ---
@@ -142,7 +142,7 @@ chmod +x installers/macos/build_dmg.sh
 ./installers/macos/build_dmg.sh
 ```
 
-Output: `dist/MeshCommunityPlanner-1.1.0.dmg`
+Output: `dist/MeshCommunityPlanner-1.2.0.dmg`
 
 To install: mount the DMG, drag "Mesh Community Planner" to Applications.
 
@@ -230,12 +230,12 @@ chmod +x installers/linux/build_appimage.sh
 ./installers/linux/build_appimage.sh
 ```
 
-Output: `dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage`
+Output: `dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage`
 
 Run it:
 ```bash
-chmod +x dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
-./dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
+chmod +x dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage
+./dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage
 ```
 
 ### Linux Troubleshooting

@@ -5,7 +5,7 @@
 #   - PyInstaller .app bundle in dist/Mesh Community Planner.app/
 #     (built by: python3 -m PyInstaller installers/mesh_planner.spec --noconfirm)
 #
-# Output: installers/dist/MeshCommunityPlanner-1.1.0.dmg
+# Output: installers/dist/MeshCommunityPlanner-1.2.0.dmg
 
 set -euo pipefail
 
@@ -14,7 +14,7 @@ INSTALLERS_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_ROOT="$(dirname "$INSTALLERS_DIR")"
 
 APP_NAME="Mesh Community Planner"
-APP_VERSION="1.1.0"
+APP_VERSION="1.2.0"
 APP_BUNDLE="${APP_NAME}.app"
 DMG_NAME="MeshCommunityPlanner-${APP_VERSION}.dmg"
 
@@ -74,6 +74,9 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="${HOME}/Library/Logs/MeshCommunityPlanner.log"
 
 echo "$(date): Starting Mesh Community Planner..." >> "${LOG_FILE}"
+
+# Tell the backend not to open a browser — this launcher handles it
+export MESH_PLANNER_NO_BROWSER=1
 
 # Start the actual server binary in background, capture output to log
 "${DIR}/MeshCommunityPlanner-bin" >> "${LOG_FILE}" 2>&1 &

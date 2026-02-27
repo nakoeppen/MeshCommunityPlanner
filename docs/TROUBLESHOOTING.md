@@ -134,13 +134,13 @@ sudo dnf install fuse fuse-libs
 **Solution:**
 ```bash
 sudo apt --fix-broken install
-sudo dpkg -i mesh-community-planner_1.1.0_amd64.deb
+sudo dpkg -i mesh-community-planner_1.2.0_amd64.deb
 ```
 
 **Alternative:** Use `gdebi` to auto-resolve dependencies:
 ```bash
 sudo apt install gdebi
-sudo gdebi mesh-community-planner_1.1.0_amd64.deb
+sudo gdebi mesh-community-planner_1.2.0_amd64.deb
 ```
 
 ---
@@ -494,6 +494,23 @@ sudo apt install libgtk-3-0 libnotify4 libnss3 libxss1 \
 3. **Check frequency**
    - Different frequencies have different propagation characteristics
    - Ensure frequency is set correctly
+
+---
+
+### Elevation heatmap shows one solid color
+
+**Problem:** The elevation heatmap is enabled but the entire area appears as a single flat color with no visible terrain variation.
+
+**Cause:** Your area has a narrow elevation range (e.g., 50m variation) that is invisible within the default -500m to 9000m color scale.
+
+**Solution:**
+1. Use the **Min/Max elevation range sliders** in the legend panel
+2. Drag **Min** up to just below your area's lowest elevation
+3. Drag **Max** down to just above your area's highest elevation
+4. The full color spectrum now stretches across your local range
+5. Click **Reset** to restore the default range at any time
+
+This is the intended workflow for flat terrain — the range sliders exist specifically for this purpose.
 
 ---
 
@@ -865,7 +882,7 @@ When filing a bug report, use this template:
 ```markdown
 **Environment**
 - OS: [e.g., Windows 11, macOS 13.2, Ubuntu 22.04]
-- App Version: [e.g., v1.1.0]
+- App Version: [e.g., v1.2.0]
 - RAM: [e.g., 8 GB]
 - CPU: [e.g., Intel Core i5-8250U]
 

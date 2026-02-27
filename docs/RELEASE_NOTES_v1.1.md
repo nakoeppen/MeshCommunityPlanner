@@ -7,7 +7,7 @@
 
 ## Summary
 
-v1.1.0 adds the **Elevation Heatmap** feature — a terrain visualization layer that renders NASA SRTM elevation data directly on the map. It also introduces the project's first automated test suite (39 backend + frontend tests) and a developer guide for adapting the tile streaming pipeline to other servers.
+v1.1.0 adds the **Elevation Heatmap** feature — a terrain visualization layer that renders NASA SRTM elevation data directly on the map — with **Elevation Range Sliders** for narrowing the color ramp to local elevation ranges. It also introduces the project's first automated test suite (59 backend + frontend + integration tests) and a developer guide for adapting the tile streaming pipeline to other servers.
 
 ---
 
@@ -22,6 +22,7 @@ A toggleable terrain overlay that shows elevation contours using a cartographic 
 2. Click **Elevation Heatmap** (a checkmark appears when active)
 3. Pan and zoom — SRTM tiles download automatically from AWS
 4. Use the opacity slider in the bottom-right legend panel to adjust transparency
+5. Use the Min/Max elevation sliders to narrow the color range for your area
 
 **Color scale:**
 
@@ -48,6 +49,20 @@ The color ramp follows established cartographic conventions (Google Earth Engine
 - Caching: Three-layer (browser → rendered PNG disk cache → in-memory .hgt LRU)
 - No new dependencies: PNG encoding uses only Python stdlib (struct + zlib)
 
+### Elevation Range Sliders
+
+Adjustable min/max elevation bounds let you focus the full color spectrum on a narrow local range — essential for planning in flat terrain where the default -500m to 9000m scale shows everything as a single muddy color.
+
+**Features:**
+- Min and Max sliders in the elevation legend panel (-500m to 9000m, step 10m)
+- Live preview: legend swatches and labels update during drag
+- Tiles re-render with the new color mapping on slider release
+- Reset button restores default range
+- Range-specific tile caching (switching back to a previous range is instant)
+- Both sliders have `aria-label` attributes for screen reader accessibility
+
+**Example:** For a Wisconsin deployment (elevations ~160m to ~360m), set Min=150, Max=400. The full blue-to-white color ramp now spans just 250m of local elevation, revealing terrain detail that was previously invisible.
+
 ### Elevation Tile Streaming Guide
 
 A new developer document (`ELEVATION-TILE-STREAMING.md`) explains the complete pipeline from AWS download through .hgt parsing, tile rendering, HTTP serving, and Leaflet integration. Includes working code examples and guidance for adapting the implementation to ATAK or other tile-consuming map clients.
@@ -58,19 +73,19 @@ A new developer document (`ELEVATION-TILE-STREAMING.md`) explains the complete p
 
 v1.1.0 introduces the project's first automated test infrastructure:
 
-**Backend (24 tests — pytest):**
+**Backend (23 tests — pytest):**
 - `test_png_writer.py` — PNG signature, IHDR dimensions, error handling, edge cases
-- `test_elevation_tiles.py` — Tile bounds math, color ramp values, renderer with disk caching
+- `test_elevation_tiles.py` — Tile bounds math, color ramp values, ranged color interpolation (bottom/top/mid/clamping/inverted), cache path formats, renderer with disk caching
 - `test_elevation_api.py` — FastAPI endpoint tests (auth, 204 responses, ensure-tiles, 503)
 - `test_middleware_bypass.py` — Elevation tile endpoints bypass Bearer header auth
 
-**Frontend (15 tests — Vitest):**
-- `mapStore.test.ts` — Zustand store elevation state defaults and mutations
-- `ElevationLegend.test.tsx` — Component rendering, opacity slider, swatch colors, axe-core a11y
+**Frontend (22 tests — Vitest):**
+- `mapStore.test.ts` — Zustand store elevation state defaults, mutations, setElevationRange
+- `ElevationLegend.test.tsx` — Component rendering, opacity slider, min/max range sliders, numeric range values, Reset button visibility and behavior, dynamic swatch colors, swatch labels with custom range, axe-core a11y
 - `Toolbar.elevation.test.tsx` — Toggle checkmark, click handler, title attribute, axe-core a11y
 
-**Integration (6 tests — Playwright):**
-- `elevation-heatmap.spec.ts` — End-to-end UI: toggle on/off, legend visibility, opacity slider, checkmark state
+**Integration (14 tests — Playwright):**
+- `elevation-heatmap.spec.ts` — End-to-end UI: toggle on/off, legend visibility, opacity slider, checkmark state, min/max slider defaults, Reset button behavior, range slider accessibility (aria-labels), swatch count after range change
 
 ---
 

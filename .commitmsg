@@ -1,0 +1,36 @@
+Add elevation range UX enhancements and bump to v1.2.1
+
+Keyboard accessibility:
+- Tab order through all legend controls (sliders, number fields, checkbox, opacity)
+- Arrow keys move slider by 10m; Page Up/Page Down move by 100m
+- role="group" + aria-labelledby on range section for screen readers
+
+Direct number entry:
+- Numeric input fields alongside each range slider
+- Accepts any integer; clamped on Enter/blur; Escape cancels
+- Spinner arrows hidden; styled to match dark legend panel
+
+Mouse wheel fine-tuning:
+- Scroll wheel on focused slider nudges value by 10m per tick
+- Non-passive wheel listeners suppress page scroll while adjusting
+
+Remember range checkbox:
+- Persists Min/Max elevation to localStorage across sessions
+- Store reads localStorage at init; falls back to defaults if missing
+- Reset button updates localStorage when lock is active
+
+Tests:
+- ElevationLegend unit tests: 9 -> 28 (number inputs, keyboard, lock, axe)
+- Playwright integration tests: 14 -> 27 (number input, keyboard nav, lock, reload restore)
+
+Documentation:
+- USER_GUIDE.md: keyboard table, number input, mouse wheel, lock checkbox sections
+- FAQ.md: "Can I use keyboard?" and "How do I save my range?" entries
+- QUICK-START-TUTORIALS.md: Tutorial 4 updated with all input methods
+- KNOWN-ISSUES.md: removed 10m step size limitation (resolved by number entry + Page Up/Down)
+- WelcomeTour.tsx: Analysis Tools step updated
+- CHANGELOG.md: v1.2.1 section added
+- docs/RELEASE_NOTES_v1.2.1.md: new release notes
+- All installer/build configs, README, and doc version headers bumped to 1.2.1
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>

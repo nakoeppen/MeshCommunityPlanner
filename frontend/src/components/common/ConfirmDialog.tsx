@@ -2,9 +2,10 @@
  * ConfirmDialog Component
  * Styled confirmation dialog matching the app's dark theme.
  * Replaces native window.confirm() throughout the app.
+ * Includes focus trap so Tab/Shift+Tab cycle within the dialog.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import './ConfirmDialog.css';
 
@@ -18,6 +19,7 @@ export interface ConfirmDialogProps {
   cancelText?: string;
   variant?: 'primary' | 'danger';
   closeOnBackdrop?: boolean;
+  showCloseButton?: boolean;
 }
 
 export function ConfirmDialog({
@@ -30,18 +32,49 @@ export function ConfirmDialog({
   cancelText = 'Cancel',
   variant = 'primary',
   closeOnBackdrop = true,
+  showCloseButton = false,
 }: ConfirmDialogProps) {
   const okRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap: keep Tab/Shift+Tab cycling within the dialog
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onCancel();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const focusable = dialog.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, [onCancel]);
 
   useEffect(() => {
     if (!isOpen) return;
     setTimeout(() => okRef.current?.focus(), 50);
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCancel();
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [isOpen, onCancel]);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, handleKeyDown]);
 
   if (!isOpen) return null;
 
@@ -54,10 +87,28 @@ export function ConfirmDialog({
 
   return createPortal(
     <div className="confirm-dialog-overlay" onClick={handleBackdrop}>
-      <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="confirm-dialog"
+        ref={dialogRef}
+        role="alertdialog"
+        aria-modal="true"
+        aria-label={title}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={`confirm-dialog-header${isDanger ? ' danger' : ''}`}>
           <span className="confirm-dialog-icon">{icon}</span>
           <span className="confirm-dialog-title">{title}</span>
+          {showCloseButton && (
+            <button
+              className="confirm-dialog-close"
+              onClick={onCancel}
+              aria-label="Close dialog"
+              title="Close dialog"
+              type="button"
+            >
+              &times;
+            </button>
+          )}
         </div>
         <div className="confirm-dialog-body">{message}</div>
         <div className="confirm-dialog-footer">

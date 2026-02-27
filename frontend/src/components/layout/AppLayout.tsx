@@ -1154,6 +1154,46 @@ export function AppLayout() {
     });
   }, [api, currentPlan, clearPlan, setMode, clearNodeSelection, clearLOSOverlays, clearCoverageOverlays]);
 
+  // ---- Exit App handler ----
+  const [exitDialogOpen, setExitDialogOpen] = useState(false);
+  const handleExitApp = useCallback(() => {
+    setExitDialogOpen(true);
+  }, []);
+  const handleExitConfirm = useCallback(() => {
+    setExitDialogOpen(false);
+    // Flag so the beforeunload handler skips the browser's native dialog
+    (window as any).__exitConfirmed = true;
+    // Send shutdown request to kill the backend server
+    const token = (window as any).__MESH_PLANNER_AUTH__;
+    if (token) {
+      fetch('/api/shutdown', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: '{}',
+        keepalive: true,
+      }).catch(() => {});
+    }
+    // Try to close the tab/window. On macOS browsers this may fail
+    // silently because the tab was not opened by JavaScript.
+    // If window.close() doesn't work, replace the page with a
+    // "safe to close" message so the user knows the app has shut down.
+    setTimeout(() => {
+      window.close();
+      // If we're still here after 500ms, the browser blocked window.close()
+      setTimeout(() => {
+        document.title = 'Mesh Community Planner — Closed';
+        document.body.innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;height:100vh;' +
+          'background:#1a1a2e;color:#e0e0e0;font-family:system-ui,sans-serif;text-align:center">' +
+          '<div><h2 style="margin-bottom:0.5rem">Mesh Community Planner has shut down.</h2>' +
+          '<p style="color:#999">You can close this browser tab.</p></div></div>';
+      }, 500);
+    }, 200);
+  }, []);
+
   const handleEditPlan = useCallback(() => {
     if (!currentPlan) return;
     setPlanName(currentPlan.name);
@@ -2304,6 +2344,7 @@ export function AppLayout() {
         onDuplicatePlan={handleDuplicatePlan}
         onClosePlan={handleClosePlan}
         onDeletePlan={handleDeletePlan}
+        onExitApp={handleExitApp}
         hasPlan={!!currentPlan}
         onLineOfSight={handleLineOfSight}
         onCoverageAnalysis={handleCoverageAnalysis}
@@ -2677,6 +2718,18 @@ export function AppLayout() {
         confirmText={confirmDialog?.confirmText}
         onConfirm={() => { confirmDialog?.onConfirm(); }}
         onCancel={() => setConfirmDialog(null)}
+      />
+      <ConfirmDialog
+        isOpen={exitDialogOpen}
+        title="Exit Application"
+        message="Closing this tab or window will close the Mesh Community Planner app. Are you sure?"
+        confirmText="Exit"
+        cancelText="Cancel"
+        variant="danger"
+        showCloseButton
+        closeOnBackdrop={false}
+        onConfirm={handleExitConfirm}
+        onCancel={() => setExitDialogOpen(false)}
       />
       <PromptDialog
         isOpen={promptDialog !== null}

@@ -69,15 +69,15 @@ This produces:
 ./installers/macos/build_dmg.sh
 ```
 
-Output: `installers/dist/MeshCommunityPlanner-1.1.0.dmg`
+Output: `installers/dist/MeshCommunityPlanner-1.2.0.dmg`
 
 ## 10. Test the DMG
 
 ```bash
-hdiutil attach installers/dist/MeshCommunityPlanner-1.1.0.dmg
+hdiutil attach installers/dist/MeshCommunityPlanner-1.2.0.dmg
 cp -R "/Volumes/Mesh Community Planner/MeshCommunityPlanner.app" /Applications/
 xattr -cr /Applications/MeshCommunityPlanner.app
-open /Applications/MeshCommunityPlanner.app
+open -n /Applications/MeshCommunityPlanner.app
 ```
 
 Should start the server and open your browser to `http://127.0.0.1:8321`.
@@ -87,7 +87,7 @@ Eject the DMG from Finder when done testing.
 ## 11. Upload to release
 
 ```bash
-gh release upload v1.1.0 installers/dist/MeshCommunityPlanner-1.1.0.dmg
+gh release upload v1.2.0 installers/dist/MeshCommunityPlanner-1.2.0.dmg
 ```
 
 ## What the DMG Contains

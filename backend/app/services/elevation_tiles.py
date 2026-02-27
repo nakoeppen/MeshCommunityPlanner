@@ -84,6 +84,35 @@ def _elev_to_rgb(elev: int) -> tuple[int, int, int]:
     return _LUT[idx]
 
 
+def _elev_to_rgb_ranged(elev: int, elev_min: int, elev_max: int) -> tuple[int, int, int]:
+    """Map elevation to RGB with a custom min/max range.
+
+    Normalizes elevation to [0, 1] within the given range, then interpolates
+    through the 10 COLOR_STOPS evenly spaced across that range.
+    """
+    if elev_max <= elev_min:
+        return _COLOR_STOPS[0][1], _COLOR_STOPS[0][2], _COLOR_STOPS[0][3]
+
+    # Clamp to range
+    clamped = max(elev_min, min(elev_max, elev))
+    t = (clamped - elev_min) / (elev_max - elev_min)  # 0..1
+
+    # Map t to a position across the N color stops (evenly spaced)
+    n = len(_COLOR_STOPS)
+    scaled = t * (n - 1)
+    idx = int(scaled)
+    if idx >= n - 1:
+        return _COLOR_STOPS[-1][1], _COLOR_STOPS[-1][2], _COLOR_STOPS[-1][3]
+
+    frac = scaled - idx
+    _, r0, g0, b0 = _COLOR_STOPS[idx]
+    _, r1, g1, b1 = _COLOR_STOPS[idx + 1]
+    r = int(r0 + frac * (r1 - r0))
+    g = int(g0 + frac * (g1 - g0))
+    b = int(b0 + frac * (b1 - b0))
+    return (r, g, b)
+
+
 # ---------------------------------------------------------------------------
 # Slippy map math
 # ---------------------------------------------------------------------------
@@ -120,27 +149,52 @@ class ElevationTileRenderer:
         self._cache_dir = cache_dir
         self._cache_dir.mkdir(parents=True, exist_ok=True)
 
-    def _tile_path(self, z: int, x: int, y: int) -> Path:
-        """Get the disk cache path for a tile."""
-        return self._cache_dir / str(z) / str(x) / f"{y}.png"
+    def _tile_path(
+        self, z: int, x: int, y: int,
+        elev_min: Optional[int] = None, elev_max: Optional[int] = None,
+    ) -> Path:
+        """Get the disk cache path for a tile.
 
-    def get_cached(self, z: int, x: int, y: int) -> Optional[bytes]:
+        When custom elevation range is provided, the filename includes the range
+        so different ranges are cached separately.
+        """
+        if elev_min is not None and elev_max is not None:
+            fname = f"{y}_min{elev_min}_max{elev_max}.png"
+        else:
+            fname = f"{y}.png"
+        return self._cache_dir / str(z) / str(x) / fname
+
+    def get_cached(
+        self, z: int, x: int, y: int,
+        elev_min: Optional[int] = None, elev_max: Optional[int] = None,
+    ) -> Optional[bytes]:
         """Check disk cache for a rendered tile."""
-        path = self._tile_path(z, x, y)
+        path = self._tile_path(z, x, y, elev_min, elev_max)
         if path.exists():
             return path.read_bytes()
         return None
 
-    def render_tile(self, z: int, x: int, y: int) -> Optional[bytes]:
+    def render_tile(
+        self, z: int, x: int, y: int,
+        elev_min: Optional[int] = None, elev_max: Optional[int] = None,
+    ) -> Optional[bytes]:
         """Render a 256x256 elevation heatmap tile.
 
         Returns PNG bytes, or None if no SRTM data is available for this area.
+        When elev_min/elev_max are provided, the full color ramp is stretched
+        across that elevation range for better local contrast.
         """
         if z < MIN_ZOOM or z > MAX_ZOOM:
             return None
 
+        # Determine if we're using a custom range
+        use_ranged = (
+            elev_min is not None and elev_max is not None
+            and (elev_min != _LUT_MIN or elev_max != _LUT_MAX)
+        )
+
         # Check cache first
-        cached = self.get_cached(z, x, y)
+        cached = self.get_cached(z, x, y, elev_min if use_ranged else None, elev_max if use_ranged else None)
         if cached is not None:
             return cached
 
@@ -160,6 +214,12 @@ class ElevationTileRenderer:
         lat_step = (max_lat - min_lat) / TILE_SIZE
         lon_step = (max_lon - min_lon) / TILE_SIZE
 
+        # Choose color mapping function
+        if use_ranged:
+            color_fn = lambda elev: _elev_to_rgb_ranged(elev, elev_min, elev_max)
+        else:
+            color_fn = _elev_to_rgb
+
         pixels = bytearray(TILE_SIZE * TILE_SIZE * 4)
         has_data = False
 
@@ -172,7 +232,7 @@ class ElevationTileRenderer:
                 elev = self._srtm.read_elevation_cached(lat, lon)
                 if elev is not None:
                     has_data = True
-                    r, g, b = _elev_to_rgb(elev)
+                    r, g, b = color_fn(elev)
                     idx = row_offset + px * 4
                     pixels[idx] = r
                     pixels[idx + 1] = g
@@ -186,7 +246,7 @@ class ElevationTileRenderer:
         png_bytes = encode_rgba_png(TILE_SIZE, TILE_SIZE, bytes(pixels))
 
         # Cache to disk
-        path = self._tile_path(z, x, y)
+        path = self._tile_path(z, x, y, elev_min if use_ranged else None, elev_max if use_ranged else None)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(png_bytes)
 

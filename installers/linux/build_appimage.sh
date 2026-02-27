@@ -5,7 +5,7 @@
 #   - PyInstaller output in dist/MeshCommunityPlanner/
 #   - appimagetool (https://github.com/AppImage/AppImageKit)
 #
-# Output: dist/MeshCommunityPlanner-1.1.0-x86_64.AppImage
+# Output: dist/MeshCommunityPlanner-1.2.0-x86_64.AppImage
 
 set -euo pipefail
 
@@ -14,7 +14,7 @@ INSTALLERS_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_ROOT="$(dirname "$INSTALLERS_DIR")"
 
 APP_NAME="MeshCommunityPlanner"
-APP_VERSION="1.1.0"
+APP_VERSION="1.2.0"
 PYINSTALLER_DIST="${PROJECT_ROOT}/dist/MeshCommunityPlanner"
 APPDIR="${PROJECT_ROOT}/dist/${APP_NAME}.AppDir"
 
@@ -63,6 +63,9 @@ LOG_FILE="${HOME}/.local/share/MeshCommunityPlanner/appimage.log"
 mkdir -p "$(dirname "$LOG_FILE")"
 
 echo "$(date): Starting Mesh Community Planner..." >> "${LOG_FILE}"
+
+# Tell the backend not to open a browser — this launcher handles it
+export MESH_PLANNER_NO_BROWSER=1
 
 # Start the backend server
 "${HERE}/usr/bin/MeshCommunityPlanner" >> "${LOG_FILE}" 2>&1 &

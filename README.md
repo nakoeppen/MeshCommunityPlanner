@@ -2,7 +2,7 @@
 
 A desktop application for planning LoRa mesh network deployments with terrain-aware RF propagation, hardware selection, and bill of materials generation.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.2.0-blue)
 ![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-green)
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
@@ -20,9 +20,9 @@ Download the latest release from the [GitHub Releases page](https://github.com/P
 
 | Platform | Format | File |
 |----------|--------|------|
-| **Windows** | Portable (.zip) | `MeshCommunityPlanner-1.1.0-win.zip` |
-| **macOS** | Disk image (.dmg) | `MeshCommunityPlanner-1.1.0.dmg` |
-| **Linux** | AppImage | `MeshCommunityPlanner-1.1.0-x86_64.AppImage` |
+| **Windows** | Portable (.zip) | `MeshCommunityPlanner-1.2.0-win.zip` |
+| **macOS** | Disk image (.dmg) | `MeshCommunityPlanner-1.2.0.dmg` |
+| **Linux** | AppImage | `MeshCommunityPlanner-1.2.0-x86_64.AppImage` |
 
 All downloads are self-contained — no Python or Node.js installation required.
 
@@ -34,7 +34,7 @@ All downloads are self-contained — no Python or Node.js installation required.
 - **Node Configuration Wizard** — Guided setup: Region, Firmware, Device, Radio, Antenna, Power
 - **Hardware Catalog** — 11+ real LoRa devices across Meshtastic, MeshCore, and Reticulum/RNode
 - **Terrain-Aware Propagation** — Longley-Rice/ITWOM with SRTM 30m elevation data
-- **Elevation Heatmap** — On-demand terrain visualization with hypsometric tinting and adjustable opacity
+- **Elevation Heatmap** — On-demand terrain visualization with hypsometric tinting, adjustable opacity, and min/max range sliders
 - **Line-of-Sight Analysis** — Terrain profiles with Fresnel zone clearance visualization
 - **Network Topology** — Graph view with critical node detection and resilience metrics
 - **Power Budgeting** — Battery and solar deployment recommendations per node
@@ -120,7 +120,9 @@ All documentation lives in the [`docs/`](docs/) folder. Start with the User Guid
 - [FAQ](docs/FAQ.md) — Common questions answered
 - [Troubleshooting](docs/TROUBLESHOOTING.md) — Common issues and fixes
 - [Known Issues](docs/KNOWN-ISSUES.md) — Current limitations
-- [Release Notes v1.1](docs/RELEASE_NOTES_v1.1.md) — What's new in v1.1.0
+- [Release Notes v1.2.0](docs/RELEASE_NOTES_v1.2.0.md) — What's new in v1.2.0
+- [Release Notes v1.2.0](docs/RELEASE_NOTES_v1.2.md) — Elevation Range Sliders
+- [Release Notes v1.1](docs/RELEASE_NOTES_v1.1.md) — Elevation Heatmap and test suite
 - [Release Notes v1.0](docs/RELEASE_NOTES_v1.0.md) — Initial release
 - [Changelog](CHANGELOG.md) — Version history
 

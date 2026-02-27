@@ -5,7 +5,7 @@
 #   - PyInstaller output in dist/MeshCommunityPlanner/
 #   - dpkg-deb (standard on Debian/Ubuntu)
 #
-# Output: dist/mesh-community-planner_1.1.0_amd64.deb
+# Output: dist/mesh-community-planner_1.2.0_amd64.deb
 
 set -euo pipefail
 
@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALLERS_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_ROOT="$(dirname "$INSTALLERS_DIR")"
 
-APP_VERSION="1.1.0"
+APP_VERSION="1.2.0"
 PKG_NAME="mesh-community-planner"
 PYINSTALLER_DIST="${PROJECT_ROOT}/dist/MeshCommunityPlanner"
 DEB_ROOT="${PROJECT_ROOT}/dist/deb_build"
@@ -53,6 +53,9 @@ LOG_FILE="${LOG_DIR}/launcher.log"
 mkdir -p "${LOG_DIR}"
 
 echo "$(date): Starting Mesh Community Planner..." >> "${LOG_FILE}"
+
+# Tell the backend not to open a browser — this launcher handles it
+export MESH_PLANNER_NO_BROWSER=1
 
 # Start the backend server
 /opt/mesh-community-planner/MeshCommunityPlanner >> "${LOG_FILE}" 2>&1 &

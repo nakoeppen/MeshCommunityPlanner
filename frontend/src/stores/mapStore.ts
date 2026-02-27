@@ -158,6 +158,8 @@ export interface MapState {
   // Elevation heatmap layer
   elevation_layer_enabled: boolean;
   elevationOpacity: number;
+  elevationMin: number;
+  elevationMax: number;
 
   // Coverage heatmap opacity (0..1)
   coverageOpacity: number;
@@ -203,11 +205,46 @@ export interface MapState {
   setCoverageOpacity: (opacity: number) => void;
   setElevationLayerEnabled: (enabled: boolean) => void;
   setElevationOpacity: (opacity: number) => void;
+  setElevationRange: (min: number, max: number) => void;
+}
+
+// ============================================================================
+// Elevation Range Persistence
+// ============================================================================
+
+const ELEVATION_RANGE_KEY = 'meshPlanner_elevationRange';
+// __BUILD_ID__ is injected by Vite at build time (Date.now() string).
+// Every build gets a unique ID, so localStorage is automatically invalidated
+// between builds — no manual clearing needed during testing.
+declare const __BUILD_ID__: string;
+export const ELEVATION_RANGE_BUILD_ID: string = typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev';
+
+function loadStoredElevationRange(): { elevationMin: number; elevationMax: number } {
+  try {
+    const raw = localStorage.getItem(ELEVATION_RANGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Discard entries saved by a different build — clears stale state
+      // automatically on every rebuild (each build gets a unique __BUILD_ID__).
+      if (parsed.buildId !== ELEVATION_RANGE_BUILD_ID) {
+        localStorage.removeItem(ELEVATION_RANGE_KEY);
+        return { elevationMin: -500, elevationMax: 9000 };
+      }
+      const min = typeof parsed.min === 'number' ? parsed.min : -500;
+      const max = typeof parsed.max === 'number' ? parsed.max : 9000;
+      if (min < max) return { elevationMin: min, elevationMax: max };
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return { elevationMin: -500, elevationMax: 9000 };
 }
 
 // ============================================================================
 // Initial State
 // ============================================================================
+
+const storedElevationRange = loadStoredElevationRange();
 
 const initialState = {
   viewport: {
@@ -238,6 +275,8 @@ const initialState = {
   placement_search_bounds: null as { min_lat: number; min_lon: number; max_lat: number; max_lon: number } | null,
   elevation_layer_enabled: false,
   elevationOpacity: 0.6,
+  elevationMin: storedElevationRange.elevationMin,
+  elevationMax: storedElevationRange.elevationMax,
   coverageOpacity: 0.7,
   map_invalidate_counter: 0,
   fit_bounds_counter: 0,
@@ -340,4 +379,5 @@ export const useMapStore = create<MapState>((set) => ({
   setCoverageOpacity: (opacity) => set({ coverageOpacity: opacity }),
   setElevationLayerEnabled: (enabled) => set({ elevation_layer_enabled: enabled }),
   setElevationOpacity: (opacity) => set({ elevationOpacity: opacity }),
+  setElevationRange: (min, max) => set({ elevationMin: min, elevationMax: max }),
 }));

@@ -1,6 +1,6 @@
 # Mesh Community Planner — User Guide
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Last Updated:** February 2026
 
 ---
@@ -553,7 +553,41 @@ Overlay a terrain elevation layer on the map to visualize the topography of your
 | Gray | 3,000 m | Alpine, above treeline |
 | White | 4,500 m+ | Snow and glacier |
 
-**Opacity control:** When the elevation layer is active, a legend panel appears in the bottom-right corner of the map with a slider to adjust transparency (0–100%). Lower opacity lets the base map show through more clearly.
+**Elevation range sliders:** The legend panel includes Min and Max elevation sliders that let you narrow the color ramp to a specific elevation range. This is essential for flat areas where local variation is invisible at the full -500m to 9000m scale.
+
+For example, if you're planning a network in Wisconsin (elevations ~160m to ~360m), set Min to 150 and Max to 400. The full color spectrum now stretches across just 250m of local elevation, making terrain features dramatically more visible.
+
+- **Min Elevation** — Sets the bottom of the color range (default: -500m). Terrain at or below this value appears steel blue.
+- **Max Elevation** — Sets the top of the color range (default: 9000m). Terrain at or above this value appears snow white.
+- **Live preview:** The legend swatches and their labels update in real time as you drag the sliders.
+- **Reset button:** When the range differs from the default, a "Reset" button appears next to the title. Click it to restore the full -500m to 9000m range.
+
+**Setting elevation values:**
+
+You have three ways to set the Min and Max values:
+
+1. **Drag the slider** — Click and drag left/right for coarse adjustment.
+2. **Type a number directly** — Click the numeric field next to each slider and type any value. Press **Enter** or click elsewhere to apply. The value is automatically clamped to a valid range.
+3. **Mouse wheel fine-tuning** — Click a slider to focus it, then scroll the mouse wheel to nudge the value by 10m per tick.
+
+**Keyboard navigation:**
+
+All controls in the elevation legend are fully keyboard-accessible:
+
+| Key | Action |
+|-----|--------|
+| **Tab** | Move between sliders, number inputs, checkbox, and opacity slider |
+| **Arrow keys** | Move focused slider by 10m |
+| **Page Up / Page Down** | Move focused slider by 100m |
+| **Enter** | Commit a typed number-field value |
+| **Escape** | Cancel editing a number field |
+
+**Remembering your range across sessions:**
+
+Check the **"Remember range"** checkbox in the legend panel. The current Min/Max values are saved in your browser's local storage and automatically restored the next time you open the application. Uncheck the box to clear the saved range and revert to the defaults (-500m / 9000m) on next launch.
+- **Tile re-rendering:** When you release the slider, the map tiles re-render with the new color mapping. Different ranges are cached separately, so switching between ranges you've used before is instant.
+
+**Opacity control:** When the elevation layer is active, the legend panel also includes a slider to adjust transparency (0–100%). Lower opacity lets the base map show through more clearly.
 
 **Zoom range:** Elevation tiles render at zoom levels 9–15. Below zoom 9 the view is too wide for meaningful detail; above zoom 15 you exceed the 30 m resolution of the SRTM data.
 
@@ -564,6 +598,8 @@ Overlay a terrain elevation layer on the map to visualize the topography of your
 - Understand why certain line-of-sight links are blocked
 - Find high-ground locations for relay nodes
 - Visualize terrain context when presenting plans to stakeholders
+- Use range sliders to reveal subtle terrain in flat areas (plains, coastal regions, river valleys)
+- Narrow the range to highlight specific elevation bands relevant to your deployment
 
 ### Save Screenshot
 
@@ -825,4 +861,4 @@ For technical terms, see the [Technical Glossary](TECHNICAL-GLOSSARY.md).
 For answers to common questions, see the [FAQ](FAQ.md).
 
 *Last Updated: February 2026*
-*Version: 1.1.0*
+*Version: 1.2.0*

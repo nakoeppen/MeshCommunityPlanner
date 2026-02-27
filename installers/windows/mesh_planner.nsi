@@ -9,7 +9,7 @@
 
 ; --- Application metadata ---
 !define APP_NAME "Mesh Community Planner"
-!define APP_VERSION "1.1.0"
+!define APP_VERSION "1.2.0"
 !define APP_PUBLISHER "Mesh Community Planner Project"
 !define APP_URL "https://github.com/PapaSierra555/MeshCommunityPlanner"
 !define APP_EXE "MeshCommunityPlanner.exe"
