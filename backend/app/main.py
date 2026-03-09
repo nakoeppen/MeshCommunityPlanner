@@ -376,8 +376,9 @@ if __name__ == "__main__":
         production = is_production_mode()
 
         # Auto-open browser once server is ready (production/PyInstaller only).
-        # macOS .app and Linux launcher scripts open the browser themselves,
-        # so they set MESH_PLANNER_NO_BROWSER=1 to prevent a duplicate tab.
+        # Linux launcher scripts open the browser themselves and set
+        # MESH_PLANNER_NO_BROWSER=1 to prevent a duplicate tab.
+        # macOS and Windows use this code path directly (no launcher wrapper).
         if production and not os.environ.get("MESH_PLANNER_NO_BROWSER"):
             import threading
             import webbrowser

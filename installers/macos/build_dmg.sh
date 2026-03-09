@@ -58,70 +58,10 @@ else
     echo "[WARN] No PNG icons found at ${ICON_PNG_DIR} — app will have no icon"
 fi
 
-# Add launcher script that starts the server and opens the browser
-# The original executable is the PyInstaller binary
-MACOS_DIR="${PYINSTALLER_APP}/Contents/MacOS"
-ORIGINAL_EXE="${MACOS_DIR}/MeshCommunityPlanner"
-
-if [ -f "${ORIGINAL_EXE}" ]; then
-    # Rename original binary
-    mv "${ORIGINAL_EXE}" "${MACOS_DIR}/MeshCommunityPlanner-bin"
-
-    # Create launcher that starts server + opens browser
-    cat > "${ORIGINAL_EXE}" << 'LAUNCHER_EOF'
-#!/bin/bash
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOG_FILE="${HOME}/Library/Logs/MeshCommunityPlanner.log"
-
-echo "$(date): Starting Mesh Community Planner..." >> "${LOG_FILE}"
-
-# Tell the backend not to open a browser — this launcher handles it
-export MESH_PLANNER_NO_BROWSER=1
-
-# Start the actual server binary in background, capture output to log
-"${DIR}/MeshCommunityPlanner-bin" >> "${LOG_FILE}" 2>&1 &
-SERVER_PID=$!
-
-echo "$(date): Server PID: ${SERVER_PID}" >> "${LOG_FILE}"
-
-# Kill the server when the .app is quit (Cmd+Q, Dock > Quit, force quit)
-cleanup() {
-    echo "$(date): Shutting down server (PID ${SERVER_PID})..." >> "${LOG_FILE}"
-    kill ${SERVER_PID} 2>/dev/null
-    wait ${SERVER_PID} 2>/dev/null
-    echo "$(date): Server stopped" >> "${LOG_FILE}"
-}
-trap cleanup EXIT TERM INT HUP
-
-# Wait for server to actually be ready (up to 30 seconds)
-STARTED=0
-for i in $(seq 1 30); do
-    # Check if server process is still alive
-    if ! kill -0 ${SERVER_PID} 2>/dev/null; then
-        echo "$(date): Server process died (exit early)" >> "${LOG_FILE}"
-        break
-    fi
-    if curl -s -o /dev/null "http://127.0.0.1:8321/api/health" 2>/dev/null; then
-        echo "$(date): Server ready after ${i}s — opening browser" >> "${LOG_FILE}"
-        open "http://127.0.0.1:8321"
-        STARTED=1
-        break
-    fi
-    sleep 1
-done
-
-if [ ${STARTED} -eq 0 ]; then
-    echo "$(date): Server failed to start within 30s" >> "${LOG_FILE}"
-fi
-
-# Wait for server process (keeps app "running" in Dock)
-wait ${SERVER_PID}
-echo "$(date): Server exited" >> "${LOG_FILE}"
-LAUNCHER_EOF
-    chmod +x "${ORIGINAL_EXE}"
-    echo "[INFO] Launcher script installed (original binary renamed to MeshCommunityPlanner-bin)"
-fi
-
+# PyInstaller's native bootloader is the CFBundleExecutable.
+# It properly registers with macOS Launch Services, so Finder/open/Dock
+# all work correctly. The Python main.py handles browser opening directly.
+# No bash launcher script — that breaks Launch Services relaunch tracking.
 echo "[INFO] .app bundle ready at ${PYINSTALLER_APP}"
 
 # Build DMG
