@@ -178,8 +178,9 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-# macOS: use console=True so the binary works as a plain CLI executable.
-# The .app bundle launcher.sh handles browser-opening separately.
+# macOS/Windows: console=False so the native bootloader registers as a GUI app
+# with Launch Services (macOS) and hides the console window (Windows).
+# Linux: console=True for terminal-based launcher scripts.
 # argv_emulation is DISABLED — it causes hangs on macOS 12+ with PyInstaller.
 _is_macos = sys.platform == "darwin"
 
@@ -193,7 +194,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=(sys.platform != "win32"),  # Windows: hide console (user closes via browser); macOS/Linux: keep for launcher scripts
+    console=(sys.platform == "linux"),  # Linux: keep console for launcher scripts; Windows/macOS: windowed (GUI app)
     disable_windowed_traceback=False,
     argv_emulation=False,  # DISABLED — causes hangs/crashes on macOS 12+
     target_arch=None,
