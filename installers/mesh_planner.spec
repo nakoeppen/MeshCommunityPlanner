@@ -236,5 +236,6 @@ if sys.platform == "darwin":
             "LSApplicationCategoryType": "public.app-category.utilities",
             "NSHumanReadableCopyright": "Copyright 2024-2026 Mesh Community Planner Project. CC BY-NC-SA 4.0.",
             "LSBackgroundOnly": False,
+            "LSUIElement": True,
         },
     )
