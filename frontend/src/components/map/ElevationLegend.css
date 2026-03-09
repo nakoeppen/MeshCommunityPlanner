@@ -244,13 +244,6 @@ input.elevation-legend-range-value {
   font-variant-numeric: tabular-nums;
   box-sizing: border-box;
   line-height: 16px;
-  /* Hide browser spinner arrows */
-  -moz-appearance: textfield;
-}
-
-input.elevation-legend-range-value::-webkit-inner-spin-button,
-input.elevation-legend-range-value::-webkit-outer-spin-button {
-  display: none;
 }
 
 input.elevation-legend-range-value:focus-visible {
@@ -269,6 +262,28 @@ input.elevation-legend-range-value:focus-visible {
   font-size: 10px;
   color: #777;
   user-select: none;
+}
+
+/* ── Input hint + error ────────────────────────────────── */
+
+.elevation-input-hint {
+  display: block;
+  font-size: 9px;
+  color: #666;
+  text-align: center;
+  margin-top: 1px;
+}
+
+input.elevation-legend-range-value.elevation-input-error {
+  border-color: #f44336;
+  outline: 1px solid #f44336;
+}
+
+.elevation-input-error-msg {
+  display: block;
+  font-size: 9px;
+  color: #f44336;
+  margin-top: 1px;
 }
 
 /* ── Lock checkbox ──────────────────────────────────────── */

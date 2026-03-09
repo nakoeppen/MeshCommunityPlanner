@@ -89,6 +89,10 @@ export function ElevationLegend() {
 
   const [localMin, setLocalMin] = useState<number | null>(null);
   const [localMax, setLocalMax] = useState<number | null>(null);
+  const [inputMinText, setInputMinText] = useState<string | null>(null);
+  const [inputMaxText, setInputMaxText] = useState<string | null>(null);
+  const [inputMinError, setInputMinError] = useState(false);
+  const [inputMaxError, setInputMaxError] = useState(false);
   const [isLocked, setIsLocked] = useState<boolean>(
     () => !!localStorage.getItem(ELEVATION_RANGE_KEY)
   );
@@ -186,30 +190,56 @@ export function ElevationLegend() {
 
   // ── Number input handlers ────────────────────────────────────────────────
 
-  const handleMinNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(e.target.value, 10);
-    if (!isNaN(v)) setLocalMin(v);
+  const handleMinInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputMinText(e.target.value);
+    setInputMinError(false);
   };
 
-  const handleMaxNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseInt(e.target.value, 10);
-    if (!isNaN(v)) setLocalMax(v);
+  const handleMaxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputMaxText(e.target.value);
+    setInputMaxError(false);
+  };
+
+  const handleMinInputFocus = () => {
+    setInputMinText(String(displayMin));
+    setInputMinError(false);
+  };
+
+  const handleMaxInputFocus = () => {
+    setInputMaxText(String(displayMax));
+    setInputMaxError(false);
   };
 
   const commitMinNumber = () => {
-    if (localMin === null) return;
-    const clamped = Math.max(SLIDER_MIN, Math.min(localMin, displayMax - STEP));
+    if (inputMinText === null) return;
+    const trimmed = inputMinText.trim();
+    if (trimmed === '' || isNaN(Number(trimmed))) {
+      setInputMinError(true);
+      return;
+    }
+    const v = parseInt(trimmed, 10);
+    const clamped = Math.max(SLIDER_MIN, Math.min(v, displayMax - STEP));
     setElevationRange(clamped, elevationMax);
     setLocalMin(null);
+    setInputMinText(null);
+    setInputMinError(false);
     if (isLocked)
       localStorage.setItem(ELEVATION_RANGE_KEY, JSON.stringify({ min: clamped, max: elevationMax, buildId: ELEVATION_RANGE_BUILD_ID }));
   };
 
   const commitMaxNumber = () => {
-    if (localMax === null) return;
-    const clamped = Math.min(SLIDER_MAX, Math.max(localMax, elevationMin + STEP));
+    if (inputMaxText === null) return;
+    const trimmed = inputMaxText.trim();
+    if (trimmed === '' || isNaN(Number(trimmed))) {
+      setInputMaxError(true);
+      return;
+    }
+    const v = parseInt(trimmed, 10);
+    const clamped = Math.min(SLIDER_MAX, Math.max(v, elevationMin + STEP));
     setElevationRange(elevationMin, clamped);
     setLocalMax(null);
+    setInputMaxText(null);
+    setInputMaxError(false);
     if (isLocked)
       localStorage.setItem(ELEVATION_RANGE_KEY, JSON.stringify({ min: elevationMin, max: clamped, buildId: ELEVATION_RANGE_BUILD_ID }));
   };
@@ -219,7 +249,12 @@ export function ElevationLegend() {
     commit: () => void
   ) => {
     if (e.key === 'Enter')  { e.preventDefault(); commit(); }
-    if (e.key === 'Escape') { e.preventDefault(); setLocalMin(null); setLocalMax(null); }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setLocalMin(null); setLocalMax(null);
+      setInputMinText(null); setInputMaxText(null);
+      setInputMinError(false); setInputMaxError(false);
+    }
   };
 
   // ── Reset ────────────────────────────────────────────────────────────────
@@ -227,6 +262,10 @@ export function ElevationLegend() {
   const handleReset = () => {
     setLocalMin(null);
     setLocalMax(null);
+    setInputMinText(null);
+    setInputMaxText(null);
+    setInputMinError(false);
+    setInputMaxError(false);
     setElevationRange(DEFAULT_MIN, DEFAULT_MAX);
     if (isLocked)
       localStorage.setItem(ELEVATION_RANGE_KEY, JSON.stringify({ min: DEFAULT_MIN, max: DEFAULT_MAX, buildId: ELEVATION_RANGE_BUILD_ID }));
@@ -341,41 +380,44 @@ export function ElevationLegend() {
             <span className="elevation-dual-side-label">Min</span>
             <span className="elevation-legend-range-value-wrap">
               <input
-                type="number"
-                className="elevation-legend-range-value"
-                value={displayMin}
-                min={SLIDER_MIN}
-                max={SLIDER_MAX}
-                step={STEP}
-                onChange={handleMinNumberChange}
+                type="text"
+                inputMode="numeric"
+                className={`elevation-legend-range-value${inputMinError ? ' elevation-input-error' : ''}`}
+                value={inputMinText !== null ? inputMinText : String(displayMin)}
+                onChange={handleMinInputChange}
+                onFocus={handleMinInputFocus}
                 onBlur={commitMinNumber}
                 onKeyDown={(e) => handleNumberKeyDown(e, commitMinNumber)}
                 aria-label="Minimum elevation value"
+                aria-invalid={inputMinError}
                 title="Type a minimum elevation in metres, then press Enter to apply"
               />
               <span className="elevation-legend-unit">m</span>
             </span>
+            {inputMinError && <span className="elevation-input-error-msg">Enter a number</span>}
           </span>
           <span className="elevation-dual-side elevation-dual-side-right">
             <span className="elevation-dual-side-label">Max</span>
             <span className="elevation-legend-range-value-wrap">
               <input
-                type="number"
-                className="elevation-legend-range-value"
-                value={displayMax}
-                min={SLIDER_MIN}
-                max={SLIDER_MAX}
-                step={STEP}
-                onChange={handleMaxNumberChange}
+                type="text"
+                inputMode="numeric"
+                className={`elevation-legend-range-value${inputMaxError ? ' elevation-input-error' : ''}`}
+                value={inputMaxText !== null ? inputMaxText : String(displayMax)}
+                onChange={handleMaxInputChange}
+                onFocus={handleMaxInputFocus}
                 onBlur={commitMaxNumber}
                 onKeyDown={(e) => handleNumberKeyDown(e, commitMaxNumber)}
                 aria-label="Maximum elevation value"
+                aria-invalid={inputMaxError}
                 title="Type a maximum elevation in metres, then press Enter to apply"
               />
               <span className="elevation-legend-unit">m</span>
             </span>
+            {inputMaxError && <span className="elevation-input-error-msg">Enter a number</span>}
           </span>
         </div>
+        <span className="elevation-input-hint">Press Enter to apply</span>
       </div>
 
       <div className="elevation-legend-separator" />
