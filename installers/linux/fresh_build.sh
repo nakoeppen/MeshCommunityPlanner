@@ -26,6 +26,9 @@
 
 set -euo pipefail
 
+# Always start from home to avoid "current directory deleted" errors
+cd "$HOME"
+
 REPO_SSH="git@github.com:PapaSierra555/MeshCommunityPlanner.git"
 REPO_DIR="$HOME/MeshCommunityPlanner"
 APP_VERSION="1.2.0"
