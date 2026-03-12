@@ -895,6 +895,145 @@ export function AppLayout() {
       }
     };
     input.click();
+  }, [api, currentPlan, setNodes, fitBoundsToNodes, setErrorMsg, setStatusMessage]);
+
+  const handleImportJSON = useCallback(() => {
+    if (!currentPlan) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setStatusMessage('Importing JSON...');
+      try {
+        const text = await file.text();
+        let data: any;
+        try {
+          data = JSON.parse(text);
+        } catch (err: any) {
+          setErrorMsg(`JSON import error: Invalid JSON - ${err.message}`);
+          return;
+        }
+
+        if (!data || !Array.isArray(data.layers)) {
+          setErrorMsg('JSON import error: Expected an object with a "layers" array.');
+          return;
+        }
+
+        const refNode = usePlanStore.getState().nodes[0];
+        const defaults: Partial<Node> = {
+          antenna_height_m: refNode?.antenna_height_m ?? 3,
+          device_id: refNode?.device_id || 'tbeam-supreme',
+          firmware: refNode?.firmware || (currentPlan.firmware_family as any) || 'meshtastic',
+          region: refNode?.region || (currentPlan.region as any) || 'us_fcc',
+          frequency_mhz: refNode?.frequency_mhz ?? 906.875,
+          tx_power_dbm: refNode?.tx_power_dbm ?? 20,
+          spreading_factor: refNode?.spreading_factor ?? 11,
+          bandwidth_khz: refNode?.bandwidth_khz ?? 250,
+          coding_rate: refNode?.coding_rate || '4/5',
+          antenna_id: refNode?.antenna_id || '915-3dbi-omni',
+          is_solar: false,
+        };
+
+        const errors: string[] = [];
+        const candidates: {
+          name: string;
+          latitude: number;
+          longitude: number;
+          antenna_height_m?: number;
+        }[] = [];
+
+        data.layers.forEach((layer: any, idx: number) => {
+          const rowIdx = idx + 1;
+          if (!layer || typeof layer !== 'object') {
+            errors.push(`Layer ${rowIdx}: not an object`);
+            return;
+          }
+          const name = typeof layer.name === 'string' && layer.name.trim() !== ''
+            ? layer.name.trim()
+            : `Imported Node ${rowIdx}`;
+
+          const lat = typeof layer.latitude === 'number' ? layer.latitude : parseFloat(String(layer.latitude));
+          const lon = typeof layer.longitude === 'number' ? layer.longitude : parseFloat(String(layer.longitude));
+
+          if (isNaN(lat) || lat < -90 || lat > 90) {
+            errors.push(`Layer ${rowIdx}: invalid latitude "${layer.latitude}"`);
+            return;
+          }
+          if (isNaN(lon) || lon < -180 || lon > 180) {
+            errors.push(`Layer ${rowIdx}: invalid longitude "${layer.longitude}"`);
+            return;
+          }
+
+          let antennaHeight: number | undefined;
+          if (layer.antenna_height_a !== undefined && layer.antenna_height_a !== null) {
+            const ah = typeof layer.antenna_height_a === 'number'
+              ? layer.antenna_height_a
+              : parseFloat(String(layer.antenna_height_a));
+            if (!isNaN(ah)) {
+              antennaHeight = ah;
+            }
+          }
+
+          candidates.push({
+            name,
+            latitude: lat,
+            longitude: lon,
+            antenna_height_m: antennaHeight,
+          });
+        });
+
+        if (candidates.length === 0) {
+          setErrorMsg(`JSON import failed: no valid layers found.${errors.length ? `\n${errors.join('\n')}` : ''}`);
+          return;
+        }
+
+        let created = 0;
+        const newNodes: Node[] = [];
+        for (const nd of candidates) {
+          try {
+            const node = await api.createNode(currentPlan.id, {
+              name: nd.name || 'Imported Node',
+              latitude: nd.latitude,
+              longitude: nd.longitude,
+              antenna_height_m: nd.antenna_height_m ?? defaults.antenna_height_m ?? 3,
+              device_id: defaults.device_id!,
+              firmware: defaults.firmware!,
+              region: defaults.region!,
+              frequency_mhz: defaults.frequency_mhz!,
+              tx_power_dbm: defaults.tx_power_dbm!,
+              spreading_factor: defaults.spreading_factor!,
+              bandwidth_khz: defaults.bandwidth_khz!,
+              coding_rate: defaults.coding_rate! as any,
+              modem_preset: null,
+              antenna_id: defaults.antenna_id!,
+              cable_id: null,
+              cable_length_m: 0,
+              pa_module_id: null,
+              is_solar: false,
+              desired_coverage_radius_m: null,
+              notes: '',
+            });
+            newNodes.push(node);
+            created++;
+          } catch (err: any) {
+            console.error(`JSON import: failed to create node "${nd.name}":`, err);
+          }
+        }
+
+        const existingNodes = usePlanStore.getState().nodes;
+        setNodes([...existingNodes, ...newNodes]);
+        if (newNodes.length > 0) {
+          fitBoundsToNodes([...existingNodes, ...newNodes]);
+        }
+        const errText = errors.length > 0 ? ` (${errors.length} warning(s))` : '';
+        setStatusMessage(`Imported ${created} node(s) from JSON${errText}.`);
+      } catch (err: any) {
+        setErrorMsg(`JSON import error: ${err.message}`);
+      }
+    };
+    input.click();
   }, [api, currentPlan, setNodes, fitBoundsToNodes]);
 
   // ---- KML Export ----
@@ -2338,6 +2477,7 @@ export function AppLayout() {
         onExportPlan={handleExportPlan}
         onExportCSV={handleExportCSV}
         onImportCSV={handleImportCSV}
+        onImportJSON={handleImportJSON}
         onExportKML={handleExportKML}
         onExportGeoJSON={handleExportGeoJSON}
         onExportCoT={handleExportCoT}
