@@ -223,7 +223,11 @@ source venv/bin/activate
 
 pip install -r requirements.txt 
 pip install pyinstaller
-cd frontend && npm install && cd ..
+
+cd frontend
+npm install
+npx vite build
+cd ..
 
 python3 -m PyInstaller installers/mesh_planner.spec --noconfirm
 ```
