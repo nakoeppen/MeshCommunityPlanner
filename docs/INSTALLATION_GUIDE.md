@@ -211,6 +211,23 @@ cd ..
 python3 -m PyInstaller installers/mesh_planner.spec --noconfirm
 ```
 
+### Alternate Build Instructions for Arch-based Distros
+
+```bash
+yay -S python313 python-pip npm
+
+git clone https://github.com/PapaSierra555/MeshCommunityPlanner.git
+cd MeshCommunityPlanner
+python3.13 -m venv venv
+source venv/bin/activate
+
+pip install -r requirements.txt 
+pip install pyinstaller
+cd frontend && npm install && cd ..
+
+python3 -m PyInstaller installers/mesh_planner.spec --noconfirm
+```
+
 ### Run
 
 ```bash
