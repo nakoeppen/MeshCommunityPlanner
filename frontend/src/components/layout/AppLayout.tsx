@@ -1657,7 +1657,7 @@ export function AppLayout() {
         }
         const result = await api.getTerrainCoverageGrid(node, nodeEnv, maxRadiusKm * 1000, paMaxOutputDbm, paInputRangeMaxDbm);
 
-        // Render to canvas — pass TX position for proper filled-sector brush sizing
+        // Render to canvas before discarding raw points — they are NOT stored in state
         const canvasResult = renderCoverageCanvas(
           result.points,
           result.bounds,
@@ -1666,6 +1666,15 @@ export function AppLayout() {
           node.longitude,
         );
 
+        // Precompute signal stats; drop raw points to prevent memory crash at large radii
+        const signals = result.points.map((p: any) => p.signal_dbm);
+        const pointCount = signals.length;
+        const signalMin = pointCount > 0 ? Math.min(...signals) : 0;
+        const signalMax = pointCount > 0 ? Math.max(...signals) : 0;
+        const signalMean = pointCount > 0
+          ? signals.reduce((a: number, b: number) => a + b, 0) / pointCount
+          : 0;
+
         terrainOverlays.push({
           id: `tcov-${node.id}`,
           nodeUuid: String(node.id),
@@ -1673,7 +1682,10 @@ export function AppLayout() {
           environment: result.environment,
           elevationSource: result.elevation_source,
           computationTimeMs: result.computation_time_ms,
-          points: result.points,
+          pointCount,
+          signalMin,
+          signalMax,
+          signalMean,
           bounds: result.bounds,
           imageDataUrl: canvasResult?.dataUrl || null,
           maxRadiusM: maxRadiusKm * 1000,

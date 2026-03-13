@@ -582,20 +582,16 @@ export function MapContainer({ className = '' }: MapContainerProps) {
         interactive: true,
       });
 
-      // Compute signal statistics for enhanced popup
-      const signals = overlay.points.map((p) => p.signal_dbm);
+      // Signal stats are precomputed — raw points not stored in state
       let popupContent = `<b>Coverage: ${overlay.nodeName}</b><br>` +
         `Environment: ${overlay.environment}<br>`;
-      if (signals.length > 0) {
-        const minSignal = Math.min(...signals);
-        const maxSignal = Math.max(...signals);
-        const avgSignal = (signals.reduce((a, b) => a + b, 0) / signals.length).toFixed(1);
+      if (overlay.pointCount > 0) {
         popupContent +=
-          `Signal range: ${maxSignal.toFixed(0)} to ${minSignal.toFixed(0)} dBm<br>` +
-          `Average: ${avgSignal} dBm<br>`;
+          `Signal range: ${overlay.signalMax.toFixed(0)} to ${overlay.signalMin.toFixed(0)} dBm<br>` +
+          `Average: ${overlay.signalMean.toFixed(1)} dBm<br>`;
       }
       popupContent +=
-        `Grid points: ${overlay.points.length.toLocaleString()}<br>` +
+        `Grid points: ${overlay.pointCount.toLocaleString()}<br>` +
         `Elevation: ${overlay.elevationSource}<br>` +
         `Compute: ${overlay.computationTimeMs}ms`;
 

@@ -47,7 +47,11 @@ export interface TerrainCoverageOverlay {
   environment: string;
   elevationSource: string;
   computationTimeMs: number;
-  points: Array<{ lat: number; lon: number; signal_dbm: number }>;
+  // Precomputed stats — raw points are NOT stored to avoid memory crash at large radii
+  pointCount: number;
+  signalMin: number;
+  signalMax: number;
+  signalMean: number;
   bounds: { min_lat: number; min_lon: number; max_lat: number; max_lon: number };
   imageDataUrl: string | null;
   maxRadiusM: number;
