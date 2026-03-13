@@ -162,6 +162,24 @@
   line-height: 1.4;
 }
 
+/* Per-node coverage environment badge in node list */
+.node-env-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* Multi-select bulk coverage env row */
+.multi-env-row {
+  margin-top: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+
 .sidebar-btn {
   display: block;
   width: 100%;
@@ -367,6 +385,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.3rem;
 }
 
 .node-name {

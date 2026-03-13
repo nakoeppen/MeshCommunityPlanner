@@ -99,6 +99,25 @@ const MODEM_PRESETS: Record<string, ModemPreset> = {
   },
 };
 
+// Per-node coverage environment override options
+const COVERAGE_ENV_OPTIONS = [
+  { value: '', label: 'Inherit global setting' },
+  { value: 'los_elevated', label: 'Clear LOS (Elevated)' },
+  { value: 'open_rural', label: 'Open Rural' },
+  { value: 'suburban', label: 'Suburban' },
+  { value: 'urban', label: 'Urban' },
+  { value: 'indoor', label: 'Indoor' },
+];
+
+// Badge abbreviation + color for per-node environment override
+const ENV_BADGE: Record<string, { label: string; color: string }> = {
+  los_elevated: { label: 'LOS', color: '#7fb3f0' },
+  open_rural: { label: 'Rural', color: '#2ecc71' },
+  suburban: { label: 'Sub', color: '#f39c12' },
+  urban: { label: 'Urban', color: '#e74c3c' },
+  indoor: { label: 'Indoor', color: '#9b59b6' },
+};
+
 const REGION_FREQUENCIES: Record<string, number> = {
   'us_fcc': 906.875,
   'eu_868': 869.525,
@@ -287,6 +306,7 @@ export function AppLayout() {
   const [showPlacementSuggest, setShowPlacementSuggest] = useState(false);
   const [showPDFReport, setShowPDFReport] = useState(false);
   const [internetMapImportOpen, setInternetMapImportOpen] = useState(false);
+  const [bulkCoverageEnv, setBulkCoverageEnv] = useState('');
   const [envWarningDialog, setEnvWarningDialog] = useState<{
     nodeNames: string;
     onSwitch: () => void;
@@ -1643,7 +1663,8 @@ export function AppLayout() {
       setStatusMessage(`Computing terrain coverage for "${node.name}" (${i + 1}/${targetNodes.length})...`);
 
       try {
-        const nodeEnv = activeEnv || node.environment;
+        // Per-node override takes priority; fall back to global panel setting
+        const nodeEnv = node.coverage_environment || activeEnv || node.environment;
         // Resolve PA params for effective TX calculation on the backend
         const pa = catalogPAModules.find((p: any) => p.id === node.pa_module_id) ?? null;
         let paMaxOutputDbm: number | undefined;
@@ -1681,7 +1702,7 @@ export function AppLayout() {
           id: `tcov-${node.id}`,
           nodeUuid: String(node.id),
           nodeName: node.name,
-          environment: result.environment,
+          environment: nodeEnv,
           elevationSource: result.elevation_source,
           computationTimeMs: result.computation_time_ms,
           pointCount,
@@ -1698,7 +1719,7 @@ export function AppLayout() {
       } catch (err: any) {
         console.warn(`Terrain coverage failed for ${node.name}, falling back to circle:`, err);
         // Fallback to client-side circle
-        const fallbackEnv = activeEnv || node.environment;
+        const fallbackEnv = node.coverage_environment || activeEnv || node.environment;
         const result = computeRealisticCoverageM(
           node.tx_power_dbm,
           node.device_id,
@@ -1745,8 +1766,9 @@ export function AppLayout() {
     const targetNodes = selectedNodeIds.length > 0
       ? nodes.filter((n) => selectedNodeIds.includes(String(n.id)))
       : nodes;
-    // Warn before computing if elevated nodes are using a non-LOS environment
-    const elevatedNodes = targetNodes.filter((n) => n.antenna_height_m > 15 && coverageEnv !== 'los_elevated');
+    // Warn before computing if elevated nodes are using a non-LOS environment.
+    // Skip nodes that already have an explicit per-node coverage_environment set — the user made an intentional choice.
+    const elevatedNodes = targetNodes.filter((n) => !n.coverage_environment && n.antenna_height_m > 15 && coverageEnv !== 'los_elevated');
     if (elevatedNodes.length > 0) {
       const names = elevatedNodes.map((n) => `${n.name} (${n.antenna_height_m}m)`).join(', ');
       setEnvWarningDialog({
@@ -2564,6 +2586,25 @@ export function AppLayout() {
               <label style={{ margin: 0 }}>Is the node solar powered?</label>
             </div>
             <div className="config-field">
+              <label>Coverage Environment</label>
+              <select
+                value={selectedNode.coverage_environment ?? ''}
+                title="Per-node coverage environment override. Leave as 'Inherit' to use the global panel setting."
+                onChange={(e) => {
+                  const val = e.target.value || null;
+                  updateNodeStore(String(selectedNode.id), { coverage_environment: val });
+                  handleUpdateNodeField(String(selectedNode.id), 'coverage_environment', val);
+                }}
+              >
+                {COVERAGE_ENV_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <p className="sidebar-hint" style={{ marginTop: '0.25rem', marginBottom: 0 }}>
+                Overrides the global environment for this node's coverage simulation. Leave as 'Inherit' to use the panel setting.
+              </p>
+            </div>
+            <div className="config-field">
               <label>Notes</label>
               <textarea value={selectedNode.notes || ''} rows={2}
                 title="Free-form notes about this node (location details, mount info, etc.)"
@@ -2981,9 +3022,49 @@ export function AppLayout() {
                     <p className="sidebar-hint">Open or create a New plan to manage nodes.</p>
                   )}
                   {selectedNodeIds.length > 1 && (
-                    <p className="sidebar-hint multi-select-info">
-                      {selectedNodeIds.length} nodes selected (Ctrl+Click for more, drag one to move all)
-                    </p>
+                    <>
+                      <p className="sidebar-hint multi-select-info">
+                        {selectedNodeIds.length} nodes selected (Ctrl+Click for more, drag one to move all)
+                      </p>
+                      <div className="config-field multi-env-row">
+                        <label>Set Coverage Env (all selected)</label>
+                        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                          <select
+                            value={bulkCoverageEnv}
+                            onChange={(e) => setBulkCoverageEnv(e.target.value)}
+                            style={{ flex: 1 }}
+                            title="Set coverage environment override on all selected nodes"
+                          >
+                            {COVERAGE_ENV_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                          <button
+                            className="sidebar-btn sidebar-btn-secondary"
+                            type="button"
+                            style={{ whiteSpace: 'nowrap', padding: '0.2rem 0.5rem' }}
+                            title="Apply to all selected nodes"
+                            onClick={async () => {
+                              const val = bulkCoverageEnv || null;
+                              const plan = usePlanStore.getState().current_plan;
+                              for (const nid of selectedNodeIds) {
+                                updateNodeStore(nid, { coverage_environment: val });
+                                if (!nid.startsWith('temp-') && plan) {
+                                  const n = usePlanStore.getState().nodes.find((x) => String(x.id) === nid);
+                                  const planId = n?.plan_id || plan.id;
+                                  api.updateNode(planId, nid, { coverage_environment: val })
+                                    .catch((err: any) => console.error(`Failed to update node ${nid}:`, err));
+                                }
+                              }
+                              setStatusMessage(`Coverage environment set on ${selectedNodeIds.length} node(s).`);
+                              flashSaved();
+                            }}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    </>
                   )}
                   <div className="sidebar-node-list" aria-label="Node list">
                     {nodes.length === 0 ? (
@@ -3000,6 +3081,15 @@ export function AppLayout() {
                             onClick={(e) => handleNodeClick(nodeId, e)}>
                             <div className="node-row">
                               <span className="node-name">{node.name}</span>
+                              {node.coverage_environment && ENV_BADGE[node.coverage_environment] && (
+                                <span
+                                  className="node-env-badge"
+                                  style={{ backgroundColor: ENV_BADGE[node.coverage_environment].color }}
+                                  title={`Coverage environment override: ${COVERAGE_ENV_OPTIONS.find((o) => o.value === node.coverage_environment)?.label ?? node.coverage_environment}`}
+                                >
+                                  {ENV_BADGE[node.coverage_environment].label}
+                                </span>
+                              )}
                               <button className="node-delete-btn" type="button"
                                 title="Delete node"
                                 onClick={(e) => { e.stopPropagation(); handleDeleteNode(node); }}>
