@@ -31,7 +31,16 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.app.auth.middleware import AuthMiddleware
 from backend.app.auth.token import get_token
-from backend.app.config import find_available_port, get_data_dir, get_db_path, get_port, is_production_mode, is_test_mode
+from backend.app.config import (
+    find_available_port,
+    get_app_mode,
+    get_bind_host,
+    get_data_dir,
+    get_db_path,
+    get_port,
+    is_production_mode,
+    is_test_mode,
+)
 from backend.app.lifecycle import ShutdownManager, cleanup_stale_instance, install_signal_handlers, write_pid_file
 from backend.app.db.connection import init_db_manager
 from backend.app.db.database import DatabaseManager, run_migrations
@@ -46,6 +55,9 @@ logger = logging.getLogger(__name__)
 
 # Module-level token — generated once at app creation, lives in process memory only
 _app_token: str | None = None
+
+# Lazily-initialized FastAPI app (created after port resolution when possible)
+_app: FastAPI | None = None
 
 # Module-level database manager — lives for the process lifetime
 _db_manager: DatabaseManager | None = None
@@ -164,11 +176,13 @@ def create_app(port: int | None = None) -> FastAPI:
     # CORS
     if port is None:
         port = get_port()
+    host = get_bind_host()
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
+            f"http://{host}:{port}",
             f"http://127.0.0.1:{port}",
-            "http://localhost:5173",
+            "http://127.0.0.1:5173",
         ],
         allow_methods=["*"],
         allow_headers=["Authorization", "Content-Type"],
@@ -218,7 +232,7 @@ def create_app(port: int | None = None) -> FastAPI:
         return Response(status_code=204)
 
     # --- Shutdown endpoint (desktop app: browser tab close triggers server exit) ---
-    if production:
+    if production and get_app_mode():
         from fastapi.responses import JSONResponse as _JSONResp
 
         @app.post("/api/shutdown", include_in_schema=False)
@@ -268,7 +282,19 @@ def create_app(port: int | None = None) -> FastAPI:
     return app
 
 
-app = create_app()
+def get_app(port: int | None = None) -> FastAPI:
+    """Return the module's FastAPI app, creating it lazily if needed."""
+    global _app  # noqa: PLW0603
+    if _app is None:
+        _app = create_app(port=port)
+    return _app
+
+
+def __getattr__(name: str):
+    """Provide lazy `app` attribute for `uvicorn backend.app.main:app`."""
+    if name == "app":
+        return get_app()
+    raise AttributeError(name)
 
 
 if __name__ == "__main__":
@@ -356,17 +382,23 @@ if __name__ == "__main__":
         install_signal_handlers(_shutdown_mgr)
 
         # 3. Find an available port
-        host = "127.0.0.1"
-        preferred = get_port()
-        actual_port = find_available_port(host)
+        host = get_bind_host()
+        port = get_port()
 
-        if actual_port != preferred:
-            print(f"Port {preferred} in use \u2014 using port {actual_port} instead")
+        available_port = find_available_port(host)
+
+        # If app_mode is true, find other available port if needed
+        if available_port != port:
+            if get_app_mode():
+                print(f"Port {port} in use \u2014 using port {available_port} instead")    
+                port = available_port
+            else: 
+                print(f"Port {port} already in use \u2014")
 
         # 4. Write PID + port files for single-instance enforcement
-        write_pid_file(actual_port)
+        write_pid_file(port)
 
-        print(f"Starting Mesh Community Planner at http://{host}:{actual_port}")
+        print(f"Starting Mesh Community Planner at http://{host}:{port}")
 
         # Install async exception handler once the event loop exists
         loop = asyncio.new_event_loop()
@@ -375,17 +407,20 @@ if __name__ == "__main__":
 
         production = is_production_mode()
 
-        # Auto-open browser once server is ready (production/PyInstaller only).
+        # Create the FastAPI app after resolving the final port so CORS matches.
+        app = get_app(port=port)
+
+        # Auto-open browser once server is ready (production/PyInstaller only, app_mode enabled).
         # Linux launcher scripts open the browser themselves and set
         # MESH_PLANNER_NO_BROWSER=1 to prevent a duplicate tab.
         # macOS and Windows use this code path directly (no launcher wrapper).
-        if production and not os.environ.get("MESH_PLANNER_NO_BROWSER"):
+        if production and get_app_mode() and not os.environ.get("MESH_PLANNER_NO_BROWSER"):
             import threading
             import webbrowser
             import urllib.request
 
             def _open_browser_when_ready():
-                url = f"http://{host}:{actual_port}"
+                url = f"http://{host}:{port}"
                 for _ in range(30):
                     import time
                     time.sleep(1)
@@ -398,10 +433,14 @@ if __name__ == "__main__":
 
             threading.Thread(target=_open_browser_when_ready, daemon=True).start()
 
+        os.environ["MESH_PLANNER_PORT"] = str(port)
+        os.environ["MESH_PLANNER_HOST"] = host
+
         uvicorn.run(
-            app if production else "backend.app.main:app",
+            app if production else "backend.app.main:get_app",
+            factory=not production,
             host=host,
-            port=actual_port,
+            port=port,
             reload=not production,
             timeout_graceful_shutdown=3,
         )
