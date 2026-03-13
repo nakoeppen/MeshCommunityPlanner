@@ -47,12 +47,19 @@ function TxWarnings({ txPowerDbm, deviceMaxTx, pa }: WarningProps) {
 
   const overdrivingDevice = txPowerDbm > deviceMaxTx;
   const overdrivingPaInput = pa !== null && txPowerDbm > (paInputMax ?? 22);
-  const exceedsRegulatory = !overdrivingDevice && !overdrivingPaInput && effectiveOutputDbm > 30;
+  // >= 30 dBm = 1W — FCC Part 15 / ETSI unlicensed limit
+  const exceedsRegulatory = !overdrivingDevice && !overdrivingPaInput && effectiveOutputDbm >= 30;
   const effectiveW = Math.pow(10, (effectiveOutputDbm - 30) / 10);
 
   return (
     <div>
       <span data-testid="effective-output">{effectiveOutputDbm.toFixed(1)}</span>
+      {/* PA info always shown when PA present — even alongside warnings */}
+      {pa && (
+        <p data-testid="info-pa-output">
+          PA output: {effectiveOutputDbm.toFixed(1)} dBm ({txPowerDbm} dBm device + {paGain} dB gain) ≈ {effectiveW.toFixed(2)}W
+        </p>
+      )}
       {overdrivingDevice && (
         <p data-testid="warn-device-limit" style={{ color: '#e74c3c' }}>
           ⚠ {txPowerDbm} dBm exceeds device limit ({deviceMaxTx} dBm). Simulation only — do not transmit.
@@ -65,12 +72,7 @@ function TxWarnings({ txPowerDbm, deviceMaxTx, pa }: WarningProps) {
       )}
       {exceedsRegulatory && (
         <p data-testid="warn-regulatory" style={{ color: '#e67e22' }}>
-          Effective output {effectiveOutputDbm.toFixed(1)} dBm ≈ {effectiveW.toFixed(1)}W — exceeds unlicensed limit.
-        </p>
-      )}
-      {pa && !overdrivingDevice && !overdrivingPaInput && (
-        <p data-testid="info-pa-output">
-          PA output: {effectiveOutputDbm.toFixed(1)} dBm ({txPowerDbm} dBm device + {paGain} dB gain)
+          {effectiveOutputDbm.toFixed(1)} dBm ≈ {effectiveW.toFixed(2)}W — at or above 1W unlicensed limit. Use only where permitted.
         </p>
       )}
     </div>
@@ -151,9 +153,9 @@ describe('TxWarnings — no PA', () => {
     expect(screen.queryByTestId('warn-device-limit')).toBeNull();
   });
 
-  it('no regulatory warning exactly at 30 dBm', () => {
+  it('regulatory warning appears at exactly 30 dBm (>= threshold)', () => {
     render(<TxWarnings txPowerDbm={30} deviceMaxTx={47} pa={null} />);
-    expect(screen.queryByTestId('warn-regulatory')).toBeNull();
+    expect(screen.getByTestId('warn-regulatory')).toBeInTheDocument();
   });
 
   it('device-limit warning takes priority over regulatory', () => {
@@ -186,11 +188,12 @@ describe('TxWarnings — with PA (E22, gain=8)', () => {
     expect(screen.getByTestId('info-pa-output')).toBeInTheDocument();
   });
 
-  it('red warning when device TX exceeds device max (PA present)', () => {
+  it('red warning when device TX exceeds device max (PA present, info still shown)', () => {
     render(<TxWarnings txPowerDbm={25} deviceMaxTx={22} pa={E22_PA} />);
     expect(screen.getByTestId('warn-device-limit')).toBeInTheDocument();
     expect(screen.queryByTestId('warn-pa-overdrive')).toBeNull();
-    expect(screen.queryByTestId('info-pa-output')).toBeNull();
+    // PA info always shown so user can still see effective output
+    expect(screen.getByTestId('info-pa-output')).toBeInTheDocument();
   });
 
   it('red PA overdrive warning when TX exceeds PA input max but within device limit', () => {
@@ -198,7 +201,8 @@ describe('TxWarnings — with PA (E22, gain=8)', () => {
     render(<TxWarnings txPowerDbm={25} deviceMaxTx={47} pa={E22_PA} />);
     expect(screen.getByTestId('warn-pa-overdrive')).toBeInTheDocument();
     expect(screen.queryByTestId('warn-device-limit')).toBeNull();
-    expect(screen.queryByTestId('info-pa-output')).toBeNull();
+    // PA info always shown
+    expect(screen.getByTestId('info-pa-output')).toBeInTheDocument();
   });
 
   it('device-limit warning takes priority over PA overdrive warning', () => {
@@ -208,12 +212,12 @@ describe('TxWarnings — with PA (E22, gain=8)', () => {
     expect(screen.queryByTestId('warn-pa-overdrive')).toBeNull();
   });
 
-  it('no warning at exactly PA input max (22 dBm)', () => {
+  it('regulatory warning at exactly PA input max (22 dBm) — effective = 30 dBm = 1W', () => {
     render(<TxWarnings txPowerDbm={22} deviceMaxTx={22} pa={E22_PA} />);
     expect(screen.queryByTestId('warn-pa-overdrive')).toBeNull();
     expect(screen.queryByTestId('warn-device-limit')).toBeNull();
-    // effective = 30 (not > 30)
-    expect(screen.queryByTestId('warn-regulatory')).toBeNull();
+    // effective = 30 dBm = 1W → at the unlicensed limit → orange warning
+    expect(screen.getByTestId('warn-regulatory')).toBeInTheDocument();
     expect(screen.getByTestId('info-pa-output')).toBeInTheDocument();
   });
 

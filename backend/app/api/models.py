@@ -270,5 +270,7 @@ class TerrainCoverageGridRequest(BaseModel):
     num_radials: int = Field(360, ge=36, le=720)
     sample_interval_m: float = Field(30.0, ge=10, le=200)
     # PA module params — when present, effective TX = min(tx+gain, max_output)
-    pa_max_output_power_dbm: Optional[float] = Field(None, ge=0, le=47)
-    pa_input_range_max_dbm: Optional[float] = Field(None, ge=0, le=47)
+    # No ge/le constraints here: Optional[float] with constraints can behave
+    # unexpectedly in some Pydantic v2 builds; handler validates values itself.
+    pa_max_output_power_dbm: Optional[float] = None
+    pa_input_range_max_dbm: Optional[float] = None

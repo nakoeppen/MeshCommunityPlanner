@@ -2428,7 +2428,8 @@ export function AppLayout() {
               // Warning tiers
               const overdrivingDevice = selectedNode.tx_power_dbm > deviceMaxTx;
               const overdrivingPaInput = pa !== null && selectedNode.tx_power_dbm > (paInputMax ?? 22);
-              const exceedsRegulatory = !overdrivingDevice && !overdrivingPaInput && effectiveOutputDbm > 30;
+              // >= 30 dBm = 1W — the FCC Part 15 / ETSI unlicensed limit
+              const exceedsRegulatory = !overdrivingDevice && !overdrivingPaInput && effectiveOutputDbm >= 30;
               const effectiveW = Math.pow(10, (effectiveOutputDbm - 30) / 10);
               return (<>
                 <div className="config-field">
@@ -2439,6 +2440,12 @@ export function AppLayout() {
                     onCommit={(v) => { const c = Math.max(0, Math.min(47, v)); updateNodeStore(String(selectedNode.id), { tx_power_dbm: c }); handleUpdateNodeField(String(selectedNode.id), 'tx_power_dbm', c); }}
                   />
                 </div>
+                {/* PA info always shown when PA is present — even alongside warnings */}
+                {pa && (
+                  <p className="sidebar-hint" style={{ marginBottom: '0.25rem' }}>
+                    PA output: {effectiveOutputDbm.toFixed(1)} dBm ({selectedNode.tx_power_dbm} dBm device + {paGain} dB gain) ≈ {effectiveW.toFixed(2)}W
+                  </p>
+                )}
                 {overdrivingDevice && (
                   <p className="sidebar-hint" style={{ marginBottom: '0.25rem', color: '#e74c3c' }}>
                     ⚠ {selectedNode.tx_power_dbm} dBm exceeds device limit ({deviceMaxTx} dBm). Simulation only — do not transmit.
@@ -2451,12 +2458,13 @@ export function AppLayout() {
                 )}
                 {exceedsRegulatory && (
                   <p className="sidebar-hint" style={{ marginBottom: '0.25rem', color: 'var(--color-warning, #e67e22)' }}>
-                    Effective output {effectiveOutputDbm.toFixed(1)} dBm ≈ {effectiveW.toFixed(1)}W — exceeds unlicensed limit. Use only where permitted.
+                    {effectiveOutputDbm.toFixed(1)} dBm ≈ {effectiveW.toFixed(2)}W — at or above 1W unlicensed limit. Use only where permitted.
                   </p>
                 )}
-                {pa && !overdrivingDevice && !overdrivingPaInput && (
+                {/* No-PA watt note when TX is meaningfully high */}
+                {!pa && selectedNode.tx_power_dbm >= 27 && !overdrivingDevice && (
                   <p className="sidebar-hint" style={{ marginBottom: '0.25rem' }}>
-                    PA output: {effectiveOutputDbm.toFixed(1)} dBm ({selectedNode.tx_power_dbm} dBm device + {paGain} dB gain)
+                    {selectedNode.tx_power_dbm} dBm ≈ {Math.pow(10, (selectedNode.tx_power_dbm - 30) / 10).toFixed(2)}W
                   </p>
                 )}
               </>);
