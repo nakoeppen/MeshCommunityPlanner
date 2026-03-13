@@ -2895,16 +2895,20 @@ export function AppLayout() {
                                 title="Maximum sweep distance. The sweep stops at the radio horizon or signal cutoff (whichever comes first), even if this value is larger."
                               />
                             </div>
-                            <p className="sidebar-hint" style={{ marginBottom: '0' }}>
-                              Radio horizon: ~{horizonKm} km ({h} m antenna). Coverage beyond this point is physically blocked by Earth curvature on flat terrain.
-                            </p>
+                            <details className="horizon-note">
+                              <summary>Note: Radio Horizon</summary>
+                              <div className="horizon-note-body">
+                                Radio horizon: ~{horizonKm} km ({h} m antenna). Coverage beyond this point is physically blocked by Earth curvature on flat terrain.
+                              </div>
+                            </details>
                             {beyondHorizon && (
                               <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
-                                Max radius ({maxRadiusKm} km) exceeds the radio horizon — extra sweep range adds computation time with no additional coverage.{' '}
+                                Max radius ({maxRadiusKm} km) exceeds the radio horizon — extra range adds compute time with no additional coverage.{' '}
                                 <button
                                   type="button"
+                                  className="horizon-set-btn"
                                   onClick={() => saveAndSet(Math.ceil(horizonKm))}
-                                  style={{ background: 'none', border: 'none', color: '#3498db', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                                  aria-label={`Set max radius to radio horizon (${Math.ceil(horizonKm)} km)`}
                                 >
                                   Set to {Math.ceil(horizonKm)} km
                                 </button>

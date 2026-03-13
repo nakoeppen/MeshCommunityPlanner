@@ -97,6 +97,70 @@
   color: #5a6a7a;
 }
 
+/* Inline "Set to X km" button inside warning hints */
+.horizon-set-btn {
+  display: inline;
+  background: none;
+  border: 1px solid #2471a3;
+  color: #2471a3;
+  border-radius: 3px;
+  padding: 0px 5px;
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.horizon-set-btn:hover {
+  background: #2471a3;
+  color: #fff;
+}
+.horizon-set-btn:focus-visible {
+  outline: 2px solid #7fb3f0;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Collapsible radio horizon note */
+.horizon-note {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.8rem;
+}
+.horizon-note summary {
+  color: #7f8c8d;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.horizon-note summary::-webkit-details-marker { display: none; }
+.horizon-note summary::before {
+  content: '\25B6';
+  font-size: 0.6rem;
+  color: #95a5a6;
+  transition: transform 0.15s;
+}
+.horizon-note[open] summary::before {
+  transform: rotate(90deg);
+}
+.horizon-note summary:focus-visible {
+  outline: 2px solid #7fb3f0;
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+.horizon-note-body {
+  margin-top: 0.25rem;
+  padding: 0.3rem 0.5rem;
+  background: #f0f4f8;
+  border-left: 2px solid #95a5a6;
+  border-radius: 2px;
+  color: #5a6a7a;
+  line-height: 1.4;
+}
+
 .sidebar-btn {
   display: block;
   width: 100%;

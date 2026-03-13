@@ -114,11 +114,12 @@ export function Toolbar({
   networkRadioSummary,
   coverageEnv,
 }: ToolbarProps) {
-  const [openMenu, setOpenMenu] = useState<null | 'plan' | 'tools' | 'catalog' | 'info' | 'appinfo'>(null);
+  const [openMenu, setOpenMenu] = useState<null | 'plan' | 'tools' | 'catalog' | 'info' | 'appinfo' | 'moretools'>(null);
   const [expandedPlanIds, setExpandedPlanIds] = useState<Set<string>>(new Set());
   const [expandedHelpSections, setExpandedHelpSections] = useState<Set<string>>(new Set());
   const menuRef = useRef<HTMLDivElement>(null);
   const appInfoRef = useRef<HTMLDivElement>(null);
+  const moreToolsRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -155,6 +156,34 @@ export function Toolbar({
     return () => document.removeEventListener('keydown', handleTab);
   }, [openMenu]);
 
+  // Focus trap for More Tools modal
+  useEffect(() => {
+    if (openMenu !== 'moretools') return;
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const modal = moreToolsRef.current;
+      if (!modal) return;
+      const focusable = modal.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpenMenu(null); };
+    document.addEventListener('keydown', handleTab);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('keydown', handleTab);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [openMenu]);
+
   // Auto-expand all plans when dropdown opens, reset when closed
   useEffect(() => {
     if (openMenu === 'info') {
@@ -175,7 +204,7 @@ export function Toolbar({
     });
   }, []);
 
-  const handleMenuClick = useCallback((menu: 'plan' | 'tools' | 'catalog' | 'info' | 'appinfo') => {
+  const handleMenuClick = useCallback((menu: 'plan' | 'tools' | 'catalog' | 'info' | 'appinfo' | 'moretools') => {
     setOpenMenu((prev) => (prev === menu ? null : menu));
   }, []);
 
@@ -440,38 +469,6 @@ export function Toolbar({
                   >
                     Find Route{selectedCount === 2 ? ' (2 nodes)' : ''}
                   </button>
-                  <button
-                    className="toolbar-dropdown-item"
-                    type="button"
-                    onClick={() => handleItemClick(onTimeOnAir)}
-                    title="Calculate LoRa packet airtime, data rate, and duty cycle for different radio settings"
-                  >
-                    LoRa Airtime Calculator
-                  </button>
-                  <button
-                    className="toolbar-dropdown-item"
-                    type="button"
-                    onClick={() => handleItemClick(onChannelCapacity)}
-                    title="Estimate channel utilization, collision probability, and find the optimal modem preset for your network size"
-                  >
-                    Channel Capacity Estimator
-                  </button>
-                  <button
-                    className={`toolbar-dropdown-item${!hasPlan || !hasLOSOverlays ? ' disabled' : ''}`}
-                    type="button"
-                    onClick={() => hasPlan && hasLOSOverlays && handleItemClick(onFloodSim)}
-                    title={!hasPlan ? 'Open a plan first' : !hasLOSOverlays ? 'Run Line of Sight analysis first (select 2+ nodes, then Tools → Line of Sight)' : 'Simulate message flooding through the mesh network using LOS links'}
-                  >
-                    Message Flooding Sim
-                  </button>
-                  <button
-                    className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`}
-                    type="button"
-                    onClick={() => hasPlan && handleItemClick(onSuggestPlacement)}
-                    title="Get AI-suggested node placement locations to maximize coverage"
-                  >
-                    Suggest Node Placement
-                  </button>
                   <div className="toolbar-dropdown-separator" />
                   <button
                     className="toolbar-dropdown-item"
@@ -523,6 +520,15 @@ export function Toolbar({
                     title="Save the current map view as a PNG image"
                   >
                     Save Screenshot
+                  </button>
+                  <div className="toolbar-dropdown-separator" />
+                  <button
+                    className="toolbar-dropdown-item"
+                    type="button"
+                    onClick={() => { setOpenMenu(null); setTimeout(() => setOpenMenu('moretools'), 0); }}
+                    title="Open the protocol-organized tool library"
+                  >
+                    More Tools&#8230;
                   </button>
                 </div>
               )}
@@ -898,6 +904,87 @@ export function Toolbar({
                 </button>
               </div>
               <span>Map data: OpenStreetMap contributors (ODbL). Elevation data: NASA SRTM.</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* More Tools Modal */}
+      {openMenu === 'moretools' && (
+        <div className="appinfo-overlay" onClick={() => setOpenMenu(null)} role="dialog" aria-modal="true" aria-label="More Tools" ref={moreToolsRef}>
+          <div className="appinfo-modal" style={{ width: '560px' }} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+            <div className="appinfo-modal-header">
+              <div>
+                <div className="appinfo-title">More Tools</div>
+                <div className="appinfo-version">Protocol-specific calculators and simulators</div>
+              </div>
+              <button className="appinfo-close" type="button" onClick={() => setOpenMenu(null)} title="Close">&times;</button>
+            </div>
+            <div className="appinfo-modal-body">
+
+              {/* Meshtastic */}
+              <div className="moretools-protocol-section">
+                <div className="moretools-protocol-header">Meshtastic</div>
+                <button
+                  className="moretools-btn"
+                  type="button"
+                  onClick={() => { setOpenMenu(null); onTimeOnAir?.(); }}
+                  title="Calculate LoRa packet airtime, data rate, and duty cycle"
+                >
+                  <span className="moretools-btn-name">LoRa Airtime Calculator</span>
+                  <span className="moretools-btn-desc">Packet airtime, data rate, and duty cycle for any modem preset</span>
+                </button>
+                <button
+                  className="moretools-btn"
+                  type="button"
+                  onClick={() => { setOpenMenu(null); onChannelCapacity?.(); }}
+                  title="Estimate channel utilization and find optimal modem preset"
+                >
+                  <span className="moretools-btn-name">Channel Capacity Estimator</span>
+                  <span className="moretools-btn-desc">Channel utilization, collision probability, and optimal preset for your node count</span>
+                </button>
+                <button
+                  className="moretools-btn"
+                  type="button"
+                  disabled={!hasPlan || !hasLOSOverlays}
+                  onClick={() => { setOpenMenu(null); if (hasPlan && hasLOSOverlays) onFloodSim?.(); }}
+                  title={!hasPlan ? 'Open a plan first' : !hasLOSOverlays ? 'Run Line of Sight analysis first' : 'Simulate message flooding through the mesh'}
+                >
+                  <span className="moretools-btn-name">Message Flooding Simulator</span>
+                  <span className="moretools-btn-desc">
+                    {!hasLOSOverlays ? 'Requires LOS analysis — run Tools \u2192 Line of Sight first' : 'Simulate message propagation hop-by-hop through your mesh network'}
+                  </span>
+                </button>
+                <button
+                  className="moretools-btn"
+                  type="button"
+                  disabled={!hasPlan}
+                  onClick={() => { setOpenMenu(null); if (hasPlan) onSuggestPlacement?.(); }}
+                  title="Get suggested node placement locations to maximize coverage"
+                >
+                  <span className="moretools-btn-name">Suggest Node Placement</span>
+                  <span className="moretools-btn-desc">AI-assisted placement suggestions to maximize mesh coverage</span>
+                </button>
+              </div>
+
+              {/* MeshCore */}
+              <div className="moretools-protocol-section">
+                <div className="moretools-protocol-header">
+                  MeshCore
+                  <span className="moretools-badge">coming soon</span>
+                </div>
+                <div className="moretools-coming-soon">MeshCore-specific tools are planned for a future release.</div>
+              </div>
+
+              {/* Reticulum */}
+              <div className="moretools-protocol-section">
+                <div className="moretools-protocol-header">
+                  Reticulum
+                  <span className="moretools-badge">coming soon</span>
+                </div>
+                <div className="moretools-coming-soon">Reticulum link budget and transport calculators are planned for a future release.</div>
+              </div>
+
             </div>
           </div>
         </div>
