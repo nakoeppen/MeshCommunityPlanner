@@ -46,6 +46,7 @@ interface ToolbarProps {
   onFloodSim?: () => void;
   onSuggestPlacement?: () => void;
   onRepeaterChain?: () => void;
+  onReticulumAnnounce?: () => void;
   onSaveScreenshot?: () => void;
   onToggleElevation?: () => void;
   elevationEnabled?: boolean;
@@ -98,6 +99,7 @@ export function Toolbar({
   onFloodSim,
   onSuggestPlacement,
   onRepeaterChain,
+  onReticulumAnnounce,
   onSaveScreenshot,
   onToggleElevation,
   elevationEnabled = false,
@@ -990,9 +992,17 @@ export function Toolbar({
               <div className="moretools-protocol-section">
                 <div className="moretools-protocol-header">
                   Reticulum
-                  <span className="moretools-badge">coming soon</span>
                 </div>
-                <div className="moretools-coming-soon">Reticulum link budget and transport calculators are planned for a future release.</div>
+                <button
+                  className="moretools-btn"
+                  type="button"
+                  onClick={() => { setOpenMenu(null); onReticulumAnnounce?.(); }}
+                  title="Calculate safe announce intervals and channel utilization for Reticulum over LoRa/RNode"
+                >
+                  <span className="moretools-btn-name">Announce Rate Calculator</span>
+                  <span className="moretools-btn-desc">Safe announce intervals and channel utilization for Reticulum over LoRa/RNode</span>
+                </button>
+                <div className="moretools-coming-soon">More Reticulum-specific tools are planned for a future release.</div>
               </div>
 
             </div>

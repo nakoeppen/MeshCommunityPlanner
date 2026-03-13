@@ -19,6 +19,7 @@ import { LinkReportModal } from '../analysis/LinkReportModal';
 import { TimeOnAirModal } from '../analysis/TimeOnAirModal';
 import { RepeaterChainModal } from '../analysis/RepeaterChainModal';
 import { ChannelCapacityModal } from '../analysis/ChannelCapacityModal';
+import { ReticulumAnnounceModal } from '../analysis/ReticulumAnnounceModal';
 import { BOMModal } from '../bom/BOMModal';
 import { exportNodesCSV, parseNodesCSV } from '../../utils/csv';
 import { exportKML, type KMLLink } from '../../utils/kml';
@@ -286,6 +287,7 @@ export function AppLayout() {
   const [showTimeOnAir, setShowTimeOnAir] = useState(false);
   const [showRepeaterChain, setShowRepeaterChain] = useState(false);
   const [showChannelCapacity, setShowChannelCapacity] = useState(false);
+  const [showReticulumAnnounce, setShowReticulumAnnounce] = useState(false);
   const [showBOM, setShowBOM] = useState(false);
   const [bomData, setBomData] = useState<BOMPlanData[] | null>(null);
   const [bomLoading, setBomLoading] = useState(false);
@@ -2633,6 +2635,7 @@ export function AppLayout() {
         onTimeOnAir={() => setShowTimeOnAir(true)}
         onRepeaterChain={() => setShowRepeaterChain(true)}
         onChannelCapacity={() => setShowChannelCapacity(true)}
+        onReticulumAnnounce={() => setShowReticulumAnnounce(true)}
         onFloodSim={() => setShowFloodingSim(true)}
         onSuggestPlacement={() => setShowPlacementSuggest(true)}
         onSaveScreenshot={handleSaveScreenshot}
@@ -3080,6 +3083,10 @@ export function AppLayout() {
         currentPresetBW={networkRadio.bandwidth_khz}
         currentPresetCR={networkRadio.coding_rate}
         currentNodeCount={nodes.length}
+      />
+      <ReticulumAnnounceModal
+        isOpen={showReticulumAnnounce}
+        onClose={() => setShowReticulumAnnounce(false)}
       />
       <BOMModal
         isOpen={showBOM}
