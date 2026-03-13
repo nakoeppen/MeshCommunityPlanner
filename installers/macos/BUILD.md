@@ -13,10 +13,10 @@ Follow the post-install instructions to add `brew` to your PATH.
 ## 2. Install system tools
 
 ```bash
-brew install python@3.12 node git dos2unix create-dmg gh
+brew install python@3.13 node git dos2unix create-dmg gh
 ```
 
-> **Important:** Use Python 3.12. Python 3.14 is too new — pydantic-core does not support it yet.
+> **Important:** Use Python 3.12 or 3.13. Python 3.14 is too new — pydantic-core does not support it yet.
 
 ## 3. Authenticate GitHub CLI
 
@@ -41,7 +41,7 @@ chmod +x installers/macos/build_dmg.sh
 ## 6. Python environment + dependencies
 
 ```bash
-python3.12 -m venv venv
+python3.13 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 pip install pyinstaller
