@@ -221,9 +221,10 @@ describe('RepeaterChainModal — interaction', () => {
     // Default: 3 hops × 5km = 15.0km total reach — check summary line
     expect(document.querySelector('.rc-summary-line')?.textContent).toContain('15.0 km');
 
-    // Change hop distance to 10km
+    // Change hop distance to 10km — must blur to commit (NumberInput pattern)
     const hopDistInput = screen.getByLabelText('Hop distance km');
     fireEvent.change(hopDistInput, { target: { value: '10' } });
+    fireEvent.blur(hopDistInput);
 
     // Now total reach should be 30km in the summary line
     expect(document.querySelector('.rc-summary-line')?.textContent).toContain('30.0 km');

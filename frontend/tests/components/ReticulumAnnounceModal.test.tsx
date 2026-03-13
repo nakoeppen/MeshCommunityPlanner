@@ -166,9 +166,10 @@ describe('ReticulumAnnounceModal — computation (input changes)', () => {
     const rowsBefore = document.querySelectorAll('.ra-table tbody tr');
     const intervalBefore = parseIntervalSec(rowsBefore[0].querySelectorAll('td')[1].textContent ?? '');
 
-    // Increase node count to 100
+    // Increase node count to 100 — must blur to commit (NumberInput pattern)
     const nodesInput = screen.getByLabelText('Number of Nodes');
     fireEvent.change(nodesInput, { target: { value: '100' } });
+    fireEvent.blur(nodesInput);
 
     // Capture new minInterval
     const rowsAfter = document.querySelectorAll('.ra-table tbody tr');
@@ -240,9 +241,10 @@ describe('ReticulumAnnounceModal — interaction', () => {
     // Capture effective announces before
     const before = screen.getByText(/nodes × .* hops =/).textContent ?? '';
 
-    // Change to 50 nodes
+    // Change to 50 nodes — must blur to commit (NumberInput pattern)
     const nodesInput = screen.getByLabelText('Number of Nodes');
     fireEvent.change(nodesInput, { target: { value: '50' } });
+    fireEvent.blur(nodesInput);
 
     const after = screen.getByText(/nodes × .* hops =/).textContent ?? '';
     expect(after).not.toBe(before);
