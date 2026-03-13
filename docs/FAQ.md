@@ -80,9 +80,18 @@ Click **Add Node** (or press `Insert`), then click on the map where you want the
 ### How do I import nodes from a CSV file?
 
 1. Prepare a CSV with columns: `name`, `latitude`, `longitude` (minimum). Optional columns include `antenna_height`, `device`, `frequency`, `tx_power`.
-2. Click **Import** in the toolbar
+2. Click **Import Nodes (CSV)** in the toolbar
 3. Select your CSV file
 4. Review the column mapping and click **Import Nodes**
+
+### How do I import nodes from a JSON file?
+
+1. Export your nodes from "Antenna Coverage" under Liam Cottle's "Antenna Coverage" tool within the [MeshCore app](https://app.meshcore.nz/)
+2. Click **Import Nodes (JSON)** in the toolbar
+3. Select your JSON file
+4. Review the column mapping and click **Import Nodes**
+
+Naturally, as long as your JSON follows that format, the import will function properly. See the site for more details.
 
 See the [Quick Start Tutorials](QUICK-START-TUTORIALS.md) for a detailed walkthrough.
 
