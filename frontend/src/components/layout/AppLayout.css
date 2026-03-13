@@ -640,3 +640,47 @@
   background: none !important;
   border: none !important;
 }
+
+/* ---- Analysis loading overlay ---- */
+.analysis-loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.analysis-loading-box {
+  background: #2c3e50;
+  border: 1px solid #3d5166;
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 340px;
+  text-align: center;
+}
+
+@keyframes analysis-spin {
+  to { transform: rotate(360deg); }
+}
+
+.analysis-loading-spinner {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid #4a6278;
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: analysis-spin 0.8s linear infinite;
+}
+
+.analysis-loading-text {
+  color: #bdc3c7;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}

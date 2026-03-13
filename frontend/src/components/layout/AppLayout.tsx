@@ -297,6 +297,11 @@ export function AppLayout() {
   const [showFloodingSim, setShowFloodingSim] = useState(false);
   const [showPlacementSuggest, setShowPlacementSuggest] = useState(false);
   const [showPDFReport, setShowPDFReport] = useState(false);
+  const [envWarningDialog, setEnvWarningDialog] = useState<{
+    nodeNames: string;
+    onSwitch: () => void;
+    onRunAnyway: () => void;
+  } | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
     message: string;
     onConfirm: () => void;
@@ -1616,7 +1621,7 @@ export function AppLayout() {
     setAnalysisLoading(false);
   }, [currentPlan, selectedNodeIds, nodes, api, setLOSOverlays, clearLOSOverlays]);
 
-  const handleCoverageAnalysis = useCallback(async () => {
+  const runCoverageAnalysis = useCallback(async (envOverride?: string) => {
     if (!currentPlan) { setErrorMsg('Open a plan first.'); return; }
     if (analysisLoading) return;
 
@@ -1629,7 +1634,10 @@ export function AppLayout() {
       return;
     }
 
-    const envLabel = COVERAGE_ENVIRONMENTS[coverageEnv]?.label || 'Suburban';
+    const activeEnv = envOverride ?? coverageEnv;
+    if (envOverride) setCoverageEnv(envOverride);
+
+    const envLabel = COVERAGE_ENVIRONMENTS[activeEnv]?.label || 'Suburban';
     setStatusMessage(`Computing terrain-aware ${envLabel} coverage for ${targetNodes.length} node(s)...`);
     setAnalysisLoading(true);
     clearCoverageOverlays();
@@ -1645,7 +1653,7 @@ export function AppLayout() {
       setStatusMessage(`Computing terrain coverage for "${node.name}" (${i + 1}/${targetNodes.length})...`);
 
       try {
-        const nodeEnv = coverageEnv || node.environment;
+        const nodeEnv = activeEnv || node.environment;
         // Resolve PA params for effective TX calculation on the backend
         const pa = catalogPAModules.find((p: any) => p.id === node.pa_module_id) ?? null;
         let paMaxOutputDbm: number | undefined;
@@ -1700,7 +1708,7 @@ export function AppLayout() {
       } catch (err: any) {
         console.warn(`Terrain coverage failed for ${node.name}, falling back to circle:`, err);
         // Fallback to client-side circle
-        const fallbackEnv = coverageEnv || node.environment;
+        const fallbackEnv = activeEnv || node.environment;
         const result = computeRealisticCoverageM(
           node.tx_power_dbm,
           node.device_id,
@@ -1728,7 +1736,7 @@ export function AppLayout() {
       setCoverageOverlays(fallbackOverlays);
     }
 
-    const totalPoints = terrainOverlays.reduce((sum, o) => sum + o.points.length, 0);
+    const totalPoints = terrainOverlays.reduce((sum, o) => sum + o.pointCount, 0);
     const elevNote = elevSource.startsWith('srtm') ? ` [${elevSource}]` : ' [no terrain data]';
     const parts: string[] = [];
     if (terrainOverlays.length > 0) {
@@ -1738,9 +1746,28 @@ export function AppLayout() {
       parts.push(`${fallbackOverlays.length} circle fallback(s)`);
     }
     setStatusMessage(`Coverage (${envLabel}): ${parts.join(', ')}. Click overlays for details.`);
-    setLastRunCoverageSettings({ env: coverageEnv, maxRadiusKm });
+    setLastRunCoverageSettings({ env: activeEnv, maxRadiusKm });
     setAnalysisLoading(false);
   }, [currentPlan, selectedNodeIds, nodes, coverageEnv, maxRadiusKm, api, analysisLoading, setCoverageOverlays, clearCoverageOverlays, setTerrainCoverageOverlays, clearTerrainCoverageOverlays]);
+
+  const handleCoverageAnalysis = useCallback(() => {
+    if (!currentPlan || analysisLoading) return;
+    const targetNodes = selectedNodeIds.length > 0
+      ? nodes.filter((n) => selectedNodeIds.includes(String(n.id)))
+      : nodes;
+    // Warn before computing if elevated nodes are using a non-LOS environment
+    const elevatedNodes = targetNodes.filter((n) => n.antenna_height_m > 15 && coverageEnv !== 'los_elevated');
+    if (elevatedNodes.length > 0) {
+      const names = elevatedNodes.map((n) => `${n.name} (${n.antenna_height_m}m)`).join(', ');
+      setEnvWarningDialog({
+        nodeNames: names,
+        onSwitch: () => { setEnvWarningDialog(null); runCoverageAnalysis('los_elevated'); },
+        onRunAnyway: () => { setEnvWarningDialog(null); runCoverageAnalysis(); },
+      });
+      return;
+    }
+    runCoverageAnalysis();
+  }, [currentPlan, analysisLoading, selectedNodeIds, nodes, coverageEnv, runCoverageAnalysis]);
 
   /** Fetch catalog data once (shared across all plan BOM builds). */
   const fetchCatalogData = useCallback(async () => {
@@ -2956,6 +2983,30 @@ export function AppLayout() {
         <MainContent />
       </div>
       <StatusBar status={buildStatus()} isLoading={analysisLoading} />
+      {/* Blocking overlay — prevents interaction while terrain analysis runs */}
+      {analysisLoading && (
+        <div
+          className="analysis-loading-overlay"
+          role="progressbar"
+          aria-label="Coverage analysis in progress"
+          aria-busy="true"
+        >
+          <div className="analysis-loading-box">
+            <span className="analysis-loading-spinner" aria-hidden="true" />
+            <span className="analysis-loading-text">{buildStatus()}</span>
+          </div>
+        </div>
+      )}
+      {/* Environment warning — shown before compute starts */}
+      <ConfirmDialog
+        isOpen={!!envWarningDialog}
+        title="Environment Recommendation"
+        message={`${envWarningDialog?.nodeNames} — the current environment underestimates coverage for elevated nodes. Switch to Clear LOS (Elevated) for accurate simulation?`}
+        confirmText="Switch to Clear LOS & Run"
+        cancelText="Run Anyway"
+        onConfirm={envWarningDialog?.onSwitch ?? (() => {})}
+        onCancel={envWarningDialog?.onRunAnyway ?? (() => {})}
+      />
       <LinkReportModal isOpen={showLinkReport} onClose={() => setShowLinkReport(false)} onExportPDF={handleExportNetworkPDF} />
       <TimeOnAirModal
         isOpen={showTimeOnAir}
