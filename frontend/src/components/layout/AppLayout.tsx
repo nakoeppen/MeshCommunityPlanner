@@ -4,13 +4,13 @@
  * Implements network-wide radio settings with modem presets.
  */
 
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Toolbar } from './Toolbar';
 import type { PlanInfoEntry } from './Toolbar';
 import { StatusBar } from './StatusBar';
 import { MainContent } from './MainContent';
 import { usePlanStore } from '../../stores/planStore';
-import { useMapStore } from '../../stores/mapStore';
+import { useMapStore, ELEVATION_RANGE_BUILD_ID as BUILD_ID } from '../../stores/mapStore';
 import type { LOSOverlay, CoverageOverlay, TerrainCoverageOverlay, ViewshedOverlay, RoutePathOverlay } from '../../stores/mapStore';
 import { getAPIClient } from '../../services/api';
 import { renderCoverageCanvas } from '../../utils/coverageCanvas';
@@ -241,6 +241,24 @@ function sanitizeFilename(name: string): string {
   return name.replace(/[^a-z0-9_-]/gi, '_');
 }
 
+/** Number input that allows free typing — only parses and commits on blur or Enter. */
+function CommitOnBlurNumberInput({ value, onCommit, fallback = 0, ...props }: {
+  value: number;
+  onCommit: (v: number) => void;
+  fallback?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'onBlur' | 'onKeyDown'>) {
+  const [text, setText] = useState(String(value));
+  useEffect(() => { setText(String(value)); }, [value]);
+  const commit = () => { const p = parseFloat(text); onCommit(isNaN(p) ? fallback : p); };
+  return (
+    <input type="number" {...props} value={text}
+      onChange={(e) => setText(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === 'Enter') commit(); }}
+    />
+  );
+}
+
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -254,7 +272,12 @@ export function AppLayout() {
   const [radioHelpExpanded, setRadioHelpExpanded] = useState(false);
   const [planCollapsed, setPlanCollapsed] = useState(false);
   const [nodesCollapsed, setNodesCollapsed] = useState(false);
-  const [coverageEnv, setCoverageEnv] = useState('suburban');
+  const COVERAGE_SETTINGS_KEY = 'meshPlanner_coverageSettings';
+  const savedCoverageSettings = (() => { try { const p = JSON.parse(localStorage.getItem(COVERAGE_SETTINGS_KEY) || 'null'); return p?.buildId === BUILD_ID ? p : null; } catch { return null; } })();
+  const [coverageEnv, setCoverageEnv] = useState(savedCoverageSettings?.env ?? 'suburban');
+  const [maxRadiusKm, setMaxRadiusKm] = useState(savedCoverageSettings?.maxRadiusKm ?? 15);
+  const [rememberCoverageSettings, setRememberCoverageSettings] = useState(!!savedCoverageSettings);
+  const [lastRunCoverageSettings, setLastRunCoverageSettings] = useState<{ env: string; maxRadiusKm: number } | null>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [checkedPlanIds, setCheckedPlanIds] = useState<Set<string>>(new Set());
   const [descExpanded, setDescExpanded] = useState(false);
@@ -1623,7 +1646,16 @@ export function AppLayout() {
 
       try {
         const nodeEnv = node.environment || coverageEnv;
-        const result = await api.getTerrainCoverageGrid(node, nodeEnv);
+        // Resolve PA params for effective TX calculation on the backend
+        const pa = catalogPAModules.find((p: any) => p.id === node.pa_module_id) ?? null;
+        let paMaxOutputDbm: number | undefined;
+        let paInputRangeMaxDbm: number | undefined;
+        if (pa) {
+          paMaxOutputDbm = pa.max_output_power_dbm;
+          const nums = (pa.input_power_range ?? '').match(/-?\d+(?:\.\d+)?/g);
+          paInputRangeMaxDbm = nums ? parseFloat(nums[nums.length - 1]) : 22;
+        }
+        const result = await api.getTerrainCoverageGrid(node, nodeEnv, maxRadiusKm * 1000, paMaxOutputDbm, paInputRangeMaxDbm);
 
         // Render to canvas — pass TX position for proper filled-sector brush sizing
         const canvasResult = renderCoverageCanvas(
@@ -1644,6 +1676,7 @@ export function AppLayout() {
           points: result.points,
           bounds: result.bounds,
           imageDataUrl: canvasResult?.dataUrl || null,
+          maxRadiusM: maxRadiusKm * 1000,
         });
 
         totalTimeMs += result.computation_time_ms;
@@ -1689,8 +1722,9 @@ export function AppLayout() {
       parts.push(`${fallbackOverlays.length} circle fallback(s)`);
     }
     setStatusMessage(`Coverage (${envLabel}): ${parts.join(', ')}. Click overlays for details.`);
+    setLastRunCoverageSettings({ env: coverageEnv, maxRadiusKm });
     setAnalysisLoading(false);
-  }, [currentPlan, selectedNodeIds, nodes, coverageEnv, api, analysisLoading, setCoverageOverlays, clearCoverageOverlays, setTerrainCoverageOverlays, clearTerrainCoverageOverlays]);
+  }, [currentPlan, selectedNodeIds, nodes, coverageEnv, maxRadiusKm, api, analysisLoading, setCoverageOverlays, clearCoverageOverlays, setTerrainCoverageOverlays, clearTerrainCoverageOverlays]);
 
   /** Fetch catalog data once (shared across all plan BOM builds). */
   const fetchCatalogData = useCallback(async () => {
@@ -2269,25 +2303,27 @@ export function AppLayout() {
             </div>
             <div className="config-field">
               <label>Frequency (MHz)</label>
-              <input type="number" step="0.125" min="137" max="1020"
+              <CommitOnBlurNumberInput step="0.125" min="137" max="1020" fallback={906.875}
                 value={networkRadio.frequency_mhz}
                 title="Center frequency in MHz. Must match across all nodes."
-                onChange={(e) => applyNetworkRadio({ frequency_mhz: parseFloat(e.target.value) || 906.875 })}
+                onCommit={(v) => applyNetworkRadio({ frequency_mhz: v })}
               />
             </div>
             <div className="radio-params-row">
               <div className="config-field">
                 <label>Spreading Factor</label>
-                <input type="number" step="1" min="5" max="12" value={networkRadio.spreading_factor}
+                <CommitOnBlurNumberInput step="1" min="5" max="12" fallback={11}
+                  value={networkRadio.spreading_factor}
                   title="Higher Spreading Factor = longer range but slower data rate (5-12)"
-                  onChange={(e) => applyNetworkRadio({ spreading_factor: parseInt(e.target.value) || 11 })}
+                  onCommit={(v) => applyNetworkRadio({ spreading_factor: Math.round(v) })}
                 />
               </div>
               <div className="config-field">
                 <label>Bandwidth (kHz)</label>
-                <input type="number" step="25" min="1" value={networkRadio.bandwidth_khz}
+                <CommitOnBlurNumberInput step="25" min="1" fallback={250}
+                  value={networkRadio.bandwidth_khz}
                   title="Lower Bandwidth = longer range but slower data rate (125, 250, 500 kHz)"
-                  onChange={(e) => applyNetworkRadio({ bandwidth_khz: parseFloat(e.target.value) || 250 })}
+                  onCommit={(v) => applyNetworkRadio({ bandwidth_khz: v })}
                 />
               </div>
               <div className="config-field">
@@ -2332,26 +2368,23 @@ export function AppLayout() {
             </div>
             <div className="config-field">
               <label>Latitude</label>
-              <input type="number" step="0.00001" value={selectedNode.latitude}
+              <CommitOnBlurNumberInput step="0.00001" value={selectedNode.latitude}
                 title="Node latitude in decimal degrees. Drag the marker on the map to reposition."
-                onChange={(e) => updateNodeStore(String(selectedNode.id), { latitude: parseFloat(e.target.value) || 0 })}
-                onBlur={(e) => handleUpdateNodeField(String(selectedNode.id), 'latitude', parseFloat(e.target.value) || 0)}
+                onCommit={(v) => { updateNodeStore(String(selectedNode.id), { latitude: v }); handleUpdateNodeField(String(selectedNode.id), 'latitude', v); }}
               />
             </div>
             <div className="config-field">
               <label>Longitude</label>
-              <input type="number" step="0.00001" value={selectedNode.longitude}
+              <CommitOnBlurNumberInput step="0.00001" value={selectedNode.longitude}
                 title="Node longitude in decimal degrees. Drag the marker on the map to reposition."
-                onChange={(e) => updateNodeStore(String(selectedNode.id), { longitude: parseFloat(e.target.value) || 0 })}
-                onBlur={(e) => handleUpdateNodeField(String(selectedNode.id), 'longitude', parseFloat(e.target.value) || 0)}
+                onCommit={(v) => { updateNodeStore(String(selectedNode.id), { longitude: v }); handleUpdateNodeField(String(selectedNode.id), 'longitude', v); }}
               />
             </div>
             <div className="config-field">
               <label>Antenna Height (m)</label>
-              <input type="number" step="0.5" min="0" max="500" value={selectedNode.antenna_height_m}
+              <CommitOnBlurNumberInput step="0.5" min="0" max="500" value={selectedNode.antenna_height_m}
                 title="Height above ground in meters. Higher = better coverage and radio horizon."
-                onChange={(e) => updateNodeStore(String(selectedNode.id), { antenna_height_m: parseFloat(e.target.value) || 0 })}
-                onBlur={(e) => handleUpdateNodeField(String(selectedNode.id), 'antenna_height_m', parseFloat(e.target.value) || 0)}
+                onCommit={(v) => { updateNodeStore(String(selectedNode.id), { antenna_height_m: v }); handleUpdateNodeField(String(selectedNode.id), 'antenna_height_m', v); }}
               />
             </div>
             <div className="config-field">
@@ -2379,14 +2412,55 @@ export function AppLayout() {
                 }
               </select>
             </div>
-            <div className="config-field">
-              <label>TX Power (dBm)</label>
-              <input type="number" step="1" min="0" max="30" value={selectedNode.tx_power_dbm}
-                title="Transmit power in dBm. Higher = more range but more battery usage."
-                onChange={(e) => updateNodeStore(String(selectedNode.id), { tx_power_dbm: parseFloat(e.target.value) || 20 })}
-                onBlur={(e) => handleUpdateNodeField(String(selectedNode.id), 'tx_power_dbm', parseFloat(e.target.value) || 20)}
-              />
-            </div>
+            {(() => {
+              const device = catalogDevices.find((d: any) => d.id === selectedNode.device_id);
+              const pa = catalogPAModules.find((p: any) => p.id === selectedNode.pa_module_id) ?? null;
+              // Device hardware output limit
+              const deviceMaxTx: number = device?.max_tx_power_dbm ?? 30;
+              // PA input range max — parsed from "0-22 dBm" → 22
+              const paInputMax: number | null = pa
+                ? (() => { const m = (pa.input_power_range ?? '').match(/\b\d+(?:\.\d+)?/g); return m ? parseFloat(m[m.length - 1]) : 22; })()
+                : null;
+              const paGain: number = pa ? (pa.max_output_power_dbm - (paInputMax ?? 22)) : 0;
+              const effectiveOutputDbm: number = pa
+                ? Math.min(selectedNode.tx_power_dbm + paGain, pa.max_output_power_dbm)
+                : selectedNode.tx_power_dbm;
+              // Warning tiers
+              const overdrivingDevice = selectedNode.tx_power_dbm > deviceMaxTx;
+              const overdrivingPaInput = pa !== null && selectedNode.tx_power_dbm > (paInputMax ?? 22);
+              const exceedsRegulatory = !overdrivingDevice && !overdrivingPaInput && effectiveOutputDbm > 30;
+              const effectiveW = Math.pow(10, (effectiveOutputDbm - 30) / 10);
+              return (<>
+                <div className="config-field">
+                  <label htmlFor="txPowerDbm">TX Power (dBm)</label>
+                  <CommitOnBlurNumberInput id="txPowerDbm" step="1" min="0" max="47" fallback={20}
+                    value={selectedNode.tx_power_dbm}
+                    title="Transmit power in dBm. 30 dBm = 1W (FCC Part 15 / ETSI unlicensed limit). Higher values supported for licensed or non-permissive environments."
+                    onCommit={(v) => { const c = Math.max(0, Math.min(47, v)); updateNodeStore(String(selectedNode.id), { tx_power_dbm: c }); handleUpdateNodeField(String(selectedNode.id), 'tx_power_dbm', c); }}
+                  />
+                </div>
+                {overdrivingDevice && (
+                  <p className="sidebar-hint" style={{ marginBottom: '0.25rem', color: '#e74c3c' }}>
+                    ⚠ {selectedNode.tx_power_dbm} dBm exceeds device limit ({deviceMaxTx} dBm). Simulation only — do not transmit.
+                  </p>
+                )}
+                {!overdrivingDevice && overdrivingPaInput && (
+                  <p className="sidebar-hint" style={{ marginBottom: '0.25rem', color: '#e74c3c' }}>
+                    ⚠ {selectedNode.tx_power_dbm} dBm overdrives PA input (max {paInputMax} dBm). Simulation only — do not transmit.
+                  </p>
+                )}
+                {exceedsRegulatory && (
+                  <p className="sidebar-hint" style={{ marginBottom: '0.25rem', color: 'var(--color-warning, #e67e22)' }}>
+                    Effective output {effectiveOutputDbm.toFixed(1)} dBm ≈ {effectiveW.toFixed(1)}W — exceeds unlicensed limit. Use only where permitted.
+                  </p>
+                )}
+                {pa && !overdrivingDevice && !overdrivingPaInput && (
+                  <p className="sidebar-hint" style={{ marginBottom: '0.25rem' }}>
+                    PA output: {effectiveOutputDbm.toFixed(1)} dBm ({selectedNode.tx_power_dbm} dBm device + {paGain} dB gain)
+                  </p>
+                )}
+              </>);
+            })()}
             <div className="config-field">
               <label>Antenna</label>
               <select value={selectedNode.antenna_id || ''}
@@ -2414,10 +2488,9 @@ export function AppLayout() {
             {selectedNode.cable_id && (
               <div className="config-field">
                 <label>Cable Length (m)</label>
-                <input type="number" step="0.1" min="0" max="100" value={selectedNode.cable_length_m || 0}
+                <CommitOnBlurNumberInput step="0.1" min="0" max="100" value={selectedNode.cable_length_m || 0}
                   title="Cable length in meters. Longer cable = more signal loss."
-                  onChange={(e) => updateNodeStore(String(selectedNode.id), { cable_length_m: parseFloat(e.target.value) || 0 })}
-                  onBlur={(e) => handleUpdateNodeField(String(selectedNode.id), 'cable_length_m', parseFloat(e.target.value) || 0)}
+                  onCommit={(v) => { updateNodeStore(String(selectedNode.id), { cable_length_m: v }); handleUpdateNodeField(String(selectedNode.id), 'cable_length_m', v); }}
                 />
               </div>
             )}
@@ -2712,7 +2785,7 @@ export function AppLayout() {
                       </button>
                       <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
                         <label>Coverage Environment</label>
-                        <select value={coverageEnv} onChange={(e) => setCoverageEnv(e.target.value)}
+                        <select value={coverageEnv} onChange={(e) => { setCoverageEnv(e.target.value); if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: e.target.value, maxRadiusKm, buildId: BUILD_ID })); }}
                           title="Terrain type affects signal propagation and coverage radius">
                           {Object.entries(COVERAGE_ENVIRONMENTS).map(([key, env]) => (
                             <option key={key} value={key}>{env.label}</option>
@@ -2724,6 +2797,49 @@ export function AppLayout() {
                           {COVERAGE_ENVIRONMENTS[coverageEnv].description}
                         </p>
                       )}
+                      <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
+                        <label htmlFor="maxRadiusKm" title="Maximum analysis sweep distance. The signal cutoff (−135 dBm) may stop the sweep before this point. Licensed or elevated deployments may need larger values — max 50 km (FCC Part 15 / ETSI practical limit).">Max Radius (km)</label>
+                        <input
+                          id="maxRadiusKm"
+                          type="number"
+                          min={1}
+                          max={50}
+                          step={1}
+                          value={maxRadiusKm}
+                          onChange={(e) => { const v = Math.max(1, Math.min(50, Number(e.target.value) || 15)); setMaxRadiusKm(v); if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: coverageEnv, maxRadiusKm: v, buildId: BUILD_ID })); }}
+                          aria-label="Maximum coverage analysis radius in kilometres (1–50)"
+                          title="Maximum analysis sweep distance. The signal cutoff (−135 dBm) may stop the sweep before this point."
+                        />
+                      </div>
+                      {maxRadiusKm > 25 && (
+                        <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
+                          Large radius — computation may take longer.
+                        </p>
+                      )}
+                      {lastRunCoverageSettings && terrainCoverageOverlays.length > 0 &&
+                        (lastRunCoverageSettings.env !== coverageEnv || lastRunCoverageSettings.maxRadiusKm !== maxRadiusKm) && (
+                        <p className="sidebar-hint" style={{ marginBottom: '0.25rem', color: 'var(--color-warning, #e67e22)' }}>
+                          Settings changed — re-run analysis to update.
+                        </p>
+                      )}
+                      <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <input
+                          type="checkbox"
+                          id="rememberCoverageSettings"
+                          checked={rememberCoverageSettings}
+                          onChange={(e) => {
+                            setRememberCoverageSettings(e.target.checked);
+                            if (e.target.checked) {
+                              localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: coverageEnv, maxRadiusKm, buildId: BUILD_ID }));
+                            } else {
+                              localStorage.removeItem(COVERAGE_SETTINGS_KEY);
+                            }
+                          }}
+                        />
+                        <label htmlFor="rememberCoverageSettings" className="sidebar-hint" style={{ margin: 0, cursor: 'pointer' }}>
+                          Remember coverage settings
+                        </label>
+                      </div>
                     </>
                   )
                 ) : (

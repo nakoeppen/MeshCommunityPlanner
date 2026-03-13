@@ -219,7 +219,7 @@ export function Toolbar({
                 type="button"
                 onClick={() => handleMenuClick('plan')}
               >
-                Plan <span className="menu-arrow">&#9662;</span>
+                Plan <span className="menu-arrow" aria-hidden="true">&#9662;</span>
               </button>
               {openMenu === 'plan' && (
                 <div className="toolbar-dropdown">
@@ -301,7 +301,7 @@ export function Toolbar({
                 type="button"
                 onClick={() => handleMenuClick('info')}
               >
-                Plan Info <span className="menu-arrow">&#9662;</span>
+                Plan Info <span className="menu-arrow" aria-hidden="true">&#9662;</span>
               </button>
               {openMenu === 'info' && (
                 <div className="toolbar-dropdown toolbar-info-dropdown">
@@ -404,7 +404,7 @@ export function Toolbar({
                 type="button"
                 onClick={() => handleMenuClick('tools')}
               >
-                Tools <span className="menu-arrow">&#9662;</span>
+                Tools <span className="menu-arrow" aria-hidden="true">&#9662;</span>
               </button>
               {openMenu === 'tools' && (
                 <div className="toolbar-dropdown">
@@ -535,7 +535,7 @@ export function Toolbar({
                 type="button"
                 onClick={() => handleMenuClick('catalog')}
               >
-                Catalog <span className="menu-arrow">&#9662;</span>
+                Catalog <span className="menu-arrow" aria-hidden="true">&#9662;</span>
               </button>
               {openMenu === 'catalog' && (
                 <div className="toolbar-dropdown">

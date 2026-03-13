@@ -34,7 +34,7 @@ class NodeParams:
     longitude: float  # -180 to 180
     antenna_height_m: float  # 0 to 500
     frequency_mhz: float  # 137 to 1020
-    tx_power_dbm: float  # 0 to 30
+    tx_power_dbm: float  # 0 to 47 (device output; effective may be higher with PA)
     antenna_gain_dbi: float  # dBi
     cable_loss_db: float  # total cable loss in dB (>= 0)
     receiver_sensitivity_dbm: float  # e.g. -130 for Long/Fast
@@ -52,9 +52,9 @@ class NodeParams:
             raise ValueError(
                 f"Frequency {self.frequency_mhz} out of range [137, 1020]"
             )
-        if not (0 <= self.tx_power_dbm <= 30):
+        if not (0 <= self.tx_power_dbm <= 47):
             raise ValueError(
-                f"TX power {self.tx_power_dbm} out of range [0, 30]"
+                f"TX power {self.tx_power_dbm} out of range [0, 47]"
             )
         if self.cable_loss_db < 0:
             raise ValueError(f"Cable loss {self.cable_loss_db} must be >= 0")

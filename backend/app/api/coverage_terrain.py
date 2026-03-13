@@ -86,6 +86,19 @@ async def handle_terrain_coverage_grid(request_data: dict) -> dict:
     num_radials = request_data.get("num_radials", 360)
     sample_interval_m = request_data.get("sample_interval_m", 30.0)
 
+    # PA signal chain: if PA params provided, compute effective TX power
+    # effective_tx = min(device_tx + pa_gain, pa_max_output)
+    pa_max_output = request_data.get("pa_max_output_power_dbm")
+    pa_input_max = request_data.get("pa_input_range_max_dbm")
+    if pa_max_output is not None and pa_input_max is not None:
+        pa_gain = float(pa_max_output) - float(pa_input_max)
+        effective_tx = min(tx_power_dbm + pa_gain, float(pa_max_output))
+        logger.debug(
+            "PA applied: device_tx=%.1f dBm + gain=%.1f dB → effective_tx=%.1f dBm (max_output=%.1f dBm)",
+            tx_power_dbm, pa_gain, effective_tx, pa_max_output,
+        )
+        tx_power_dbm = effective_tx
+
     # Ensure SRTM tiles are available
     if srtm_manager is not None:
         await _ensure_srtm_tiles_for_coverage(

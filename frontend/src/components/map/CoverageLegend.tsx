@@ -38,13 +38,15 @@ export function CoverageLegend() {
       </div>
       <div className="coverage-legend-separator" />
       <div className="coverage-legend-slider">
-        <span>Opacity</span>
+        <label htmlFor="coverageOpacitySlider" style={{ whiteSpace: 'nowrap' }}>Opacity</label>
         <input
+          id="coverageOpacitySlider"
           type="range"
           min="0"
           max="1"
           step="0.05"
           value={coverageOpacity}
+          aria-label="Coverage layer opacity"
           onChange={(e) => setCoverageOpacity(parseFloat(e.target.value))}
         />
         <span>{Math.round(coverageOpacity * 100)}%</span>

@@ -261,7 +261,7 @@ class TerrainCoverageGridRequest(BaseModel):
     longitude: float = Field(..., ge=-180, le=180)
     antenna_height_m: float = Field(2.0, ge=0, le=500)
     frequency_mhz: float = Field(906.875, ge=137, le=1020)
-    tx_power_dbm: float = Field(22.0, ge=0, le=30)
+    tx_power_dbm: float = Field(22.0, ge=0, le=47)
     antenna_gain_dbi: float = 3.0
     cable_loss_db: float = Field(0.0, ge=0)
     receiver_sensitivity_dbm: float = -130.0
@@ -269,3 +269,6 @@ class TerrainCoverageGridRequest(BaseModel):
     max_radius_m: float = Field(15000.0, ge=100, le=50000)
     num_radials: int = Field(360, ge=36, le=720)
     sample_interval_m: float = Field(30.0, ge=10, le=200)
+    # PA module params — when present, effective TX = min(tx+gain, max_output)
+    pa_max_output_power_dbm: Optional[float] = Field(None, ge=0, le=47)
+    pa_input_range_max_dbm: Optional[float] = Field(None, ge=0, le=47)

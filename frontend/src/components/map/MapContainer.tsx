@@ -325,6 +325,8 @@ export function MapContainer({ className = '' }: MapContainerProps) {
         // Update permanent label — must unbind/rebind to change options
         existingMarker.unbindTooltip();
         existingMarker.bindTooltip(node.name, { permanent: true, direction: 'top', offset: [0, -42], className: 'node-label-tooltip' });
+        const existingEl = existingMarker.getElement();
+        if (existingEl) existingEl.setAttribute('aria-label', `Node: ${node.name}`);
       } else {
         const marker = L.marker([node.latitude, node.longitude], {
           icon: createNodeIcon(isPrimarySelected, isMultiSelected && !isPrimarySelected),
@@ -360,6 +362,8 @@ export function MapContainer({ className = '' }: MapContainerProps) {
         marker.on('dragend', (e) => handleMarkerDragEnd(nodeId, e));
 
         markersLayerRef.current!.addLayer(marker);
+        const markerEl = marker.getElement();
+        if (markerEl) markerEl.setAttribute('aria-label', `Node: ${node.name}`);
         markersRef.current.set(nodeId, marker);
       }
     });
@@ -566,6 +570,8 @@ export function MapContainer({ className = '' }: MapContainerProps) {
     terrainCoverageOverlays.forEach((overlay: TerrainCoverageOverlay) => {
       if (!overlay.imageDataUrl) return;
 
+      const node = nodes.find((n) => String(n.id) === overlay.nodeUuid);
+
       const imageBounds: L.LatLngBoundsExpression = [
         [overlay.bounds.min_lat, overlay.bounds.min_lon],
         [overlay.bounds.max_lat, overlay.bounds.max_lon],
@@ -595,9 +601,26 @@ export function MapContainer({ className = '' }: MapContainerProps) {
 
       imageOverlay.bindPopup(popupContent);
 
+      // Dashed max-radius ring — low opacity at rest, full opacity on heatmap hover
+      if (node && overlay.maxRadiusM) {
+        const ring = L.circle([node.latitude, node.longitude], {
+          radius: overlay.maxRadiusM,
+          color: '#6b7280',
+          weight: 1.5,
+          dashArray: '6 6',
+          fill: false,
+          interactive: true,
+          opacity: 0.4,
+        });
+        ring.bindTooltip(`Analysis boundary: ${(overlay.maxRadiusM / 1000).toFixed(0)} km`, { sticky: true });
+        imageOverlay.on('mouseover', () => { ring.setStyle({ opacity: 1.0 }); });
+        imageOverlay.on('mouseout', () => { ring.setStyle({ opacity: 0.4 }); });
+        terrainCoverageLayerRef.current!.addLayer(ring);
+      }
+
       terrainCoverageLayerRef.current!.addLayer(imageOverlay);
     });
-  }, [terrainCoverageOverlays, coverageOpacity]);
+  }, [terrainCoverageOverlays, coverageOpacity, nodes]);
 
   // Draw viewshed overlays — green solid for visible, red dashed for blocked
   useEffect(() => {

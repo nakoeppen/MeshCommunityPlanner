@@ -313,25 +313,36 @@ export class APIClient {
   // Terrain Coverage Grid (W3 Engine)
   // ============================================================================
 
-  async getTerrainCoverageGrid(node: Node, environment: string): Promise<any> {
+  async getTerrainCoverageGrid(
+    node: Node,
+    environment: string,
+    maxRadiusM: number = 15000.0,
+    paMaxOutputDbm?: number,
+    paInputRangeMaxDbm?: number,
+  ): Promise<any> {
     // 120s timeout — first-time SRTM tile download can be slow
+    const body: Record<string, unknown> = {
+      node_id: String(node.id),
+      latitude: node.latitude,
+      longitude: node.longitude,
+      antenna_height_m: node.antenna_height_m,
+      frequency_mhz: node.frequency_mhz,
+      tx_power_dbm: node.tx_power_dbm,
+      antenna_gain_dbi: 3.0,
+      cable_loss_db: 0.0,
+      receiver_sensitivity_dbm: -130.0,
+      environment,
+      max_radius_m: maxRadiusM,
+      num_radials: 360,
+      sample_interval_m: 30.0,
+    };
+    if (paMaxOutputDbm !== undefined && paInputRangeMaxDbm !== undefined) {
+      body.pa_max_output_power_dbm = paMaxOutputDbm;
+      body.pa_input_range_max_dbm = paInputRangeMaxDbm;
+    }
     return this.request('/coverage/terrain-grid', {
       method: 'POST',
-      body: JSON.stringify({
-        node_id: String(node.id),
-        latitude: node.latitude,
-        longitude: node.longitude,
-        antenna_height_m: node.antenna_height_m,
-        frequency_mhz: node.frequency_mhz,
-        tx_power_dbm: node.tx_power_dbm,
-        antenna_gain_dbi: 3.0,
-        cable_loss_db: 0.0,
-        receiver_sensitivity_dbm: -130.0,
-        environment,
-        max_radius_m: 15000.0,
-        num_radials: 360,
-        sample_interval_m: 30.0,
-      }),
+      body: JSON.stringify(body),
       _timeout: 120000,
     } as any, true);
   }

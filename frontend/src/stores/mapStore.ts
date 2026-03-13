@@ -50,6 +50,7 @@ export interface TerrainCoverageOverlay {
   points: Array<{ lat: number; lon: number; signal_dbm: number }>;
   bounds: { min_lat: number; min_lon: number; max_lat: number; max_lon: number };
   imageDataUrl: string | null;
+  maxRadiusM: number;
 }
 
 export interface ViewshedOverlay {

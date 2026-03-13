@@ -76,8 +76,8 @@ class NodeCreate(BaseModel):
     tx_power_dbm: float = Field(
         ...,
         ge=0.0,
-        le=30.0,
-        description="TX power in dBm"
+        le=47.0,
+        description="TX power in dBm (0–30 dBm for unlicensed; up to 47 dBm supported for licensed/non-permissive environments)"
     )
     spreading_factor: int = Field(..., ge=5, le=12, description="LoRa spreading factor")
     bandwidth_khz: float = Field(..., gt=0.0, description="Bandwidth in kHz")
@@ -186,7 +186,7 @@ class NodeUpdate(BaseModel):
     firmware: Optional[str] = None
     region: Optional[str] = None
     frequency_mhz: Optional[float] = Field(None, ge=137.0, le=1020.0)
-    tx_power_dbm: Optional[float] = Field(None, ge=0.0, le=30.0)
+    tx_power_dbm: Optional[float] = Field(None, ge=0.0, le=47.0)
     spreading_factor: Optional[int] = Field(None, ge=5, le=12)
     bandwidth_khz: Optional[float] = Field(None, gt=0.0)
     coding_rate: Optional[str] = None
