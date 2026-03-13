@@ -1645,7 +1645,7 @@ export function AppLayout() {
       setStatusMessage(`Computing terrain coverage for "${node.name}" (${i + 1}/${targetNodes.length})...`);
 
       try {
-        const nodeEnv = node.environment || coverageEnv;
+        const nodeEnv = coverageEnv || node.environment;
         // Resolve PA params for effective TX calculation on the backend
         const pa = catalogPAModules.find((p: any) => p.id === node.pa_module_id) ?? null;
         let paMaxOutputDbm: number | undefined;
@@ -1684,7 +1684,7 @@ export function AppLayout() {
       } catch (err: any) {
         console.warn(`Terrain coverage failed for ${node.name}, falling back to circle:`, err);
         // Fallback to client-side circle
-        const fallbackEnv = node.environment || coverageEnv;
+        const fallbackEnv = coverageEnv || node.environment;
         const result = computeRealisticCoverageM(
           node.tx_power_dbm,
           node.device_id,
