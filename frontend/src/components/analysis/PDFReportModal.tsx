@@ -163,11 +163,12 @@ export function PDFReportModal({
         {/* Header */}
         <div className="pdfrpt-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="pdfrpt-title">Generate PDF Report</h2>
+            <h2 className="pdfrpt-title">Generate PDF Report
+              <span className="pdfrpt-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="pdfrpt-summary">
               Configure sections and options for the network planning report
             </p>
-            <span className="pdfrpt-drag-hint">Drag to move</span>
           </div>
           <button className="pdfrpt-close" type="button" onClick={onClose} title="Close">
             &times;

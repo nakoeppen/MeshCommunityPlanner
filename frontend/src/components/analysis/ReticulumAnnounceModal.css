@@ -21,9 +21,9 @@
   border: 1px solid #34495e;
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  width: 600px;
+  width: 720px;
   max-width: 92vw;
-  max-height: calc(100vh - 80px);
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   color: #ecf0f1;
@@ -46,10 +46,16 @@
   cursor: grabbing;
 }
 
-.ra-header .ra-drag-hint {
-  font-size: 0.65rem;
+.ra-drag-hint {
+  font-size: 0.7rem;
+  font-weight: 400;
   color: #5d6d7e;
-  margin-top: 0.15rem;
+  margin-left: 0.5rem;
+  letter-spacing: 0;
+  text-transform: none;
+  vertical-align: middle;
+  user-select: none;
+  pointer-events: none;
 }
 
 .ra-title {

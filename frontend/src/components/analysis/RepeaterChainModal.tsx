@@ -171,11 +171,12 @@ export function RepeaterChainModal({ isOpen, onClose }: RepeaterChainModalProps)
         {/* Header */}
         <div className="rc-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="rc-title">Repeater Chain Calculator</h2>
+            <h2 className="rc-title">Repeater Chain Calculator
+              <span className="rc-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="rc-summary">
               MeshCore hop-by-hop link budget — each repeater regenerates the signal
             </p>
-            <span className="rc-drag-hint">Drag to move</span>
           </div>
           <button className="rc-close" type="button" onClick={onClose} title="Close">&times;</button>
         </div>

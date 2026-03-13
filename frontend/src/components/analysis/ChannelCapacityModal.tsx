@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { computeTimeOnAir, parseCodingRateNum, FALLBACK_PRESETS, type ModemPresetEntry } from '../../utils/lora';
 import { useDraggable } from '../../hooks/useDraggable';
+import { NumberInput } from '../common/NumberInput';
 import './ChannelCapacityModal.css';
 
 interface ChannelCapacityModalProps {
@@ -238,11 +239,12 @@ export function ChannelCapacityModal({
         {/* Header */}
         <div className="ccap-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="ccap-title">Channel Capacity Estimator</h2>
+            <h2 className="ccap-title">Channel Capacity Estimator
+              <span className="ccap-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="ccap-summary">
               Predict congestion and find optimal presets using the Pure ALOHA channel model
             </p>
-            <span className="ccap-drag-hint">Drag to move</span>
           </div>
           <button className="ccap-close" type="button" onClick={onClose} title="Close">&times;</button>
         </div>
@@ -265,15 +267,11 @@ export function ChannelCapacityModal({
                     aria-label="Node count slider"
                     title={`Number of nodes in the network: ${nodeCount}`}
                   />
-                  <input
-                    type="number"
+                  <NumberInput
                     min={2}
                     max={200}
                     value={nodeCount}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 2 && v <= 200) setNodeCount(v);
-                    }}
+                    onChange={(v) => setNodeCount(Math.round(v))}
                     className="ccap-number-sm"
                     aria-label="Node count"
                     title="Enter exact node count (2–200)"

@@ -106,11 +106,12 @@ export function LinkReportModal({ isOpen, onClose, onExportPDF }: LinkReportModa
       <div className="link-report-modal" ref={modalRef} style={dragStyle}>
         <div className="link-report-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="link-report-title">Link Report</h2>
+            <h2 className="link-report-title">Link Report
+              <span className="link-report-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="link-report-summary">
               {losOverlays.length} link{losOverlays.length !== 1 ? 's' : ''}, {viable} viable, {obstructed} obstructed
             </p>
-            <span className="link-report-drag-hint">Drag to move</span>
           </div>
           <div className="link-report-actions">
             {onExportPDF && (

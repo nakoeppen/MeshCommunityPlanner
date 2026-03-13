@@ -241,11 +241,12 @@ export function PlacementSuggestModal({
         {/* Header — drag handle */}
         <div className="place-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="place-title">Node Placement Suggestions</h2>
+            <h2 className="place-title">Node Placement Suggestions
+              <span className="place-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="place-summary">
               Find optimal locations for new mesh nodes in 3 steps
             </p>
-            <span className="place-drag-hint">Drag to move</span>
           </div>
           <button className="place-close" type="button" onClick={handleClose} title="Close">
             &times;

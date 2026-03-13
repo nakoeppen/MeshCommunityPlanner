@@ -265,11 +265,12 @@ export function FloodingSimModal({
         {/* ---- Header ---- */}
         <div className="flood-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="flood-title">Flooding Simulation</h2>
+            <h2 className="flood-title">Flooding Simulation
+              <span className="flood-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="flood-summary">
               Simulate BFS message propagation through the mesh and visualise hop-by-hop timing
             </p>
-            <span className="flood-drag-hint">Drag to move</span>
           </div>
           <button className="flood-close" type="button" onClick={handleClose} title="Close">
             &times;

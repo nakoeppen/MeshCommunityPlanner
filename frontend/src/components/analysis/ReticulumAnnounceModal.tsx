@@ -190,11 +190,12 @@ export function ReticulumAnnounceModal({ isOpen, onClose }: ReticulumAnnounceMod
         {/* Header */}
         <div className="ra-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="ra-title">Announce Rate Calculator</h2>
+            <h2 className="ra-title">Announce Rate Calculator
+              <span className="ra-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="ra-summary">
               Safe announce intervals and channel utilization for Reticulum over LoRa/RNode
             </p>
-            <span className="ra-drag-hint">Drag to move</span>
           </div>
           <button className="ra-close" type="button" onClick={onClose} title="Close">
             &times;
@@ -357,7 +358,7 @@ export function ReticulumAnnounceModal({ isOpen, onClose }: ReticulumAnnounceMod
                   <strong>{interfaceBps.toLocaleString()} bps</strong> ({packetBytes * 8} bits)
                 </div>
 
-                <div className="ra-table-wrap">
+                <div className="ra-table-wrap" tabIndex={0} aria-label="Announce rate results table">
                   <table className="ra-table">
                     <thead>
                       <tr>

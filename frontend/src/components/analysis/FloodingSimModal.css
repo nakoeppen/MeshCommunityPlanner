@@ -46,10 +46,16 @@
   cursor: grabbing;
 }
 
-.flood-header .flood-drag-hint {
-  font-size: 0.65rem;
+.flood-drag-hint {
+  font-size: 0.7rem;
+  font-weight: 400;
   color: #5d6d7e;
-  margin-top: 0.15rem;
+  margin-left: 0.5rem;
+  letter-spacing: 0;
+  text-transform: none;
+  vertical-align: middle;
+  user-select: none;
+  pointer-events: none;
 }
 
 .flood-title {

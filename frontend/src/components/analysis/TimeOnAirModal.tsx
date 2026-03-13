@@ -197,11 +197,12 @@ export function TimeOnAirModal({
         {/* Header */}
         <div className="toa-header" onMouseDown={handleDragStart}>
           <div>
-            <h2 className="toa-title">LoRa Airtime Calculator</h2>
+            <h2 className="toa-title">LoRa Airtime Calculator
+              <span className="toa-drag-hint" aria-hidden="true"> · drag to move</span>
+            </h2>
             <p className="toa-summary">
               Calculate packet time-on-air, duty cycle limits, and compare presets
             </p>
-            <span className="toa-drag-hint">Drag to move</span>
           </div>
           <button className="toa-close" type="button" onClick={onClose} title="Close">&times;</button>
         </div>
