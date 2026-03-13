@@ -1666,14 +1666,18 @@ export function AppLayout() {
           node.longitude,
         );
 
-        // Precompute signal stats; drop raw points to prevent memory crash at large radii
-        const signals = result.points.map((p: any) => p.signal_dbm);
-        const pointCount = signals.length;
-        const signalMin = pointCount > 0 ? Math.min(...signals) : 0;
-        const signalMax = pointCount > 0 ? Math.max(...signals) : 0;
-        const signalMean = pointCount > 0
-          ? signals.reduce((a: number, b: number) => a + b, 0) / pointCount
-          : 0;
+        // Precompute signal stats via loop — spread operator throws on arrays > ~65k elements
+        let signalMin = Infinity, signalMax = -Infinity, signalSum = 0;
+        for (const p of result.points) {
+          const s = p.signal_dbm;
+          if (s < signalMin) signalMin = s;
+          if (s > signalMax) signalMax = s;
+          signalSum += s;
+        }
+        const pointCount = result.points.length;
+        const signalMean = pointCount > 0 ? signalSum / pointCount : 0;
+        if (!isFinite(signalMin)) signalMin = 0;
+        if (!isFinite(signalMax)) signalMax = 0;
 
         terrainOverlays.push({
           id: `tcov-${node.id}`,
