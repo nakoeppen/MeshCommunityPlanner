@@ -119,6 +119,7 @@ export function Toolbar({
   coverageEnv,
 }: ToolbarProps) {
   const [openMenu, setOpenMenu] = useState<null | 'plan' | 'tools' | 'catalog' | 'info' | 'appinfo' | 'moretools'>(null);
+  const [moreToolsProtocol, setMoreToolsProtocol] = useState<'meshtastic' | 'meshcore' | 'reticulum' | null>(null);
   const [expandedPlanIds, setExpandedPlanIds] = useState<Set<string>>(new Set());
   const [expandedHelpSections, setExpandedHelpSections] = useState<Set<string>>(new Set());
   const menuRef = useRef<HTMLDivElement>(null);
@@ -198,6 +199,11 @@ export function Toolbar({
   // Reset help accordion when modal closes
   useEffect(() => {
     if (openMenu !== 'appinfo') setExpandedHelpSections(new Set());
+  }, [openMenu]);
+
+  // Reset protocol selection when More Tools closes
+  useEffect(() => {
+    if (openMenu !== 'moretools') setMoreToolsProtocol(null);
   }, [openMenu]);
 
   const toggleHelpSection = useCallback((id: string) => {
@@ -916,94 +922,98 @@ export function Toolbar({
       {/* More Tools Modal */}
       {openMenu === 'moretools' && (
         <div className="appinfo-overlay" onClick={() => setOpenMenu(null)} role="dialog" aria-modal="true" aria-label="More Tools" ref={moreToolsRef}>
-          <div className="appinfo-modal" style={{ width: '560px' }} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+          <div className="appinfo-modal" style={{ width: '580px' }} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
             <div className="appinfo-modal-header">
               <div>
                 <div className="appinfo-title">More Tools</div>
-                <div className="appinfo-version">Protocol-specific calculators and simulators</div>
+                <div className="appinfo-version">Select your LoRa mesh protocol</div>
               </div>
               <button className="appinfo-close" type="button" onClick={() => setOpenMenu(null)} title="Close">&times;</button>
             </div>
-            <div className="appinfo-modal-body">
+            <div className="appinfo-modal-body" style={{ paddingTop: '1rem' }}>
 
-              {/* Meshtastic */}
-              <div className="moretools-protocol-section">
-                <div className="moretools-protocol-header">Meshtastic</div>
-                <button
-                  className="moretools-btn"
-                  type="button"
-                  onClick={() => { setOpenMenu(null); onTimeOnAir?.(); }}
-                  title="Calculate LoRa packet airtime, data rate, and duty cycle"
-                >
-                  <span className="moretools-btn-name">LoRa Airtime Calculator</span>
-                  <span className="moretools-btn-desc">Packet airtime, data rate, and duty cycle for any modem preset</span>
-                </button>
-                <button
-                  className="moretools-btn"
-                  type="button"
-                  onClick={() => { setOpenMenu(null); onChannelCapacity?.(); }}
-                  title="Estimate channel utilization and find optimal modem preset"
-                >
-                  <span className="moretools-btn-name">Channel Capacity Estimator</span>
-                  <span className="moretools-btn-desc">Channel utilization, collision probability, and optimal preset for your node count</span>
-                </button>
-                <button
-                  className="moretools-btn"
-                  type="button"
-                  disabled={!hasPlan || !hasLOSOverlays}
-                  onClick={() => { setOpenMenu(null); if (hasPlan && hasLOSOverlays) onFloodSim?.(); }}
-                  title={!hasPlan ? 'Open a plan first' : !hasLOSOverlays ? 'Run Line of Sight analysis first' : 'Simulate message flooding through the mesh'}
-                >
-                  <span className="moretools-btn-name">Message Flooding Simulator</span>
-                  <span className="moretools-btn-desc">
-                    {!hasLOSOverlays ? 'Requires LOS analysis — run Tools \u2192 Line of Sight first' : 'Simulate message propagation hop-by-hop through your mesh network'}
-                  </span>
-                </button>
-                <button
-                  className="moretools-btn"
-                  type="button"
-                  disabled={!hasPlan}
-                  onClick={() => { setOpenMenu(null); if (hasPlan) onSuggestPlacement?.(); }}
-                  title="Get suggested node placement locations to maximize coverage"
-                >
-                  <span className="moretools-btn-name">Suggest Node Placement</span>
-                  <span className="moretools-btn-desc">AI-assisted placement suggestions to maximize mesh coverage</span>
-                </button>
+              {/* Protocol Selector */}
+              <div className="moretools-protocol-tabs" role="tablist" aria-label="Protocol selection">
+                {(['meshtastic', 'meshcore', 'reticulum'] as const).map((p) => (
+                  <button
+                    key={p}
+                    className={`moretools-tab${moreToolsProtocol === p ? ' active' : ''}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={moreToolsProtocol === p}
+                    onClick={() => setMoreToolsProtocol(p)}
+                  >
+                    {p === 'meshtastic' ? 'Meshtastic' : p === 'meshcore' ? 'MeshCore' : 'Reticulum'}
+                  </button>
+                ))}
               </div>
 
-              {/* MeshCore */}
-              <div className="moretools-protocol-section">
-                <div className="moretools-protocol-header">
-                  MeshCore
+              {/* No selection yet */}
+              {!moreToolsProtocol && (
+                <div className="moretools-pick-prompt">
+                  Choose a protocol above to see available tools and calculators.
                 </div>
-                <button
-                  className="moretools-btn"
-                  type="button"
-                  onClick={() => { setOpenMenu(null); onRepeaterChain?.(); }}
-                  title="Calculate hop-by-hop link budget for a MeshCore repeater chain"
-                >
-                  <span className="moretools-btn-name">Repeater Chain Calculator</span>
-                  <span className="moretools-btn-desc">Hop-by-hop link budget for MeshCore repeater chains</span>
-                </button>
-                <div className="moretools-coming-soon">More MeshCore-specific tools are planned for a future release.</div>
-              </div>
+              )}
 
-              {/* Reticulum */}
-              <div className="moretools-protocol-section">
-                <div className="moretools-protocol-header">
-                  Reticulum
+              {/* Meshtastic tools */}
+              {moreToolsProtocol === 'meshtastic' && (
+                <div className="moretools-protocol-section" role="tabpanel">
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onTimeOnAir?.(); }}
+                    title="Calculate LoRa packet airtime, data rate, and duty cycle">
+                    <span className="moretools-btn-name">LoRa Airtime Calculator</span>
+                    <span className="moretools-btn-desc">Packet airtime, data rate, and duty cycle for any modem preset</span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onChannelCapacity?.(); }}
+                    title="Estimate channel utilization and find optimal modem preset">
+                    <span className="moretools-btn-name">Channel Capacity Estimator</span>
+                    <span className="moretools-btn-desc">Channel utilization, collision probability, and optimal preset for your node count</span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    disabled={!hasPlan || !hasLOSOverlays}
+                    onClick={() => { setOpenMenu(null); if (hasPlan && hasLOSOverlays) onFloodSim?.(); }}
+                    title={!hasPlan ? 'Open a plan first' : !hasLOSOverlays ? 'Run Line of Sight analysis first' : 'Simulate message flooding through the mesh'}>
+                    <span className="moretools-btn-name">Message Flooding Simulator</span>
+                    <span className="moretools-btn-desc">
+                      {!hasLOSOverlays ? 'Requires LOS analysis — run Tools \u2192 Line of Sight first' : 'Simulate message propagation hop-by-hop through your mesh network'}
+                    </span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    disabled={!hasPlan}
+                    onClick={() => { setOpenMenu(null); if (hasPlan) onSuggestPlacement?.(); }}
+                    title="Get suggested node placement locations to maximize coverage">
+                    <span className="moretools-btn-name">Suggest Node Placement</span>
+                    <span className="moretools-btn-desc">AI-assisted placement suggestions to maximize mesh coverage</span>
+                  </button>
                 </div>
-                <button
-                  className="moretools-btn"
-                  type="button"
-                  onClick={() => { setOpenMenu(null); onReticulumAnnounce?.(); }}
-                  title="Calculate safe announce intervals and channel utilization for Reticulum over LoRa/RNode"
-                >
-                  <span className="moretools-btn-name">Announce Rate Calculator</span>
-                  <span className="moretools-btn-desc">Safe announce intervals and channel utilization for Reticulum over LoRa/RNode</span>
-                </button>
-                <div className="moretools-coming-soon">More Reticulum-specific tools are planned for a future release.</div>
-              </div>
+              )}
+
+              {/* MeshCore tools */}
+              {moreToolsProtocol === 'meshcore' && (
+                <div className="moretools-protocol-section" role="tabpanel">
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onRepeaterChain?.(); }}
+                    title="Calculate hop-by-hop link budget for a MeshCore repeater chain">
+                    <span className="moretools-btn-name">Repeater Chain Calculator</span>
+                    <span className="moretools-btn-desc">Hop-by-hop link budget and signal margin across a chain of MeshCore repeaters</span>
+                  </button>
+                  <div className="moretools-coming-soon">More MeshCore tools coming in a future release.</div>
+                </div>
+              )}
+
+              {/* Reticulum tools */}
+              {moreToolsProtocol === 'reticulum' && (
+                <div className="moretools-protocol-section" role="tabpanel">
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onReticulumAnnounce?.(); }}
+                    title="Calculate safe announce intervals and channel utilization for Reticulum over LoRa/RNode">
+                    <span className="moretools-btn-name">Announce Rate Calculator</span>
+                    <span className="moretools-btn-desc">Safe announce intervals and channel utilization for Reticulum over LoRa / RNode</span>
+                  </button>
+                  <div className="moretools-coming-soon">More Reticulum tools coming in a future release.</div>
+                </div>
+              )}
 
             </div>
           </div>
