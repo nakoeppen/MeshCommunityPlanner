@@ -87,7 +87,7 @@ Click **Add Node** (or press `Insert`), then click on the map where you want the
 ### How do I import nodes from a JSON file?
 
 1. Export your nodes from "Antenna Coverage" under Liam Cottle's "Antenna Coverage" tool within the [MeshCore app](https://app.meshcore.nz/)
-2. Click **Import Nodes (JSON)* in the toolbar
+2. Click **Import Nodes (JSON)** in the toolbar
 3. Select your JSON file
 4. Review the column mapping and click **Import Nodes**
 
