@@ -547,14 +547,18 @@
   flex: 1;
   background: #253444;
   border: 1px solid #34495e;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #95a5a6;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  padding: 0.55rem 0.5rem;
+  padding: 0.75rem 0.5rem;
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
 }
 .moretools-tab:hover {
   background: #2e4057;
@@ -569,7 +573,20 @@
 .moretools-tab:focus-visible {
   outline: 2px solid #7fb3f0;
   outline-offset: 1px;
-  border-radius: 6px;
+  border-radius: 8px;
+}
+
+.moretools-tab-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  opacity: 0.6;
+  filter: brightness(0) invert(1);
+  transition: opacity 0.12s;
+}
+.moretools-tab.active .moretools-tab-icon,
+.moretools-tab:hover .moretools-tab-icon {
+  opacity: 1;
 }
 
 .moretools-pick-prompt {
@@ -655,4 +672,22 @@
   color: #5d6d7e;
   padding: 0.5rem 0.25rem;
   font-style: italic;
+}
+
+/* ---- Inline protocol icons in Tools dropdown ---- */
+
+.toolbar-dropdown-protocol-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin: 0 4px;
+  vertical-align: middle;
+}
+
+.toolbar-protocol-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  filter: brightness(0) invert(0.6);
+  vertical-align: middle;
 }

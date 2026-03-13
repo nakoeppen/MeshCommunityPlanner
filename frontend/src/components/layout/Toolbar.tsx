@@ -5,6 +5,9 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import './Toolbar.css';
+import meshtasticIcon from '../../assets/icons/meshtastic.svg';
+import meshcoreIcon from '../../assets/icons/meshcore.svg';
+import reticulumIcon from '../../assets/icons/reticulum.svg';
 
 export interface PlanInfoEntry {
   id: string;
@@ -497,6 +500,21 @@ export function Toolbar({
                   </button>
                   <div className="toolbar-dropdown-separator" />
                   <button
+                    className="toolbar-dropdown-item"
+                    type="button"
+                    onClick={() => { setOpenMenu(null); setTimeout(() => setOpenMenu('moretools'), 0); }}
+                    title="Open the protocol-organized tool library"
+                  >
+                    More Tools
+                    <span className="toolbar-dropdown-protocol-icons" aria-hidden="true">
+                      <img src={meshtasticIcon} alt="" className="toolbar-protocol-icon" />
+                      <img src={meshcoreIcon} alt="" className="toolbar-protocol-icon" />
+                      <img src={reticulumIcon} alt="" className="toolbar-protocol-icon" />
+                    </span>
+                    &#8230;
+                  </button>
+                  <div className="toolbar-dropdown-separator" />
+                  <button
                     className={`toolbar-dropdown-item${!hasLOSOverlays ? ' disabled' : ''}`}
                     type="button"
                     onClick={() => hasLOSOverlays && handleItemClick(onLinkReport)}
@@ -537,15 +555,6 @@ export function Toolbar({
                     title="Save the current map view as a PNG image"
                   >
                     Save Screenshot
-                  </button>
-                  <div className="toolbar-dropdown-separator" />
-                  <button
-                    className="toolbar-dropdown-item"
-                    type="button"
-                    onClick={() => { setOpenMenu(null); setTimeout(() => setOpenMenu('moretools'), 0); }}
-                    title="Open the protocol-organized tool library"
-                  >
-                    More Tools&#8230;
                   </button>
                 </div>
               )}
@@ -941,18 +950,36 @@ export function Toolbar({
 
               {/* Protocol Selector */}
               <div className="moretools-protocol-tabs" role="tablist" aria-label="Protocol selection">
-                {(['meshtastic', 'meshcore', 'reticulum'] as const).map((p) => (
-                  <button
-                    key={p}
-                    className={`moretools-tab${moreToolsProtocol === p ? ' active' : ''}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={moreToolsProtocol === p}
-                    onClick={() => setMoreToolsProtocol(p)}
-                  >
-                    {p === 'meshtastic' ? 'Meshtastic' : p === 'meshcore' ? 'MeshCore' : 'Reticulum'}
-                  </button>
-                ))}
+                <button
+                  className={`moretools-tab${moreToolsProtocol === 'meshtastic' ? ' active' : ''}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={moreToolsProtocol === 'meshtastic'}
+                  onClick={() => setMoreToolsProtocol('meshtastic')}
+                >
+                  <img src={meshtasticIcon} alt="" aria-hidden="true" className="moretools-tab-icon" />
+                  <span>Meshtastic</span>
+                </button>
+                <button
+                  className={`moretools-tab${moreToolsProtocol === 'meshcore' ? ' active' : ''}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={moreToolsProtocol === 'meshcore'}
+                  onClick={() => setMoreToolsProtocol('meshcore')}
+                >
+                  <img src={meshcoreIcon} alt="" aria-hidden="true" className="moretools-tab-icon" />
+                  <span>MeshCore</span>
+                </button>
+                <button
+                  className={`moretools-tab${moreToolsProtocol === 'reticulum' ? ' active' : ''}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={moreToolsProtocol === 'reticulum'}
+                  onClick={() => setMoreToolsProtocol('reticulum')}
+                >
+                  <img src={reticulumIcon} alt="" aria-hidden="true" className="moretools-tab-icon" />
+                  <span>Reticulum</span>
+                </button>
               </div>
 
               {/* No selection yet */}
