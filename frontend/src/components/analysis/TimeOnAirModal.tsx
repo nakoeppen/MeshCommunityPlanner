@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { computeTimeOnAir, parseCodingRateNum, FALLBACK_PRESETS, type ToAResult, type ModemPresetEntry } from '../../utils/lora';
 import { useDraggable } from '../../hooks/useDraggable';
+import { NumberInput } from '../common/NumberInput';
 import './TimeOnAirModal.css';
 
 /* ---- Types ---- */
@@ -241,15 +242,11 @@ export function TimeOnAirModal({
                     aria-label="Payload size slider"
                     title={`Payload size: ${payloadBytes} bytes — drag to adjust (1–256). A typical Meshtastic text message is ~32 bytes`}
                   />
-                  <input
-                    type="number"
+                  <NumberInput
                     min={1}
                     max={256}
                     value={payloadBytes}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 1 && v <= 256) setPayloadBytes(v);
-                    }}
+                    onChange={(v) => setPayloadBytes(Math.round(v))}
                     className="toa-number-sm"
                     aria-label="Payload size bytes"
                     title="Enter exact payload size in bytes (1–256)"
@@ -273,15 +270,11 @@ export function TimeOnAirModal({
                 <div className="toa-inputs-row toa-inputs-row-3">
                   <div className="toa-field">
                     <label>SF</label>
-                    <input
-                      type="number"
+                    <NumberInput
                       min={5}
                       max={12}
                       value={sf}
-                      onChange={(e) => {
-                        setSF(parseInt(e.target.value) || 7);
-                        setSelectedPresetKey('Custom');
-                      }}
+                      onChange={(v) => { setSF(Math.round(v)); setSelectedPresetKey('Custom'); }}
                       title="Spreading Factor (5–12). Higher SF = longer range but slower data rate. SF12 gives maximum range; SF7 gives maximum speed"
                     />
                   </div>
@@ -320,12 +313,11 @@ export function TimeOnAirModal({
                 <div className="toa-inputs-row toa-inputs-row-3">
                   <div className="toa-field">
                     <label>Preamble Length</label>
-                    <input
-                      type="number"
+                    <NumberInput
                       min={6}
                       max={65535}
                       value={preambleLen}
-                      onChange={(e) => setPreambleLen(parseInt(e.target.value) || 16)}
+                      onChange={(v) => setPreambleLen(Math.round(v))}
                       title="Number of preamble symbols. Meshtastic uses 16. Longer preambles improve sync reliability but increase airtime"
                     />
                   </div>

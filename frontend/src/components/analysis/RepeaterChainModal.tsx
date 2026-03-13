@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDraggable } from '../../hooks/useDraggable';
+import { NumberInput } from '../common/NumberInput';
 import './RepeaterChainModal.css';
 
 /* ---- Types ---- */
@@ -189,39 +190,36 @@ export function RepeaterChainModal({ isOpen, onClose }: RepeaterChainModalProps)
             <div className="rc-inputs-row">
               <div className="rc-field">
                 <label htmlFor="rc-txpower">TX Power (dBm)</label>
-                <input
+                <NumberInput
                   id="rc-txpower"
-                  type="number"
                   min={1}
                   max={30}
                   value={txPower}
-                  onChange={(e) => setTxPower(parseFloat(e.target.value) || 20)}
+                  onChange={(v) => setTxPower(v)}
                   title="Transmit power in dBm (1–30). MeshCore devices typically support up to 22 dBm (158 mW)"
                 />
               </div>
               <div className="rc-field">
                 <label htmlFor="rc-antgain">Antenna Gain (dBi)</label>
-                <input
+                <NumberInput
                   id="rc-antgain"
-                  type="number"
                   min={0}
                   max={12}
                   step={0.1}
                   value={antennaGain}
-                  onChange={(e) => setAntennaGain(parseFloat(e.target.value) || 0)}
+                  onChange={(v) => setAntennaGain(v)}
                   title="Antenna gain in dBi (0–12). Typical whip: 2.15 dBi. Higher-gain directional antennas increase range"
                 />
               </div>
               <div className="rc-field">
                 <label htmlFor="rc-cableloss">Cable Loss (dB)</label>
-                <input
+                <NumberInput
                   id="rc-cableloss"
-                  type="number"
                   min={0}
                   max={5}
                   step={0.1}
                   value={cableLoss}
-                  onChange={(e) => setCableLoss(parseFloat(e.target.value) || 0)}
+                  onChange={(v) => setCableLoss(v)}
                   title="Coax cable and connector loss in dB (0–5). Typical short run: 0.5 dB"
                 />
               </div>
@@ -230,14 +228,13 @@ export function RepeaterChainModal({ isOpen, onClose }: RepeaterChainModalProps)
             <div className="rc-inputs-row">
               <div className="rc-field">
                 <label htmlFor="rc-freq">Frequency (MHz)</label>
-                <input
+                <NumberInput
                   id="rc-freq"
-                  type="number"
                   min={100}
                   max={3000}
                   step={0.001}
                   value={freqMhz}
-                  onChange={(e) => setFreqMhz(parseFloat(e.target.value) || 906.875)}
+                  onChange={(v) => setFreqMhz(v)}
                   title="Center frequency in MHz. MeshCore US FCC default is 906.875 MHz"
                 />
               </div>
@@ -258,13 +255,12 @@ export function RepeaterChainModal({ isOpen, onClose }: RepeaterChainModalProps)
               </div>
               <div className="rc-field">
                 <label htmlFor="rc-rxsens">RX Sensitivity (dBm)</label>
-                <input
+                <NumberInput
                   id="rc-rxsens"
-                  type="number"
                   min={-140}
                   max={-80}
                   value={rxSensitivity}
-                  onChange={(e) => setRxSensitivity(parseFloat(e.target.value) || -130)}
+                  onChange={(v) => setRxSensitivity(v)}
                   title="Receiver sensitivity in dBm. MeshCore on SX1262 is approximately -130 dBm at SF11/BW250"
                 />
               </div>
@@ -285,16 +281,12 @@ export function RepeaterChainModal({ isOpen, onClose }: RepeaterChainModalProps)
                     aria-label="Hop distance slider"
                     title={`Distance between each repeater: ${hopDistance} km — drag to adjust (0.5–50 km)`}
                   />
-                  <input
-                    type="number"
+                  <NumberInput
                     min={0.5}
                     max={50}
                     step={0.5}
                     value={hopDistance}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
-                      if (v >= 0.5 && v <= 50) setHopDistance(v);
-                    }}
+                    onChange={(v) => setHopDistance(v)}
                     className="rc-number-sm"
                     aria-label="Hop distance km"
                     title="Enter hop distance in km (0.5–50)"
@@ -315,15 +307,11 @@ export function RepeaterChainModal({ isOpen, onClose }: RepeaterChainModalProps)
                     aria-label="Number of hops slider"
                     title={`Number of repeater hops: ${numHops} — drag to adjust (1–10)`}
                   />
-                  <input
-                    type="number"
+                  <NumberInput
                     min={1}
                     max={10}
                     value={numHops}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 1 && v <= 10) setNumHops(v);
-                    }}
+                    onChange={(v) => setNumHops(Math.round(v))}
                     className="rc-number-sm"
                     aria-label="Number of hops"
                     title="Enter number of hops (1–10)"

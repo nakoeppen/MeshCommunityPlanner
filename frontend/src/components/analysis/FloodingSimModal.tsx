@@ -16,7 +16,7 @@ import {
 import { parseCodingRateNum } from '../../utils/lora';
 import { useMapStore, type LOSOverlay } from '../../stores/mapStore';
 import { useDraggable } from '../../hooks/useDraggable';
-import { useNumberInput } from '../../hooks/useNumberInput';
+import { NumberInput } from '../common/NumberInput';
 import './FloodingSimModal.css';
 
 interface FloodingSimModalProps {
@@ -50,8 +50,8 @@ export function FloodingSimModal({
 
   // ---- Inputs ----
   const [sourceNodeId, setSourceNodeId] = useState('');
-  const payloadInput = useNumberInput(32, 1, 256);
-  const delayInput = useNumberInput(50, 10, 500);
+  const [payloadBytes, setPayloadBytes] = useState(32);
+  const [processingDelayMs, setProcessingDelayMs] = useState(50);
   const [animationSpeed, setAnimationSpeed] = useState(800);
 
   // ---- Output ----
@@ -65,8 +65,8 @@ export function FloodingSimModal({
   useEffect(() => {
     if (isOpen) {
       setSourceNodeId(nodes.length > 0 ? nodes[0].uuid : '');
-      payloadInput.reset(32);
-      delayInput.reset(50);
+      setPayloadBytes(32);
+      setProcessingDelayMs(50);
       setAnimationSpeed(800);
       setResult(null);
       setHealthResult(null);
@@ -154,8 +154,8 @@ export function FloodingSimModal({
     setTimeout(() => {
       const config: FloodingConfig = {
         sourceNodeId,
-        messagePayloadBytes: payloadInput.value,
-        processingDelayMs: delayInput.value,
+        messagePayloadBytes: payloadBytes,
+        processingDelayMs: processingDelayMs,
       };
 
       const crNum = parseCodingRateNum(radioCR);
@@ -184,7 +184,7 @@ export function FloodingSimModal({
 
       setIsSimulating(false);
     }, 0);
-  }, [sourceNodeId, payloadInput.value, delayInput.value, radioCR, radioSF, radioBW, nodes, losOverlays, animationSpeed]);
+  }, [sourceNodeId, payloadBytes, processingDelayMs, radioCR, radioSF, radioBW, nodes, losOverlays, animationSpeed]);
 
   // ---- Transport controls ----
   const handlePlay = useCallback(() => {
@@ -214,14 +214,14 @@ export function FloodingSimModal({
     }
     const config: FloodingConfig = {
       sourceNodeId,
-      messagePayloadBytes: payloadInput.value,
-      processingDelayMs: delayInput.value,
+      messagePayloadBytes: payloadBytes,
+      processingDelayMs: processingDelayMs,
     };
     const crNum = parseCodingRateNum(radioCR);
     const allNodeIds = nodes.map((n) => n.uuid);
     const fResult = simulateNodeRemoval(losOverlays, allNodeIds, removedId, config, radioSF, radioBW, crNum);
     setFailureResult(fResult);
-  }, [result, sourceNodeId, payloadInput.value, delayInput.value, radioCR, radioSF, radioBW, nodes, losOverlays]);
+  }, [result, sourceNodeId, payloadBytes, processingDelayMs, radioCR, radioSF, radioBW, nodes, losOverlays]);
 
   // ---- Animation speed update ----
   const handleSpeedChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -304,18 +304,16 @@ export function FloodingSimModal({
                   type="range"
                   min={1}
                   max={256}
-                  value={payloadInput.value}
-                  onChange={(e) => payloadInput.reset(parseInt(e.target.value))}
+                  value={payloadBytes}
+                  onChange={(e) => setPayloadBytes(parseInt(e.target.value))}
                   aria-label="Payload size slider"
-                  title={`Payload size: ${payloadInput.value} bytes`}
+                  title={`Payload size: ${payloadBytes} bytes`}
                 />
-                <input
-                  type="number"
+                <NumberInput
                   min={1}
                   max={256}
-                  value={payloadInput.display}
-                  onChange={payloadInput.handleChange}
-                  onBlur={payloadInput.handleBlur}
+                  value={payloadBytes}
+                  onChange={(v) => setPayloadBytes(Math.round(v))}
                   className="flood-number-sm"
                   aria-label="Payload size bytes"
                   title="Enter payload size in bytes (1-256)"
@@ -333,18 +331,16 @@ export function FloodingSimModal({
                   type="range"
                   min={10}
                   max={500}
-                  value={delayInput.value}
-                  onChange={(e) => delayInput.reset(parseInt(e.target.value))}
+                  value={processingDelayMs}
+                  onChange={(e) => setProcessingDelayMs(parseInt(e.target.value))}
                   aria-label="Processing delay slider"
-                  title={`Processing delay: ${delayInput.value} ms`}
+                  title={`Processing delay: ${processingDelayMs} ms`}
                 />
-                <input
-                  type="number"
+                <NumberInput
                   min={10}
                   max={500}
-                  value={delayInput.display}
-                  onChange={delayInput.handleChange}
-                  onBlur={delayInput.handleBlur}
+                  value={processingDelayMs}
+                  onChange={(v) => setProcessingDelayMs(Math.round(v))}
                   className="flood-number-sm"
                   aria-label="Processing delay ms"
                   title="Enter per-hop processing delay in ms (10-500)"

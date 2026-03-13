@@ -34,6 +34,7 @@ import { CatalogModal } from '../catalog';
 import { ErrorDialog } from '../common/ErrorDialog';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { PromptDialog } from '../common/PromptDialog';
+import { NumberInput } from '../common/NumberInput';
 import { WelcomeTour } from '../onboarding/WelcomeTour';
 import { InternetMapImportModal } from '../plan/InternetMapImportModal';
 import './AppLayout.css';
@@ -244,23 +245,6 @@ function sanitizeFilename(name: string): string {
   return name.replace(/[^a-z0-9_-]/gi, '_');
 }
 
-/** Number input that allows free typing — only parses and commits on blur or Enter. */
-function CommitOnBlurNumberInput({ value, onCommit, fallback = 0, ...props }: {
-  value: number;
-  onCommit: (v: number) => void;
-  fallback?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'onBlur' | 'onKeyDown'>) {
-  const [text, setText] = useState(String(value));
-  useEffect(() => { setText(String(value)); }, [value]);
-  const commit = () => { const p = parseFloat(text); onCommit(isNaN(p) ? fallback : p); };
-  return (
-    <input type="number" {...props} value={text}
-      onChange={(e) => setText(e.target.value)}
-      onBlur={commit}
-      onKeyDown={(e) => { if (e.key === 'Enter') commit(); }}
-    />
-  );
-}
 
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -2362,27 +2346,27 @@ export function AppLayout() {
             </div>
             <div className="config-field">
               <label>Frequency (MHz)</label>
-              <CommitOnBlurNumberInput step="0.125" min="137" max="1020" fallback={906.875}
+              <NumberInput step={0.125} min={137} max={1020}
                 value={networkRadio.frequency_mhz}
                 title="Center frequency in MHz. Must match across all nodes."
-                onCommit={(v) => applyNetworkRadio({ frequency_mhz: v })}
+                onChange={(v) => applyNetworkRadio({ frequency_mhz: v })}
               />
             </div>
             <div className="radio-params-row">
               <div className="config-field">
                 <label>Spreading Factor</label>
-                <CommitOnBlurNumberInput step="1" min="5" max="12" fallback={11}
+                <NumberInput step={1} min={5} max={12}
                   value={networkRadio.spreading_factor}
                   title="Higher Spreading Factor = longer range but slower data rate (5-12)"
-                  onCommit={(v) => applyNetworkRadio({ spreading_factor: Math.round(v) })}
+                  onChange={(v) => applyNetworkRadio({ spreading_factor: Math.round(v) })}
                 />
               </div>
               <div className="config-field">
                 <label>Bandwidth (kHz)</label>
-                <CommitOnBlurNumberInput step="25" min="1" fallback={250}
+                <NumberInput step={25} min={1}
                   value={networkRadio.bandwidth_khz}
                   title="Lower Bandwidth = longer range but slower data rate (125, 250, 500 kHz)"
-                  onCommit={(v) => applyNetworkRadio({ bandwidth_khz: v })}
+                  onChange={(v) => applyNetworkRadio({ bandwidth_khz: v })}
                 />
               </div>
               <div className="config-field">
@@ -2427,23 +2411,23 @@ export function AppLayout() {
             </div>
             <div className="config-field">
               <label>Latitude</label>
-              <CommitOnBlurNumberInput step="0.00001" value={selectedNode.latitude}
+              <NumberInput step={0.00001} value={selectedNode.latitude}
                 title="Node latitude in decimal degrees. Drag the marker on the map to reposition."
-                onCommit={(v) => { updateNodeStore(String(selectedNode.id), { latitude: v }); handleUpdateNodeField(String(selectedNode.id), 'latitude', v); }}
+                onChange={(v) => { updateNodeStore(String(selectedNode.id), { latitude: v }); handleUpdateNodeField(String(selectedNode.id), 'latitude', v); }}
               />
             </div>
             <div className="config-field">
               <label>Longitude</label>
-              <CommitOnBlurNumberInput step="0.00001" value={selectedNode.longitude}
+              <NumberInput step={0.00001} value={selectedNode.longitude}
                 title="Node longitude in decimal degrees. Drag the marker on the map to reposition."
-                onCommit={(v) => { updateNodeStore(String(selectedNode.id), { longitude: v }); handleUpdateNodeField(String(selectedNode.id), 'longitude', v); }}
+                onChange={(v) => { updateNodeStore(String(selectedNode.id), { longitude: v }); handleUpdateNodeField(String(selectedNode.id), 'longitude', v); }}
               />
             </div>
             <div className="config-field">
               <label>Antenna Height (m)</label>
-              <CommitOnBlurNumberInput step="0.5" min="0" max="500" value={selectedNode.antenna_height_m}
+              <NumberInput step={0.5} min={0} max={500} value={selectedNode.antenna_height_m}
                 title="Height above ground in meters. Higher = better coverage and radio horizon."
-                onCommit={(v) => { updateNodeStore(String(selectedNode.id), { antenna_height_m: v }); handleUpdateNodeField(String(selectedNode.id), 'antenna_height_m', v); }}
+                onChange={(v) => { updateNodeStore(String(selectedNode.id), { antenna_height_m: v }); handleUpdateNodeField(String(selectedNode.id), 'antenna_height_m', v); }}
               />
             </div>
             <div className="config-field">
@@ -2493,10 +2477,10 @@ export function AppLayout() {
               return (<>
                 <div className="config-field">
                   <label htmlFor="txPowerDbm">TX Power (dBm)</label>
-                  <CommitOnBlurNumberInput id="txPowerDbm" step="1" min="0" max="47" fallback={20}
+                  <NumberInput id="txPowerDbm" step={1} min={0} max={47}
                     value={selectedNode.tx_power_dbm}
                     title="Transmit power in dBm. 30 dBm = 1W (FCC Part 15 / ETSI unlicensed limit). Higher values supported for licensed or non-permissive environments."
-                    onCommit={(v) => { const c = Math.max(0, Math.min(47, v)); updateNodeStore(String(selectedNode.id), { tx_power_dbm: c }); handleUpdateNodeField(String(selectedNode.id), 'tx_power_dbm', c); }}
+                    onChange={(v) => { updateNodeStore(String(selectedNode.id), { tx_power_dbm: v }); handleUpdateNodeField(String(selectedNode.id), 'tx_power_dbm', v); }}
                   />
                 </div>
                 {/* PA info always shown when PA is present — even alongside warnings */}
@@ -2555,9 +2539,9 @@ export function AppLayout() {
             {selectedNode.cable_id && (
               <div className="config-field">
                 <label>Cable Length (m)</label>
-                <CommitOnBlurNumberInput step="0.1" min="0" max="100" value={selectedNode.cable_length_m || 0}
+                <NumberInput step={0.1} min={0} max={100} value={selectedNode.cable_length_m || 0}
                   title="Cable length in meters. Longer cable = more signal loss."
-                  onCommit={(v) => { updateNodeStore(String(selectedNode.id), { cable_length_m: v }); handleUpdateNodeField(String(selectedNode.id), 'cable_length_m', v); }}
+                  onChange={(v) => { updateNodeStore(String(selectedNode.id), { cable_length_m: v }); handleUpdateNodeField(String(selectedNode.id), 'cable_length_m', v); }}
                 />
               </div>
             )}
@@ -2892,14 +2876,13 @@ export function AppLayout() {
                           <>
                             <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
                               <label htmlFor="maxRadiusKm">Max Radius (km)</label>
-                              <input
+                              <NumberInput
                                 id="maxRadiusKm"
-                                type="number"
                                 min={1}
                                 max={50}
                                 step={1}
                                 value={maxRadiusKm}
-                                onChange={(e) => saveAndSet(Math.max(1, Math.min(50, Number(e.target.value) || 15)))}
+                                onChange={(v) => saveAndSet(v)}
                                 aria-label="Maximum coverage analysis radius in kilometres (1–50)"
                                 title="Maximum sweep distance. The sweep stops at the radio horizon or signal cutoff (whichever comes first), even if this value is larger."
                               />

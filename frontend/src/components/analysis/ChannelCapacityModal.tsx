@@ -292,16 +292,12 @@ export function ChannelCapacityModal({
                     aria-label="Messages per minute slider"
                     title={`Average messages per node per minute: ${msgsPerMin.toFixed(1)}`}
                   />
-                  <input
-                    type="number"
+                  <NumberInput
                     min={0.1}
                     max={10}
                     step={0.1}
                     value={msgsPerMin}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
-                      if (v >= 0.1 && v <= 10) setMsgsPerMin(v);
-                    }}
+                    onChange={(v) => setMsgsPerMin(v)}
                     className="ccap-number-sm"
                     aria-label="Messages per minute"
                     title="Enter message rate (0.1–10 per minute)"
@@ -324,15 +320,11 @@ export function ChannelCapacityModal({
                     aria-label="Payload size slider"
                     title={`Average payload size: ${payloadBytes} bytes`}
                   />
-                  <input
-                    type="number"
+                  <NumberInput
                     min={1}
                     max={256}
                     value={payloadBytes}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 1 && v <= 256) setPayloadBytes(v);
-                    }}
+                    onChange={(v) => setPayloadBytes(Math.round(v))}
                     className="ccap-number-sm"
                     aria-label="Payload size bytes"
                     title="Enter payload size in bytes (1–256)"
@@ -376,13 +368,12 @@ export function ChannelCapacityModal({
                   <option value="custom">Custom...</option>
                 </select>
                 {customDutyCycle !== '' && (
-                  <input
-                    type="number"
+                  <NumberInput
                     min={0.1}
                     max={100}
                     step={0.1}
-                    value={customDutyCycle}
-                    onChange={(e) => setCustomDutyCycle(e.target.value)}
+                    value={parseFloat(customDutyCycle) || 50}
+                    onChange={(v) => setCustomDutyCycle(String(v))}
                     aria-label="Custom duty cycle percentage"
                     title="Enter custom duty cycle percentage"
                     style={{ marginTop: '0.3rem' }}

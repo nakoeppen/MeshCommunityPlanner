@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { NumberInput } from '../../common/NumberInput';
 import type { Node } from '../../../types';
 
 export interface LocationStepProps {
@@ -21,14 +22,13 @@ export function LocationStep({ data, errors, onChange }: LocationStepProps) {
       <div className="form-group">
         <label htmlFor="latitude">
           Latitude <span aria-label="required">*</span>
-          <input
-            type="number"
+          <NumberInput
             id="latitude"
-            value={data.latitude || ''}
-            onChange={(e) => onChange('latitude', parseFloat(e.target.value))}
-            step="0.000001"
-            min="-90"
-            max="90"
+            value={data.latitude || 0}
+            onChange={(v) => onChange('latitude', v)}
+            step={0.000001}
+            min={-90}
+            max={90}
             required
             aria-invalid={!!errors.latitude}
             aria-describedby={errors.latitude ? 'latitude-error' : undefined}
@@ -44,14 +44,13 @@ export function LocationStep({ data, errors, onChange }: LocationStepProps) {
       <div className="form-group">
         <label htmlFor="longitude">
           Longitude <span aria-label="required">*</span>
-          <input
-            type="number"
+          <NumberInput
             id="longitude"
-            value={data.longitude || ''}
-            onChange={(e) => onChange('longitude', parseFloat(e.target.value))}
-            step="0.000001"
-            min="-180"
-            max="180"
+            value={data.longitude || 0}
+            onChange={(v) => onChange('longitude', v)}
+            step={0.000001}
+            min={-180}
+            max={180}
             required
             aria-invalid={!!errors.longitude}
             aria-describedby={errors.longitude ? 'longitude-error' : undefined}

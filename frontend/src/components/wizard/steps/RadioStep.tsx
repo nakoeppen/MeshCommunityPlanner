@@ -6,6 +6,7 @@
 import React from 'react';
 import { Tooltip } from '../../common/Tooltip';
 import { AccessibleIcon } from '../../common/AccessibleIcon';
+import { NumberInput } from '../../common/NumberInput';
 import type { Node} from '../../../types';
 
 export interface RadioStepProps {
@@ -29,11 +30,10 @@ export function RadioStep({ data, errors, onChange }: RadioStepProps) {
           >
             <AccessibleIcon icon="ℹ️" label="TX Power information" />
           </Tooltip>
-          <input
-            type="number"
+          <NumberInput
             id="tx_power_dbm"
             value={data.tx_power_dbm || 20}
-            onChange={(e) => onChange('tx_power_dbm', parseFloat(e.target.value))}
+            onChange={(v) => onChange('tx_power_dbm', v)}
           />
         </label>
       </div>
@@ -47,11 +47,10 @@ export function RadioStep({ data, errors, onChange }: RadioStepProps) {
           >
             <AccessibleIcon icon="ℹ️" label="RX Sensitivity information" />
           </Tooltip>
-          <input
-            type="number"
+          <NumberInput
             id="rx_sensitivity_dbm"
             value={data.rx_sensitivity_dbm || -120}
-            onChange={(e) => onChange('rx_sensitivity_dbm', parseFloat(e.target.value))}
+            onChange={(v) => onChange('rx_sensitivity_dbm', v)}
           />
         </label>
       </div>

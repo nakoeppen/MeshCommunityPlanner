@@ -12,7 +12,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useMapStore, type PlacementSuggestion } from '../../stores/mapStore';
 import { useDraggable } from '../../hooks/useDraggable';
-import { useNumberInput } from '../../hooks/useNumberInput';
+import { NumberInput } from '../common/NumberInput';
 import './PlacementSuggestModal.css';
 
 interface PlacementSuggestModalProps {
@@ -49,7 +49,7 @@ export function PlacementSuggestModal({
   const { handleDragStart, modalRef, resetDrag, dragStyle } = useDraggable();
 
   // Inputs (Step 2 — Search Area)
-  const searchArea = useNumberInput(3000, 500, 20000);
+  const [searchAreaM, setSearchAreaM] = useState(3000);
   const [gridResolution, setGridResolution] = useState(200);
   const [maxCandidates, setMaxCandidates] = useState(5);
 
@@ -61,7 +61,7 @@ export function PlacementSuggestModal({
   // Reset state on open/close
   useEffect(() => {
     if (isOpen) {
-      searchArea.reset(3000);
+      setSearchAreaM(3000);
       setGridResolution(200);
       setMaxCandidates(5);
       setSuggestions([]);
@@ -135,7 +135,7 @@ export function PlacementSuggestModal({
 
     // Padding based on user-configurable search area
     const midLat = (minLat + maxLat) / 2;
-    const padM = Math.max(searchArea.value, 2000);
+    const padM = Math.max(searchAreaM, 2000);
     const padLat = padM / 111_320;
     const padLon = padM / (111_320 * Math.cos((midLat * Math.PI) / 180));
 
@@ -145,7 +145,7 @@ export function PlacementSuggestModal({
       max_lat: maxLat + padLat,
       max_lon: maxLon + padLon,
     };
-  }, [nodes, searchArea.value]);
+  }, [nodes, searchAreaM]);
 
   // Get suggestions from API
   const handleGetSuggestions = useCallback(async () => {
@@ -279,15 +279,13 @@ export function PlacementSuggestModal({
             <div className="place-inputs-row">
               <div className="place-field">
                 <label htmlFor="place-search-area" title="How far beyond existing nodes to search for placement gaps">Search Area (m)</label>
-                <input
+                <NumberInput
                   id="place-search-area"
-                  type="number"
                   min={500}
                   max={20000}
                   step={500}
-                  value={searchArea.display}
-                  onChange={searchArea.handleChange}
-                  onBlur={searchArea.handleBlur}
+                  value={searchAreaM}
+                  onChange={(v) => setSearchAreaM(Math.round(v))}
                   title="How far beyond existing nodes to search for gaps (500-20000m)"
                 />
               </div>
@@ -320,15 +318,11 @@ export function PlacementSuggestModal({
                     aria-label="Maximum number of suggested nodes"
                     title={`Maximum suggestions to return: ${maxCandidates}. Higher values give more options but may include lower-quality locations`}
                   />
-                  <input
-                    type="number"
+                  <NumberInput
                     min={1}
                     max={10}
                     value={maxCandidates}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 1 && v <= 10) setMaxCandidates(v);
-                    }}
+                    onChange={(v) => setMaxCandidates(Math.round(v))}
                     className="place-number-sm"
                     aria-label="Max candidates count"
                     title="Enter number of suggestions (1-10)"

@@ -6,6 +6,7 @@
 import React from 'react';
 import { Tooltip } from '../../common/Tooltip';
 import { AccessibleIcon } from '../../common/AccessibleIcon';
+import { NumberInput } from '../../common/NumberInput';
 import type { Node } from '../../../types';
 
 export interface AntennaStepProps {
@@ -29,12 +30,11 @@ export function AntennaStep({ data, errors, onChange }: AntennaStepProps) {
           >
             <AccessibleIcon icon="ℹ️" label="Antenna Gain information" />
           </Tooltip>
-          <input
-            type="number"
+          <NumberInput
             id="antenna_gain_dbi"
             value={data.antenna_gain_dbi || 2}
-            onChange={(e) => onChange('antenna_gain_dbi', parseFloat(e.target.value))}
-            step="0.1"
+            onChange={(v) => onChange('antenna_gain_dbi', v)}
+            step={0.1}
           />
         </label>
       </div>
@@ -48,12 +48,11 @@ export function AntennaStep({ data, errors, onChange }: AntennaStepProps) {
           >
             <AccessibleIcon icon="ℹ️" label="Antenna Height information" />
           </Tooltip>
-          <input
-            type="number"
+          <NumberInput
             id="antenna_height_m"
             value={data.antenna_height_m || 2}
-            onChange={(e) => onChange('antenna_height_m', parseFloat(e.target.value))}
-            step="0.1"
+            onChange={(v) => onChange('antenna_height_m', v)}
+            step={0.1}
           />
         </label>
       </div>
@@ -67,12 +66,11 @@ export function AntennaStep({ data, errors, onChange }: AntennaStepProps) {
           >
             <AccessibleIcon icon="ℹ️" label="Cable Loss information" />
           </Tooltip>
-          <input
-            type="number"
+          <NumberInput
             id="cable_loss_db"
             value={data.cable_loss_db || 0}
-            onChange={(e) => onChange('cable_loss_db', parseFloat(e.target.value))}
-            step="0.1"
+            onChange={(v) => onChange('cable_loss_db', v)}
+            step={0.1}
           />
         </label>
       </div>

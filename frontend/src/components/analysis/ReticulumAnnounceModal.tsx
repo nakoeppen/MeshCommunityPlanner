@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDraggable } from '../../hooks/useDraggable';
+import { NumberInput } from '../common/NumberInput';
 import './ReticulumAnnounceModal.css';
 
 /* ---- Types ---- */
@@ -226,16 +227,12 @@ export function ReticulumAnnounceModal({ isOpen, onClose }: ReticulumAnnounceMod
               {isCustom && (
                 <div className="ra-field">
                   <label htmlFor="ra-custom-bps">Custom Throughput (bps)</label>
-                  <input
+                  <NumberInput
                     id="ra-custom-bps"
-                    type="number"
                     min={10}
                     max={10_000_000}
                     value={customBps}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 10) setCustomBps(v);
-                    }}
+                    onChange={(v) => setCustomBps(Math.round(v))}
                     title="Enter the effective data rate in bits per second for your custom interface"
                   />
                 </div>
@@ -244,16 +241,12 @@ export function ReticulumAnnounceModal({ isOpen, onClose }: ReticulumAnnounceMod
               {!isCustom && (
                 <div className="ra-field">
                   <label htmlFor="ra-packet-bytes">Announce Packet Size (bytes)</label>
-                  <input
+                  <NumberInput
                     id="ra-packet-bytes"
-                    type="number"
                     min={16}
                     max={256}
                     value={packetBytes}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 16 && v <= 256) setPacketBytes(v);
-                    }}
+                    onChange={(v) => setPacketBytes(Math.round(v))}
                     title="Typical Reticulum announce is 72 bytes: destination hash + identity + optional app data. Range: 16–256 bytes"
                   />
                 </div>
@@ -264,16 +257,12 @@ export function ReticulumAnnounceModal({ isOpen, onClose }: ReticulumAnnounceMod
               <div className="ra-inputs-row">
                 <div className="ra-field">
                   <label htmlFor="ra-packet-bytes-custom">Announce Packet Size (bytes)</label>
-                  <input
+                  <NumberInput
                     id="ra-packet-bytes-custom"
-                    type="number"
                     min={16}
                     max={256}
                     value={packetBytes}
-                    onChange={(e) => {
-                      const v = parseInt(e.target.value);
-                      if (v >= 16 && v <= 256) setPacketBytes(v);
-                    }}
+                    onChange={(v) => setPacketBytes(Math.round(v))}
                     title="Typical Reticulum announce is 72 bytes: destination hash + identity + optional app data. Range: 16–256 bytes"
                   />
                 </div>
@@ -284,31 +273,23 @@ export function ReticulumAnnounceModal({ isOpen, onClose }: ReticulumAnnounceMod
             <div className="ra-inputs-row">
               <div className="ra-field">
                 <label htmlFor="ra-nodes">Number of Nodes</label>
-                <input
+                <NumberInput
                   id="ra-nodes"
-                  type="number"
                   min={1}
                   max={500}
                   value={numNodes}
-                  onChange={(e) => {
-                    const v = parseInt(e.target.value);
-                    if (v >= 1 && v <= 500) setNumNodes(v);
-                  }}
+                  onChange={(v) => setNumNodes(Math.round(v))}
                   title="Total number of nodes in the network that will be sending announces (1–500)"
                 />
               </div>
               <div className="ra-field">
                 <label htmlFor="ra-target-util">Target Max Utilization (%)</label>
-                <input
+                <NumberInput
                   id="ra-target-util"
-                  type="number"
                   min={1}
                   max={50}
                   value={targetUtilization}
-                  onChange={(e) => {
-                    const v = parseInt(e.target.value);
-                    if (v >= 1 && v <= 50) setTargetUtilization(v);
-                  }}
+                  onChange={(v) => setTargetUtilization(Math.round(v))}
                   title="Maximum acceptable channel utilization from announce traffic. 15% is a safe default — leaves 85% for data packets (1–50%)"
                 />
               </div>
@@ -317,16 +298,12 @@ export function ReticulumAnnounceModal({ isOpen, onClose }: ReticulumAnnounceMod
             <div className="ra-inputs-row">
               <div className="ra-field">
                 <label htmlFor="ra-hops">Propagation Hops</label>
-                <input
+                <NumberInput
                   id="ra-hops"
-                  type="number"
                   min={1}
                   max={8}
                   value={hops}
-                  onChange={(e) => {
-                    const v = parseInt(e.target.value);
-                    if (v >= 1 && v <= 8) setHops(v);
-                  }}
+                  onChange={(v) => setHops(Math.round(v))}
                   title="Number of hops announcements propagate. Each hop re-transmits the announce, multiplying channel load. Reticulum default is 3 hops (1–8)"
                 />
               </div>
