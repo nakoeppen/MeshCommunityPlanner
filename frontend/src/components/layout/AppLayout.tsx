@@ -1761,7 +1761,17 @@ export function AppLayout() {
       const names = elevatedNodes.map((n) => `${n.name} (${n.antenna_height_m}m)`).join(', ');
       setEnvWarningDialog({
         nodeNames: names,
-        onSwitch: () => { setEnvWarningDialog(null); runCoverageAnalysis('los_elevated'); },
+        onSwitch: () => {
+          setEnvWarningDialog(null);
+          // Auto-cap max radius to radio horizon when switching to los_elevated
+          const h = elevatedNodes[0]?.antenna_height_m ?? 3;
+          const horizonKm = Math.ceil(3570 * (Math.sqrt(Math.max(0, h)) + Math.sqrt(1.5)) / 1000);
+          if (maxRadiusKm > horizonKm) {
+            setMaxRadiusKm(horizonKm);
+            if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: 'los_elevated', maxRadiusKm: horizonKm, buildId: BUILD_ID }));
+          }
+          runCoverageAnalysis('los_elevated');
+        },
         onRunAnyway: () => { setEnvWarningDialog(null); runCoverageAnalysis(); },
       });
       return;
@@ -2853,25 +2863,61 @@ export function AppLayout() {
                           Elevated node ({selectedNode.antenna_height_m} m) — use "Clear LOS (Elevated)" for accurate simulation. Current environment underestimates range at height.
                         </p>
                       )}
-                      <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
-                        <label htmlFor="maxRadiusKm" title="Maximum analysis sweep distance. The signal cutoff (−135 dBm) may stop the sweep before this point. Licensed or elevated deployments may need larger values — max 50 km (FCC Part 15 / ETSI practical limit).">Max Radius (km)</label>
-                        <input
-                          id="maxRadiusKm"
-                          type="number"
-                          min={1}
-                          max={50}
-                          step={1}
-                          value={maxRadiusKm}
-                          onChange={(e) => { const v = Math.max(1, Math.min(50, Number(e.target.value) || 15)); setMaxRadiusKm(v); if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: coverageEnv, maxRadiusKm: v, buildId: BUILD_ID })); }}
-                          aria-label="Maximum coverage analysis radius in kilometres (1–50)"
-                          title="Maximum analysis sweep distance. The signal cutoff (−135 dBm) may stop the sweep before this point."
-                        />
-                      </div>
-                      {maxRadiusKm > 25 && (
-                        <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
-                          Large radius — computation may take longer.
-                        </p>
-                      )}
+                      {(() => {
+                        // Radio horizon for the selected node (or tallest target node)
+                        const coverageTargetNodes = selectedNodeIds.length > 0
+                          ? nodes.filter((n) => selectedNodeIds.includes(String(n.id)))
+                          : nodes;
+                        const h = selectedNode?.antenna_height_m
+                          ?? (coverageTargetNodes.length > 0
+                            ? Math.max(...coverageTargetNodes.map((n) => n.antenna_height_m))
+                            : 3);
+                        const horizonM = 3570 * (Math.sqrt(Math.max(0, h)) + Math.sqrt(1.5));
+                        const horizonKm = Math.round(horizonM / 100) / 10;
+                        const beyondHorizon = maxRadiusKm > horizonKm;
+                        const saveAndSet = (v: number) => {
+                          setMaxRadiusKm(v);
+                          if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: coverageEnv, maxRadiusKm: v, buildId: BUILD_ID }));
+                        };
+                        return (
+                          <>
+                            <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
+                              <label htmlFor="maxRadiusKm">Max Radius (km)</label>
+                              <input
+                                id="maxRadiusKm"
+                                type="number"
+                                min={1}
+                                max={50}
+                                step={1}
+                                value={maxRadiusKm}
+                                onChange={(e) => saveAndSet(Math.max(1, Math.min(50, Number(e.target.value) || 15)))}
+                                aria-label="Maximum coverage analysis radius in kilometres (1–50)"
+                                title="Maximum sweep distance. The sweep stops at the radio horizon or signal cutoff (whichever comes first), even if this value is larger."
+                              />
+                            </div>
+                            <p className="sidebar-hint" style={{ marginBottom: '0' }}>
+                              Radio horizon: ~{horizonKm} km ({h} m antenna). Coverage beyond this point is physically blocked by Earth curvature on flat terrain.
+                            </p>
+                            {beyondHorizon && (
+                              <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
+                                Max radius ({maxRadiusKm} km) exceeds the radio horizon — extra sweep range adds computation time with no additional coverage.{' '}
+                                <button
+                                  type="button"
+                                  onClick={() => saveAndSet(Math.ceil(horizonKm))}
+                                  style={{ background: 'none', border: 'none', color: '#3498db', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                                >
+                                  Set to {Math.ceil(horizonKm)} km
+                                </button>
+                              </p>
+                            )}
+                            {maxRadiusKm > 25 && !beyondHorizon && (
+                              <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
+                                Large radius — computation may take longer.
+                              </p>
+                            )}
+                          </>
+                        );
+                      })()}
                       {lastRunCoverageSettings && terrainCoverageOverlays.length > 0 &&
                         (lastRunCoverageSettings.env !== coverageEnv || lastRunCoverageSettings.maxRadiusKm !== maxRadiusKm) && (
                         <p className="sidebar-hint" style={{ marginBottom: '0.25rem', color: 'var(--color-warning, #e67e22)' }}>
