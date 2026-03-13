@@ -31,7 +31,7 @@
     "id": "meshcore-us-fcc",
     "firmware": "meshcore",
     "region_code": "us_fcc",
-    "default_frequency_mhz": 910.525,
+    "default_frequency_mhz": 906.875,
     "default_modem_preset_id": "meshcore-default"
   },
   {

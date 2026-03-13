@@ -1652,7 +1652,7 @@ export function AppLayout() {
         let paInputRangeMaxDbm: number | undefined;
         if (pa) {
           paMaxOutputDbm = pa.max_output_power_dbm;
-          const nums = (pa.input_power_range ?? '').match(/-?\d+(?:\.\d+)?/g);
+          const nums = (pa.input_power_range ?? '').match(/\b\d+(?:\.\d+)?/g);
           paInputRangeMaxDbm = nums ? parseFloat(nums[nums.length - 1]) : 22;
         }
         const result = await api.getTerrainCoverageGrid(node, nodeEnv, maxRadiusKm * 1000, paMaxOutputDbm, paInputRangeMaxDbm);
@@ -2803,6 +2803,11 @@ export function AppLayout() {
                       {COVERAGE_ENVIRONMENTS[coverageEnv] && (
                         <p className="sidebar-hint" style={{ marginBottom: '0' }}>
                           {COVERAGE_ENVIRONMENTS[coverageEnv].description}
+                        </p>
+                      )}
+                      {selectedNode && selectedNode.antenna_height_m > 15 && coverageEnv !== 'los_elevated' && (
+                        <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
+                          Elevated node ({selectedNode.antenna_height_m} m) — use "Clear LOS (Elevated)" for accurate simulation. Current environment underestimates range at height.
                         </p>
                       )}
                       <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>

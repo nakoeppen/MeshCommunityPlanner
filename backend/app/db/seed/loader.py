@@ -110,12 +110,11 @@ def _table_is_populated(conn: sqlite3.Connection, table: str) -> bool:
 def load_seed_data(conn: sqlite3.Connection) -> None:
     """Load all catalog seed data from JSON files.
 
-    Skips each table if it already has data (idempotent).
+    Uses INSERT OR REPLACE so catalog changes (e.g. updated device specs) are
+    applied on every startup.  Custom entries (user-created, different IDs) are
+    unaffected because their IDs never appear in the seed files.
     """
     for filename, (table, columns) in SEED_FILES.items():
-        if _table_is_populated(conn, table):
-            continue
-
         json_path = SEED_DIR / filename
         if not json_path.exists():
             continue
@@ -128,7 +127,7 @@ def load_seed_data(conn: sqlite3.Connection) -> None:
 
         placeholders = ", ".join("?" for _ in columns)
         col_names = ", ".join(columns)
-        sql = f"INSERT INTO {table} ({col_names}) VALUES ({placeholders})"  # noqa: S608
+        sql = f"INSERT OR REPLACE INTO {table} ({col_names}) VALUES ({placeholders})"  # noqa: S608
 
         rows = [
             tuple(_serialize_value(entry.get(col)) for col in columns)

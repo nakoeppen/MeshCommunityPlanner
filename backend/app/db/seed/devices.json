@@ -161,7 +161,7 @@
   },
   {
     "id": "t114-v2",
-    "name": "Mesh Node T114 V2",
+    "name": "Heltec Mesh Node T114 V2",
     "mcu": "nRF52840",
     "radio_chip": "SX1262",
     "max_tx_power_dbm": 22.0,
