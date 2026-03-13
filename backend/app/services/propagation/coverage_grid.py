@@ -52,6 +52,15 @@ SIGNAL_CUTOFF_DBM = -135.0
 # Default receiver height (handheld at ground level)
 RX_HEIGHT_M = 1.5
 
+# Earth curvature correction — standard 4/3 effective Earth radius
+# h_bulge(d) = d^2 / (2 * k * Re) gives the apparent rise of the terrain
+# at distance d relative to the TX horizontal plane.  Without this, the
+# sweep treats every path as flat, making coverage unrealistically large
+# at long range (e.g. 80m antenna appears to cover 50km on flat terrain
+# instead of the correct ~37km radio horizon).
+_K_FACTOR = 4.0 / 3.0
+EFFECTIVE_EARTH_RADIUS_M = _K_FACTOR * 6_371_000.0  # ~8,494,667 m
+
 # Type alias for elevation read function
 ElevationReader = Callable[[float, float], Optional[int]]
 
@@ -194,18 +203,24 @@ def compute_terrain_coverage_grid(
             else:
                 pt_elev = 0.0  # fallback to sea level
 
+            # Earth curvature correction: the terrain at distance d appears
+            # d^2 / (2 * k * Re) higher than its AMSL elevation when viewed
+            # from the TX horizontal plane.  Without this, coverage extends
+            # far beyond the true radio horizon on flat terrain.
+            earth_bulge = (distance * distance) / (2.0 * EFFECTIVE_EARTH_RADIUS_M)
+            pt_elev_curved = pt_elev + earth_bulge
+
             # --- Update dominant obstacle tracking ---
-            # Slope from TX tip to terrain at this point (not the RX point;
-            # we care about the raw terrain acting as an obstacle for later points)
-            terrain_slope = (pt_elev - tx_tip) / distance
+            # Slope from TX tip to corrected terrain at this point
+            terrain_slope = (pt_elev_curved - tx_tip) / distance
             if terrain_slope > best_obstacle_slope:
                 best_obstacle_slope = terrain_slope
-                best_obstacle_elev = pt_elev
+                best_obstacle_elev = pt_elev_curved
                 best_obstacle_dist = distance
 
             # --- Compute signal at this sample point ---
-            # RX point: ground elevation + handheld height
-            rx_h = pt_elev + RX_HEIGHT_M
+            # RX point: curvature-corrected ground elevation + handheld height
+            rx_h = pt_elev_curved + RX_HEIGHT_M
 
             # Diffraction loss from the dominant obstacle
             diffraction_loss = 0.0
