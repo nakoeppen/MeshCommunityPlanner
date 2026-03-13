@@ -1,0 +1,329 @@
+/**
+ * Unit tests for InternetMapImportModal component.
+ * Uses vi.stubGlobal('fetch') to mock the /api/import/internet-map endpoint.
+ */
+
+import React from 'react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { axe } from 'jest-axe';
+import { InternetMapImportModal } from '../../src/components/plan/InternetMapImportModal';
+
+// ---- Store mocks ----
+vi.mock('../../src/stores/planStore', () => ({
+  usePlanStore: (selector: (s: any) => any) => {
+    const state = {
+      current_plan: { id: 'plan-1', name: 'Test Plan', firmware_family: 'meshcore', region: 'us_fcc' },
+      nodes: [],
+      setNodes: vi.fn(),
+    };
+    return selector(state);
+  },
+}));
+
+vi.mock('../../src/services/api', () => ({
+  getAPIClient: () => ({
+    createNode: vi.fn().mockResolvedValue({ id: 'new-node-1', name: 'Alpha' }),
+  }),
+}));
+
+// ---- Helpers ----
+
+const MOCK_NODES = [
+  { name: 'Alpha', lat: 25.1, lon: -80.2, description: 'Node Alpha' },
+  { name: 'Beta', lat: 25.2, lon: -80.3, description: 'Node Beta' },
+  { name: 'Gamma', lat: 25.3, lon: -80.4, description: 'Node Gamma' },
+];
+
+function makeFetchOk(nodes = MOCK_NODES) {
+  return vi.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({ nodes, count: nodes.length, source: 'meshcore' }),
+  });
+}
+
+function makeFetchError() {
+  return vi.fn().mockResolvedValue({
+    ok: false,
+    status: 502,
+    json: () => Promise.resolve({ detail: 'upstream error' }),
+  });
+}
+
+function makeFetchNetworkError() {
+  return vi.fn().mockRejectedValue(new Error('network failure'));
+}
+
+const defaultProps = {
+  isOpen: true,
+  onClose: vi.fn(),
+  planId: 'plan-1',
+};
+
+// Helper: click Fetch Nodes and wait for phase 2
+async function clickFetchAndWaitForPreview() {
+  const fetchBtn = screen.getByRole('button', { name: /fetch nodes/i });
+  await act(async () => { fireEvent.click(fetchBtn); });
+  // Wait for the node table to appear (phase 2)
+  await waitFor(() => expect(screen.queryByRole('table')).toBeTruthy());
+}
+
+describe('InternetMapImportModal', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  // ---- Rendering ----
+
+  describe('rendering when closed', () => {
+    it('renders nothing when isOpen=false', () => {
+      const { container } = render(<InternetMapImportModal {...defaultProps} isOpen={false} />);
+      expect(container.innerHTML).toBe('');
+    });
+  });
+
+  describe('phase 1 — source selection', () => {
+    beforeEach(() => {
+      vi.stubGlobal('fetch', makeFetchOk());
+    });
+
+    it('renders the dialog when isOpen=true', () => {
+      render(<InternetMapImportModal {...defaultProps} />);
+      expect(screen.getByRole('dialog')).toBeTruthy();
+    });
+
+    it('shows the MeshCore Map card', () => {
+      render(<InternetMapImportModal {...defaultProps} />);
+      expect(screen.getByText('MeshCore Map')).toBeTruthy();
+    });
+
+    it('shows the rmap.world coming-soon card', () => {
+      render(<InternetMapImportModal {...defaultProps} />);
+      // rmap.world appears in both the card name and url — just check it's present
+      const elements = screen.getAllByText('rmap.world');
+      expect(elements.length).toBeGreaterThan(0);
+      expect(screen.getByText('Coming Soon')).toBeTruthy();
+    });
+
+    it('renders Fetch Nodes button in phase 1', () => {
+      render(<InternetMapImportModal {...defaultProps} />);
+      expect(screen.getByRole('button', { name: /fetch nodes/i })).toBeTruthy();
+    });
+
+    it('× button calls onClose in phase 1', () => {
+      const onClose = vi.fn();
+      render(<InternetMapImportModal {...defaultProps} onClose={onClose} />);
+      const closeBtn = screen.getByTitle('Close');
+      fireEvent.click(closeBtn);
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
+  // ---- Loading / Error states ----
+
+  describe('loading state', () => {
+    it('shows loading spinner while fetching', async () => {
+      // Use a never-resolving promise to freeze in loading state
+      vi.stubGlobal('fetch', vi.fn().mockReturnValue(new Promise(() => {})));
+      render(<InternetMapImportModal {...defaultProps} />);
+      const fetchBtn = screen.getByRole('button', { name: /fetch nodes/i });
+      fireEvent.click(fetchBtn);
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /fetching/i })).toBeTruthy();
+      });
+    });
+
+    it('fetch button is disabled while loading', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockReturnValue(new Promise(() => {})));
+      render(<InternetMapImportModal {...defaultProps} />);
+      const fetchBtn = screen.getByRole('button', { name: /fetch nodes/i });
+      fireEvent.click(fetchBtn);
+      await waitFor(() => {
+        const btn = screen.getByRole('button', { name: /fetching/i }) as HTMLButtonElement;
+        expect(btn.disabled).toBe(true);
+      });
+    });
+  });
+
+  describe('successful fetch → phase 2', () => {
+    beforeEach(() => {
+      vi.stubGlobal('fetch', makeFetchOk());
+    });
+
+    it('transitions to phase 2 and shows node table after successful fetch', async () => {
+      render(<InternetMapImportModal {...defaultProps} />);
+      await clickFetchAndWaitForPreview();
+      expect(screen.getByRole('table')).toBeTruthy();
+    });
+
+    it('shows node count badge', async () => {
+      render(<InternetMapImportModal {...defaultProps} />);
+      await clickFetchAndWaitForPreview();
+      expect(screen.getByText(`${MOCK_NODES.length} nodes found`)).toBeTruthy();
+    });
+  });
+
+  describe('error states', () => {
+    it('shows error message on HTTP error response', async () => {
+      vi.stubGlobal('fetch', makeFetchError());
+      render(<InternetMapImportModal {...defaultProps} />);
+      await act(async () => { fireEvent.click(screen.getByRole('button', { name: /fetch nodes/i })); });
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeTruthy();
+        expect(screen.getByText(/upstream error/i)).toBeTruthy();
+      });
+    });
+
+    it('shows error message on network failure', async () => {
+      vi.stubGlobal('fetch', makeFetchNetworkError());
+      render(<InternetMapImportModal {...defaultProps} />);
+      await act(async () => { fireEvent.click(screen.getByRole('button', { name: /fetch nodes/i })); });
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toBeTruthy();
+      });
+    });
+
+    it('stays in phase 1 on error', async () => {
+      vi.stubGlobal('fetch', makeFetchError());
+      render(<InternetMapImportModal {...defaultProps} />);
+      await act(async () => { fireEvent.click(screen.getByRole('button', { name: /fetch nodes/i })); });
+      await waitFor(() => { screen.getByRole('alert'); });
+      // Phase 1 button still there
+      expect(screen.getByRole('button', { name: /fetch nodes/i })).toBeTruthy();
+    });
+  });
+
+  describe('empty node list', () => {
+    it('shows "0 nodes found" when API returns empty array', async () => {
+      vi.stubGlobal('fetch', makeFetchOk([]));
+      render(<InternetMapImportModal {...defaultProps} />);
+      await act(async () => { fireEvent.click(screen.getByRole('button', { name: /fetch nodes/i })); });
+      await waitFor(() => {
+        expect(screen.getByText('0 nodes found')).toBeTruthy();
+      });
+    });
+  });
+
+  // ---- Phase 2 — node list ----
+
+  describe('phase 2 — node list', () => {
+    beforeEach(async () => {
+      vi.stubGlobal('fetch', makeFetchOk());
+    });
+
+    async function renderAtPhase2() {
+      render(<InternetMapImportModal {...defaultProps} />);
+      await clickFetchAndWaitForPreview();
+    }
+
+    it('shows node names in the table', async () => {
+      await renderAtPhase2();
+      expect(screen.getByText('Alpha')).toBeTruthy();
+      expect(screen.getByText('Beta')).toBeTruthy();
+      expect(screen.getByText('Gamma')).toBeTruthy();
+    });
+
+    it('shows lat and lon values in the table', async () => {
+      await renderAtPhase2();
+      // toFixed(4) formatting
+      expect(screen.getByText('25.1000')).toBeTruthy();
+      expect(screen.getByText('-80.2000')).toBeTruthy();
+    });
+
+    it('has Name, Lat, Lon column headers', async () => {
+      await renderAtPhase2();
+      expect(screen.getByText('Name')).toBeTruthy();
+      expect(screen.getByText('Lat')).toBeTruthy();
+      expect(screen.getByText('Lon')).toBeTruthy();
+    });
+
+    it('filter input filters nodes by name', async () => {
+      await renderAtPhase2();
+      const filterInput = screen.getByPlaceholderText(/filter by name/i);
+      fireEvent.change(filterInput, { target: { value: 'Alpha' } });
+      expect(screen.getByText('Alpha')).toBeTruthy();
+      expect(screen.queryByText('Beta')).toBeNull();
+      expect(screen.queryByText('Gamma')).toBeNull();
+    });
+
+    it('all nodes pre-selected by default', async () => {
+      await renderAtPhase2();
+      const checkboxes = screen.getAllByRole('checkbox');
+      // Each node row has one checkbox
+      const nodeCheckboxes = checkboxes.filter((cb) =>
+        (cb as HTMLInputElement).getAttribute('aria-label')?.startsWith('Select ')
+      );
+      expect(nodeCheckboxes.length).toBe(MOCK_NODES.length);
+      nodeCheckboxes.forEach((cb) => expect((cb as HTMLInputElement).checked).toBe(true));
+    });
+
+    it('Select All selects all checkboxes', async () => {
+      await renderAtPhase2();
+      // Deselect first
+      fireEvent.click(screen.getByRole('button', { name: 'Deselect All' }));
+      // Now select all — use exact match to avoid matching "Deselect All"
+      fireEvent.click(screen.getByRole('button', { name: 'Select All' }));
+      const checkboxes = screen.getAllByRole('checkbox').filter((cb) =>
+        (cb as HTMLInputElement).getAttribute('aria-label')?.startsWith('Select ')
+      );
+      checkboxes.forEach((cb) => expect((cb as HTMLInputElement).checked).toBe(true));
+    });
+
+    it('Deselect All unchecks all checkboxes', async () => {
+      await renderAtPhase2();
+      fireEvent.click(screen.getByRole('button', { name: /deselect all/i }));
+      const checkboxes = screen.getAllByRole('checkbox').filter((cb) =>
+        (cb as HTMLInputElement).getAttribute('aria-label')?.startsWith('Select ')
+      );
+      checkboxes.forEach((cb) => expect((cb as HTMLInputElement).checked).toBe(false));
+    });
+
+    it('Import button shows selected node count', async () => {
+      await renderAtPhase2();
+      // All 3 pre-selected
+      const importBtn = screen.getByRole('button', { name: /import 3 selected/i });
+      expect(importBtn).toBeTruthy();
+    });
+
+    it('Import button is disabled when 0 nodes selected', async () => {
+      await renderAtPhase2();
+      fireEvent.click(screen.getByRole('button', { name: /deselect all/i }));
+      const importBtn = screen.getByRole('button', { name: /import 0 selected/i }) as HTMLButtonElement;
+      expect(importBtn.disabled).toBe(true);
+    });
+
+    it('× button calls onClose in phase 2', async () => {
+      const onClose = vi.fn();
+      render(<InternetMapImportModal {...defaultProps} onClose={onClose} />);
+      await clickFetchAndWaitForPreview();
+      const closeBtn = screen.getByTitle('Close');
+      fireEvent.click(closeBtn);
+      expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
+  // ---- Accessibility ----
+
+  describe('accessibility', () => {
+    it('axe passes in phase 1 (isOpen=true)', async () => {
+      vi.stubGlobal('fetch', makeFetchOk());
+      const { container } = render(<InternetMapImportModal {...defaultProps} />);
+      const overlay = document.querySelector('.imim-overlay') as HTMLElement;
+      const results = await axe(overlay || container);
+      expect(results.violations).toEqual([]);
+    });
+
+    it('axe passes in phase 2 after successful fetch', async () => {
+      vi.stubGlobal('fetch', makeFetchOk());
+      const { container } = render(<InternetMapImportModal {...defaultProps} />);
+      await clickFetchAndWaitForPreview();
+      const overlay = document.querySelector('.imim-overlay') as HTMLElement;
+      const results = await axe(overlay || container);
+      expect(results.violations).toEqual([]);
+    });
+  });
+});
