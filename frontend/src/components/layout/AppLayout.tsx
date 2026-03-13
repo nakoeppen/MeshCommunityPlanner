@@ -2955,7 +2955,7 @@ export function AppLayout() {
         )}
         <MainContent />
       </div>
-      <StatusBar status={buildStatus()} />
+      <StatusBar status={buildStatus()} isLoading={analysisLoading} />
       <LinkReportModal isOpen={showLinkReport} onClose={() => setShowLinkReport(false)} onExportPDF={handleExportNetworkPDF} />
       <TimeOnAirModal
         isOpen={showTimeOnAir}
