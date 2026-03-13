@@ -105,11 +105,13 @@ def _register_w2_routers(app: FastAPI) -> None:
     from backend.app.api.plans import router as plans_router
     from backend.app.api.nodes import router as nodes_router
     from backend.app.api.catalog import router as catalog_router
+    from backend.app.api.internet_map import router as internet_map_router
 
     app.include_router(health_router, prefix="/api")
     app.include_router(plans_router, prefix="/api")
     app.include_router(nodes_router, prefix="/api")
     app.include_router(catalog_router, prefix="/api")
+    app.include_router(internet_map_router, prefix="/api")
 
 
 def _register_w3_router(app: FastAPI, ticket_manager: TicketManager) -> None:

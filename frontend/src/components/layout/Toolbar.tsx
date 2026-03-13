@@ -25,6 +25,7 @@ interface ToolbarProps {
   onExportCSV?: () => void;
   onImportCSV?: () => void;
   onImportJSON?: () => void;
+  onImportFromMap?: () => void;
   onExportKML?: () => void;
   onExportGeoJSON?: () => void;
   onExportCoT?: () => void;
@@ -79,6 +80,7 @@ export function Toolbar({
   onExportCSV,
   onImportCSV,
   onImportJSON,
+  onImportFromMap,
   onExportKML,
   onExportGeoJSON,
   onExportCoT,
@@ -297,6 +299,11 @@ export function Toolbar({
                     onClick={() => hasPlan && handleItemClick(onImportJSON)}
                     title="Import node locations from a JSON file with a layers array (name, latitude, longitude, antenna_height_a)">
                     Import Nodes (JSON)
+                  </button>
+                  <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
+                    onClick={() => hasPlan && handleItemClick(onImportFromMap)}
+                    title="Import nodes from online mesh network maps (MeshCore Map, rmap.world)">
+                    Import Nodes from Map...
                   </button>
                   <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
                     onClick={() => hasPlan && handleItemClick(onExportKML)}

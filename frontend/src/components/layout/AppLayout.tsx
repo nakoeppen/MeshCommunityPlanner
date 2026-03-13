@@ -35,6 +35,7 @@ import { ErrorDialog } from '../common/ErrorDialog';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { PromptDialog } from '../common/PromptDialog';
 import { WelcomeTour } from '../onboarding/WelcomeTour';
+import { InternetMapImportModal } from '../plan/InternetMapImportModal';
 import './AppLayout.css';
 
 // ============================================================================
@@ -301,6 +302,7 @@ export function AppLayout() {
   const [showFloodingSim, setShowFloodingSim] = useState(false);
   const [showPlacementSuggest, setShowPlacementSuggest] = useState(false);
   const [showPDFReport, setShowPDFReport] = useState(false);
+  const [internetMapImportOpen, setInternetMapImportOpen] = useState(false);
   const [envWarningDialog, setEnvWarningDialog] = useState<{
     nodeNames: string;
     onSwitch: () => void;
@@ -2616,6 +2618,7 @@ export function AppLayout() {
         onExportCSV={handleExportCSV}
         onImportCSV={handleImportCSV}
         onImportJSON={handleImportJSON}
+        onImportFromMap={() => setInternetMapImportOpen(true)}
         onExportKML={handleExportKML}
         onExportGeoJSON={handleExportGeoJSON}
         onExportCoT={handleExportCoT}
@@ -3100,6 +3103,11 @@ export function AppLayout() {
         exporting={bomExporting}
       />
       <WelcomeTour key={tourForceKey} forceShow={tourForceKey > 0} />
+      <InternetMapImportModal
+        isOpen={internetMapImportOpen}
+        onClose={() => setInternetMapImportOpen(false)}
+        planId={currentPlan?.id ?? null}
+      />
       <CatalogModal
         isOpen={catalogModalOpen}
         onClose={handleCatalogClose}
