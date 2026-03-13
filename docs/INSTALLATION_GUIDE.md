@@ -293,6 +293,7 @@ curl http://127.0.0.1:8321/api/health
 - Data is stored in a local **SQLite** database (auto-created on first run)
 - Map tiles are fetched from OpenStreetMap (requires internet)
 - No accounts, no cloud services, no external dependencies at runtime
+- You have the option to make it a more traditional server by changing the config (see [CONFIG.md](CONFIG.md))
 
 ---
 
@@ -314,4 +315,4 @@ MeshCommunityPlanner/
 
 ---
 
-*Last Updated: 2026-02-18*
+*Last Updated: 2026-03-12*

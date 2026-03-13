@@ -181,6 +181,7 @@ def create_app(port: int | None = None) -> FastAPI:
         CORSMiddleware,
         allow_origins=[
             f"http://{host}:{port}",
+            f"http://127.0.0.1:{port}",
             "http://127.0.0.1:5173",
         ],
         allow_methods=["*"],
@@ -393,7 +394,7 @@ if __name__ == "__main__":
                 port = available_port
             else: 
                 print(f"Port {port} already in use \u2014")
-\
+
         # 4. Write PID + port files for single-instance enforcement
         write_pid_file(port)
 
@@ -432,11 +433,15 @@ if __name__ == "__main__":
 
             threading.Thread(target=_open_browser_when_ready, daemon=True).start()
 
+        os.environ["MESH_PLANNER_PORT"] = str(port)
+        os.environ["MESH_PLANNER_HOST"] = host
+
         uvicorn.run(
-            app,
+            app if production else "backend.app.main:get_app",
+            factory=not production,
             host=host,
             port=port,
-            reload=False,  # reload requires import-string; keep deterministic port/CORS
+            reload=not production,
             timeout_graceful_shutdown=3,
         )
 
