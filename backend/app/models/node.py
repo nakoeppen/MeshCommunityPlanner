@@ -99,6 +99,11 @@ class NodeCreate(BaseModel):
         pattern="^(los_elevated|open_rural|suburban|urban|indoor)$",
         description="Propagation environment"
     )
+    coverage_environment: Optional[str] = Field(
+        None,
+        pattern="^(los_elevated|open_rural|suburban|urban|indoor)$",
+        description="Per-node propagation environment override (null = inherit global)"
+    )
 
     @field_validator('name', 'notes')
     @classmethod
@@ -202,6 +207,11 @@ class NodeUpdate(BaseModel):
         None,
         pattern="^(los_elevated|open_rural|suburban|urban|indoor)$"
     )
+    coverage_environment: Optional[str] = Field(
+        None,
+        pattern="^(los_elevated|open_rural|suburban|urban|indoor)$",
+        description="Per-node propagation environment override (null = inherit global)"
+    )
     sort_order: Optional[int] = Field(None, ge=0)
 
     @field_validator('name', 'notes')
@@ -288,6 +298,7 @@ class NodeResponse(BaseModel):
     desired_coverage_radius_m: Optional[float]
     notes: str
     environment: str
+    coverage_environment: Optional[str]
     sort_order: int
     created_at: datetime
     updated_at: datetime

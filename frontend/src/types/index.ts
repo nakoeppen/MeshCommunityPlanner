@@ -54,6 +54,7 @@ export interface Node {
   desired_coverage_radius_m: number | null;
   notes: string;
   environment: string;  // 'los_elevated' | 'open_rural' | 'suburban' | 'urban' | 'indoor'
+  coverage_environment?: string | null;  // per-node override; null = inherit global
   sort_order: number;
   created_at: string;
   updated_at: string;

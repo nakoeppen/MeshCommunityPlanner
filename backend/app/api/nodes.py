@@ -145,6 +145,7 @@ async def create_node(
         desired_coverage_radius_m=node.desired_coverage_radius_m,
         notes=node.notes,
         environment=node.environment,
+        coverage_environment=node.coverage_environment,
         sort_order=0  # Default sort order
     )
 
