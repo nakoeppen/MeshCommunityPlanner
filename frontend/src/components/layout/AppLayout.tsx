@@ -17,6 +17,7 @@ import { renderCoverageCanvas } from '../../utils/coverageCanvas';
 import type { Plan, Node, CodingRate } from '../../types';
 import { LinkReportModal } from '../analysis/LinkReportModal';
 import { TimeOnAirModal } from '../analysis/TimeOnAirModal';
+import { RepeaterChainModal } from '../analysis/RepeaterChainModal';
 import { ChannelCapacityModal } from '../analysis/ChannelCapacityModal';
 import { BOMModal } from '../bom/BOMModal';
 import { exportNodesCSV, parseNodesCSV } from '../../utils/csv';
@@ -283,6 +284,7 @@ export function AppLayout() {
   const [descExpanded, setDescExpanded] = useState(false);
   const [showLinkReport, setShowLinkReport] = useState(false);
   const [showTimeOnAir, setShowTimeOnAir] = useState(false);
+  const [showRepeaterChain, setShowRepeaterChain] = useState(false);
   const [showChannelCapacity, setShowChannelCapacity] = useState(false);
   const [showBOM, setShowBOM] = useState(false);
   const [bomData, setBomData] = useState<BOMPlanData[] | null>(null);
@@ -2629,6 +2631,7 @@ export function AppLayout() {
         onExportMaterialList={handleExportMaterialList}
         onExportNetworkPDF={() => setShowPDFReport(true)}
         onTimeOnAir={() => setShowTimeOnAir(true)}
+        onRepeaterChain={() => setShowRepeaterChain(true)}
         onChannelCapacity={() => setShowChannelCapacity(true)}
         onFloodSim={() => setShowFloodingSim(true)}
         onSuggestPlacement={() => setShowPlacementSuggest(true)}
@@ -3058,6 +3061,7 @@ export function AppLayout() {
         onCancel={envWarningDialog?.onRunAnyway ?? (() => {})}
       />
       <LinkReportModal isOpen={showLinkReport} onClose={() => setShowLinkReport(false)} onExportPDF={handleExportNetworkPDF} />
+      <RepeaterChainModal isOpen={showRepeaterChain} onClose={() => setShowRepeaterChain(false)} />
       <TimeOnAirModal
         isOpen={showTimeOnAir}
         onClose={() => setShowTimeOnAir(false)}

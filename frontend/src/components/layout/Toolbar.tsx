@@ -45,6 +45,7 @@ interface ToolbarProps {
   onChannelCapacity?: () => void;
   onFloodSim?: () => void;
   onSuggestPlacement?: () => void;
+  onRepeaterChain?: () => void;
   onSaveScreenshot?: () => void;
   onToggleElevation?: () => void;
   elevationEnabled?: boolean;
@@ -96,6 +97,7 @@ export function Toolbar({
   onChannelCapacity,
   onFloodSim,
   onSuggestPlacement,
+  onRepeaterChain,
   onSaveScreenshot,
   onToggleElevation,
   elevationEnabled = false,
@@ -971,9 +973,17 @@ export function Toolbar({
               <div className="moretools-protocol-section">
                 <div className="moretools-protocol-header">
                   MeshCore
-                  <span className="moretools-badge">coming soon</span>
                 </div>
-                <div className="moretools-coming-soon">MeshCore-specific tools are planned for a future release.</div>
+                <button
+                  className="moretools-btn"
+                  type="button"
+                  onClick={() => { setOpenMenu(null); onRepeaterChain?.(); }}
+                  title="Calculate hop-by-hop link budget for a MeshCore repeater chain"
+                >
+                  <span className="moretools-btn-name">Repeater Chain Calculator</span>
+                  <span className="moretools-btn-desc">Hop-by-hop link budget for MeshCore repeater chains</span>
+                </button>
+                <div className="moretools-coming-soon">More MeshCore-specific tools are planned for a future release.</div>
               </div>
 
               {/* Reticulum */}
