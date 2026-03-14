@@ -6,6 +6,61 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.0] — 2026-03-14
+
+### Added
+
+#### ATAK Live KML Integration
+- **Live KML endpoint** — `GET /api/atak/nodes.kml` serves all plan nodes as a KML feed that ATAK can poll on a configurable interval (no TAK Server required)
+- Node types automatically classified into three styles: Mesh Node (green), Repeater (orange), Gateway (red), each with a distinct icon
+- Nodes grouped into KML `<Folder>` elements by type for clean layer management in ATAK's overlay panel
+- Rich HTML popups in each placemark: plan name, frequency, antenna height, coverage environment, device ID
+- **`GET /api/atak/local-url`** — returns the machine's LAN IP pre-formatted as an ATAK-ready URL
+- **ATAK Integration panel** in sidebar (under plan details): shows polling URL, Copy URL button, optional plan filter, and an IP Override field for cross-subnet/NAT deployments
+- Static icon PNGs served at `/static/icons/` and bundled in the PyInstaller exe
+
+#### MeshCore Tools (More Tools → MeshCore tab)
+- **Airtime & Duty Cycle Budget Calculator** — LoRa time-on-air math for MeshCore packets, projected duty cycle at current traffic load, required Airtime Factor (AF) to hit a target duty cycle, EU regulatory compliance check (10% limit on 869.525 MHz sub-band), headroom display. Key formula: `duty_cycle = 100 / (AF + 1)`
+- **Network Density Planner** — calculates clients-per-repeater vs the 32-client ACL hard limit, neighbor table saturation vs the 50-node limit, flood packet count per message, channel airtime consumed by flood traffic alone, recommended `flood.max` setting, and txdelay tier. Includes callout explaining the counterintuitive "more repeaters = more flood copies" dynamic
+
+#### Reticulum / RNS Tools (More Tools → Reticulum tab)
+- **RNode Link Budget & Range Estimator** — full Friis link budget for SX1276 and SX1262 chipsets. Inputs: chipset, Tx power, SF, BW, CR, frequency band, antenna gains, cable loss, environment fade margin, required link margin. Outputs: data rate (bps), time-on-air for 500-byte RNS MTU, max FSPL budget, estimated reliable range with qualitative band, RNS 5 bps minimum threshold check
+- **Transport Node Placement Advisor** — calculates announce traffic load vs the 2% RNS bandwidth budget, recommended minimum transport node count, path redundancy / single-point-of-failure detection, interface mode guidance (access_point / gateway / boundary / full), convergence degradation warning for oversized networks
+
+#### Per-Node Coverage Environment
+- Each node can now have its own coverage environment override (LOS / Rural / Suburban / Urban / Indoor)
+- Colored badges on node list: blue=LOS, green=Rural, yellow=Suburban, red=Urban, purple=Indoor, gray=Global (inheriting global setting)
+- Bulk set: multi-select nodes and apply an environment to all at once
+- Coverage analysis uses per-node override with fallback to global setting
+- DB migration `005_add_node_coverage_environment.sql`
+
+#### Internet Map Import
+- **Import Nodes from Internet Map** (Plan menu) — import nodes from MeshCore's live map (`map.meshcore.dev`) directly into the active plan. Decoded from msgpack binary API server-side. Phase 1: source selection. Phase 2: scrollable node table with checkboxes, filter, Select/Deselect All
+
+#### More Tools Modal — Protocol-First UX
+- Tools dropdown now leads with "More Tools" entry showing three protocol icons (Meshtastic, MeshCore, Reticulum)
+- Modal opens to a protocol selector; choosing a protocol shows only that protocol's tools
+- All "coming soon" placeholders removed as tools are now present for all three protocols
+
+### Fixed
+- **Radio horizon cap** — Max Radius input is now dynamically capped at the computed radio horizon for the selected node's antenna height. Horizon scales with antenna height (3m → ~37 km, 10m → ~48 km). No button needed; the input itself enforces the physics
+- **Coverage analysis scope** — "All nodes" analysis was computing nodes across all loaded plans simultaneously. Now correctly scoped to the active plan only
+- **Unsaved changes save button** — When the dirty asterisk (`*`) appears next to the plan name, an inline orange Save button now appears. One click persists plan metadata and clears the flag
+- **Plan name overflow** — Long plan names now truncate with ellipsis so the save button always remains visible
+- **Number inputs** — All 30+ number inputs across the app use the new `NumberInput` component: free typing while focused, commits and clamps on blur/Enter, Escape reverts
+
+### Changed
+- More Tools protocol icons updated: Meshtastic M-mark, custom MeshCore triangle-nodes, correct RNS double-ring logo (was wrong wordmark SVG)
+- Radio horizon note converted from collapsible `<details>` to always-visible inline hint
+- "Drag to move" hint moved inline inside modal title on all 8 draggable modals
+- Coverage Environment dropdown labelled "(Global Setting)" with expandable explanation
+
+### Tests
+- Frontend: 318 passing (Vitest + Testing Library + jest-axe)
+- Backend: 154 passing (pytest)
+
+---
+
 ## [1.2.0] — 2026-03
 
 ### Added
