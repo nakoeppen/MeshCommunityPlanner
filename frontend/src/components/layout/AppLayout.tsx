@@ -2934,30 +2934,17 @@ export function AppLayout() {
                                 title="Maximum sweep distance. The sweep stops at the radio horizon or signal cutoff (whichever comes first), even if this value is larger."
                               />
                             </div>
-                            <details className="horizon-note">
-                              <summary>Note: Radio Horizon</summary>
-                              <div className="horizon-note-body">
-                                Radio horizon: ~{horizonKm} km ({h} m antenna). Coverage beyond this point is physically blocked by Earth curvature on flat terrain.
-                              </div>
-                            </details>
-                            {beyondHorizon && (
-                              <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
-                                Max radius ({maxRadiusKm} km) exceeds the radio horizon — extra range adds compute time with no additional coverage.
-                                <button
-                                  type="button"
-                                  className="horizon-set-btn horizon-set-btn-block"
-                                  onClick={() => saveAndSet(Math.ceil(horizonKm))}
-                                  aria-label={`Set max radius to radio horizon (${Math.ceil(horizonKm)} km)`}
-                                >
-                                  Set to {Math.ceil(horizonKm)} km
-                                </button>
-                              </p>
-                            )}
-                            {maxRadiusKm > 25 && !beyondHorizon && (
-                              <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
-                                Large radius — computation may take longer.
-                              </p>
-                            )}
+                            <div className="horizon-note-body" style={{ marginTop: '0.4rem' }}>
+                              Radio horizon: ~{horizonKm} km ({h} m antenna). Coverage beyond this is blocked by Earth curvature.
+                              <button
+                                type="button"
+                                className="horizon-set-btn horizon-set-btn-block"
+                                onClick={() => saveAndSet(Math.ceil(horizonKm))}
+                                aria-label={`Set max radius to radio horizon (${Math.ceil(horizonKm)} km)`}
+                              >
+                                Set to {Math.ceil(horizonKm)} km
+                              </button>
+                            </div>
                           </>
                         );
                       })()}
