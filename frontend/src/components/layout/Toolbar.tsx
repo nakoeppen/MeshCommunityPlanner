@@ -53,6 +53,8 @@ interface ToolbarProps {
   onMeshCoreAirtime?: () => void;
   onMeshCoreCapacity?: () => void;
   onReticulumAnnounce?: () => void;
+  onRNSLinkBudget?: () => void;
+  onRNSTransport?: () => void;
   onSaveScreenshot?: () => void;
   onToggleElevation?: () => void;
   elevationEnabled?: boolean;
@@ -109,6 +111,8 @@ export function Toolbar({
   onMeshCoreAirtime,
   onMeshCoreCapacity,
   onReticulumAnnounce,
+  onRNSLinkBudget,
+  onRNSTransport,
   onSaveScreenshot,
   onToggleElevation,
   elevationEnabled = false,
@@ -1059,7 +1063,18 @@ export function Toolbar({
                     <span className="moretools-btn-name">Announce Rate Calculator</span>
                     <span className="moretools-btn-desc">Safe announce intervals and channel utilization for Reticulum over LoRa / RNode</span>
                   </button>
-                  <div className="moretools-coming-soon">More Reticulum tools coming in a future release.</div>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onRNSLinkBudget?.(); }}
+                    title="Full link budget and range estimate for RNode-to-RNode hops">
+                    <span className="moretools-btn-name">RNode Link Budget &amp; Range</span>
+                    <span className="moretools-btn-desc">SX1276/SX1262 chipset link budget, max range estimate, and RNS 5 bps minimum check</span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onRNSTransport?.(); }}
+                    title="How many transport nodes your RNS network needs and where to place them">
+                    <span className="moretools-btn-name">Transport Node Placement Advisor</span>
+                    <span className="moretools-btn-desc">Minimum transport nodes, announce budget consumption, interface mode guidance, and SPOF detection</span>
+                  </button>
                 </div>
               )}
 

@@ -22,6 +22,8 @@ import { MeshCoreAirtimeModal } from '../analysis/MeshCoreAirtimeModal';
 import { MeshCoreCapacityModal } from '../analysis/MeshCoreCapacityModal';
 import { ChannelCapacityModal } from '../analysis/ChannelCapacityModal';
 import { ReticulumAnnounceModal } from '../analysis/ReticulumAnnounceModal';
+import { RNSLinkBudgetModal } from '../analysis/RNSLinkBudgetModal';
+import { RNSTransportModal } from '../analysis/RNSTransportModal';
 import { BOMModal } from '../bom/BOMModal';
 import { exportNodesCSV, parseNodesCSV } from '../../utils/csv';
 import { exportKML, type KMLLink } from '../../utils/kml';
@@ -297,6 +299,8 @@ export function AppLayout() {
   const [showMeshCoreCapacity, setShowMeshCoreCapacity] = useState(false);
   const [showChannelCapacity, setShowChannelCapacity] = useState(false);
   const [showReticulumAnnounce, setShowReticulumAnnounce] = useState(false);
+  const [showRNSLinkBudget, setShowRNSLinkBudget] = useState(false);
+  const [showRNSTransport, setShowRNSTransport] = useState(false);
   const [showBOM, setShowBOM] = useState(false);
   const [bomData, setBomData] = useState<BOMPlanData[] | null>(null);
   const [bomLoading, setBomLoading] = useState(false);
@@ -2671,6 +2675,8 @@ export function AppLayout() {
         onMeshCoreCapacity={() => setShowMeshCoreCapacity(true)}
         onChannelCapacity={() => setShowChannelCapacity(true)}
         onReticulumAnnounce={() => setShowReticulumAnnounce(true)}
+        onRNSLinkBudget={() => setShowRNSLinkBudget(true)}
+        onRNSTransport={() => setShowRNSTransport(true)}
         onFloodSim={() => setShowFloodingSim(true)}
         onSuggestPlacement={() => setShowPlacementSuggest(true)}
         onSaveScreenshot={handleSaveScreenshot}
@@ -3201,6 +3207,14 @@ export function AppLayout() {
       <ReticulumAnnounceModal
         isOpen={showReticulumAnnounce}
         onClose={() => setShowReticulumAnnounce(false)}
+      />
+      <RNSLinkBudgetModal
+        isOpen={showRNSLinkBudget}
+        onClose={() => setShowRNSLinkBudget(false)}
+      />
+      <RNSTransportModal
+        isOpen={showRNSTransport}
+        onClose={() => setShowRNSTransport(false)}
       />
       <BOMModal
         isOpen={showBOM}
