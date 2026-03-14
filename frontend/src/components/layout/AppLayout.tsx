@@ -1637,7 +1637,7 @@ export function AppLayout() {
 
     const targetNodes = selectedNodeIds.length > 0
       ? nodes.filter((n) => selectedNodeIds.includes(String(n.id)))
-      : nodes;
+      : nodes.filter((n) => n.plan_id === currentPlan?.id);
 
     if (targetNodes.length < 1) {
       setErrorMsg('Need at least 1 node for coverage analysis.');
@@ -1765,7 +1765,7 @@ export function AppLayout() {
     if (!currentPlan || analysisLoading) return;
     const targetNodes = selectedNodeIds.length > 0
       ? nodes.filter((n) => selectedNodeIds.includes(String(n.id)))
-      : nodes;
+      : nodes.filter((n) => n.plan_id === currentPlan?.id);
     // Warn before computing if elevated nodes are using a non-LOS environment.
     // Skip nodes that already have an explicit per-node coverage_environment set — the user made an intentional choice.
     const elevatedNodes = targetNodes.filter((n) => !n.coverage_environment && n.antenna_height_m > 15 && coverageEnv !== 'los_elevated');
