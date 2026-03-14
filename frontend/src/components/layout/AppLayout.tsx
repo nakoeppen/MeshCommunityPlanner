@@ -2913,39 +2913,34 @@ export function AppLayout() {
                             ? Math.max(...coverageTargetNodes.map((n) => n.antenna_height_m))
                             : 3);
                         const horizonM = 3570 * (Math.sqrt(Math.max(0, h)) + Math.sqrt(1.5));
-                        const horizonKm = Math.round(horizonM / 100) / 10;
-                        const beyondHorizon = maxRadiusKm > horizonKm;
+                        const horizonMaxKm = Math.ceil(horizonM / 1000);
+                        // Auto-clamp stored value if node antenna height changed
+                        const clampedRadius = Math.min(maxRadiusKm, horizonMaxKm);
+                        if (clampedRadius !== maxRadiusKm) {
+                          setMaxRadiusKm(clampedRadius);
+                          if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: coverageEnv, maxRadiusKm: clampedRadius, buildId: BUILD_ID }));
+                        }
                         const saveAndSet = (v: number) => {
                           setMaxRadiusKm(v);
                           if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: coverageEnv, maxRadiusKm: v, buildId: BUILD_ID }));
                         };
                         return (
-                          <>
-                            <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
-                              <label htmlFor="maxRadiusKm">Max Radius (km)</label>
-                              <NumberInput
-                                id="maxRadiusKm"
-                                min={1}
-                                max={50}
-                                step={1}
-                                value={maxRadiusKm}
-                                onChange={(v) => saveAndSet(v)}
-                                aria-label="Maximum coverage analysis radius in kilometres (1–50)"
-                                title="Maximum sweep distance. The sweep stops at the radio horizon or signal cutoff (whichever comes first), even if this value is larger."
-                              />
-                            </div>
-                            <div className="horizon-note-body" style={{ marginTop: '0.4rem' }}>
-                              Radio horizon: ~{horizonKm} km ({h} m antenna). Coverage beyond this is blocked by Earth curvature.
-                              <button
-                                type="button"
-                                className="horizon-set-btn horizon-set-btn-block"
-                                onClick={() => saveAndSet(Math.ceil(horizonKm))}
-                                aria-label={`Set max radius to radio horizon (${Math.ceil(horizonKm)} km)`}
-                              >
-                                Set to {Math.ceil(horizonKm)} km
-                              </button>
-                            </div>
-                          </>
+                          <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
+                            <label htmlFor="maxRadiusKm">Max Radius (km)</label>
+                            <NumberInput
+                              id="maxRadiusKm"
+                              min={1}
+                              max={horizonMaxKm}
+                              step={1}
+                              value={clampedRadius}
+                              onChange={(v) => saveAndSet(v)}
+                              aria-label={`Maximum coverage analysis radius in kilometres (1–${horizonMaxKm})`}
+                              title={`Physical limit: ${horizonMaxKm} km radio horizon at ${h}m antenna height.`}
+                            />
+                            <p className="sidebar-hint" style={{ marginBottom: 0, marginTop: '0.2rem' }}>
+                              Radio horizon at {h} m: {horizonMaxKm} km max
+                            </p>
+                          </div>
                         );
                       })()}
                       {lastRunCoverageSettings && terrainCoverageOverlays.length > 0 &&
