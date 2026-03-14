@@ -2854,7 +2854,24 @@ export function AppLayout() {
                       <div className="plan-name-row">
                         <p className="sidebar-plan-name">{currentPlan.name}</p>
                         {dirty && saveStatus === 'idle' && (
-                          <span className="save-indicator save-unsaved" title="Unsaved changes">*</span>
+                          <>
+                            <span className="save-indicator save-unsaved" title="Unsaved changes">*</span>
+                            <button
+                              type="button"
+                              className="save-inline-btn"
+                              title="Save changes"
+                              onClick={async () => {
+                                if (!currentPlan) return;
+                                await api.updatePlan(currentPlan.id, {
+                                  name: currentPlan.name,
+                                  description: currentPlan.description || '',
+                                });
+                                flashSaved();
+                              }}
+                            >
+                              Save
+                            </button>
+                          </>
                         )}
                         {saveStatus === 'saved' && (
                           <span className="save-indicator save-confirmed">Saved</span>

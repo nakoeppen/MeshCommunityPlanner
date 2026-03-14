@@ -274,6 +274,22 @@
   animation: saveFadeOut 1.5s ease-out forwards;
 }
 
+.save-inline-btn {
+  padding: 1px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fff;
+  background: #e67e22;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 1.6;
+}
+.save-inline-btn:hover {
+  background: #cf6d17;
+}
+
 @keyframes saveFadeOut {
   0% { opacity: 1; }
   60% { opacity: 1; }
