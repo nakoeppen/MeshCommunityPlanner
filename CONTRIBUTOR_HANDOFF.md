@@ -34,42 +34,51 @@ Full details in `CHANGELOG.md`. Short version:
 
 ### What to build
 
-Allow users to import repeater positions and RF profiles from a **self-hosted meshcore-hub** instance into the planning tools.
+Extend the existing Internet Map Import to also support importing from a **self-hosted meshcore-hub** instance.
 
-### Background
+### Background — corrected
 
-There is no public REST API on `map.meshcore.dev` — the map data is MQTT-based (`meshcore/#` topics). The right integration path is **meshcore-hub**, a self-hostable REST API:
+`map.meshcore.dev` **does** have a public JSON REST API (no auth required):
 
-- Repo: `https://github.com/ipnet-mesh/meshcore-hub`
+```
+GET https://map.meshcore.dev/api/v1/nodes?binary=0
+```
+
+Returns a JSON array of all nodes globally (~7 MB). Each node has `public_key`, `name`, `device_role`, `lat`, `lon`, `last_seen`. Filter server-side before returning to the frontend.
+
+The existing Internet Map Import (`backend/app/api/internet_map.py`) already proxies `map.meshcore.dev` via msgpack — this endpoint is the plain-JSON alternative on the same domain.
+
+**meshcore-hub** (self-hosted) is a separate optional path for operators who run their own hub. Repo: `https://github.com/ipnet-mesh/meshcore-hub` — give attribution in code comments if referencing it.
+
 - Endpoint: `GET /api/nodes?token=TOKEN`
-- Returns: `public_key`, `name`, `device_role`, `lat`, `lon`, `last_seen`
-- Also has a Prometheus `/metrics` endpoint
+- Returns same shape: `public_key`, `name`, `device_role`, `lat`, `lon`, `last_seen`
 
-No public instance exists — users run their own. The import flow should be:
-1. User enters their meshcore-hub URL + token in a dialog
-2. App fetches `/api/nodes?token=TOKEN` from the user-provided URL
-3. Returns a table of nodes to review/select (same UX pattern as the Internet Map Import modal)
-4. Selected nodes are added to the active plan
+### Suggested approach
+
+**Option A (simpler) — extend the public map import only:**
+The public `map.meshcore.dev/api/v1/nodes?binary=0` endpoint covers the common case. Add a second backend route `GET /api/internet_map/nodes-json` that fetches this endpoint, filters/normalizes server-side, and returns JSON. Wire into the existing `InternetMapImportModal.tsx`.
+
+**Option B — also support self-hosted meshcore-hub:**
+1. New backend endpoint: `POST /api/import/meshcore-hub` — accepts `{url, token}` in body, proxies to `{url}/api/nodes?token={token}`, normalizes, returns JSON. Token stays server-side.
+2. Add a "meshcore-hub (self-hosted)" source card in `InternetMapImportModal.tsx` alongside the existing internet map source.
+3. Tests in `backend/tests/test_meshcore_hub.py` and `frontend/tests/components/MeshCoreHubImportModal.test.tsx`
+
+Option B is the full implementation — proceed with whichever scope makes sense for your timeline.
 
 ### Where to look for patterns
 
 - **Internet Map Import modal** (most similar): `frontend/src/components/plan/InternetMapImportModal.tsx`
-- **Backend proxy pattern** (so the token never goes to the frontend): `backend/app/api/internet_map.py`
+- **Backend proxy pattern**: `backend/app/api/internet_map.py`
 - **More Tools wiring**: `frontend/src/components/layout/Toolbar.tsx` — MeshCore section
 - **Plan menu wiring**: `frontend/src/components/layout/AppLayout.tsx` — search for `onImportFromMap`
 
-### Suggested approach
-
-1. New backend endpoint: `POST /api/import/meshcore-hub` — accepts `{url, token}` in request body, proxies to `{url}/api/nodes?token={token}`, normalizes response to `{name, lat, lon, device_role, last_seen}`, returns JSON. Token stays server-side.
-2. Reuse `InternetMapImportModal.tsx` or add a second source card to it for "meshcore-hub (self-hosted)" — similar to how "rmap.world" is already a "coming soon" card
-3. Tests in `backend/tests/test_meshcore_hub.py` and `frontend/tests/components/MeshCoreHubImportModal.test.tsx`
-
 ### Key constraints
 
-- **Token must not be passed through the frontend** — always proxy through the FastAPI backend
-- **No public URL to hardcode** — the URL is user-provided, validate it's a valid HTTP/HTTPS URL before proxying
+- **Token must not be passed through the frontend** — always proxy through the FastAPI backend (meshcore-hub path)
+- **Validate user-provided URL** — must be valid HTTP/HTTPS before proxying (meshcore-hub path)
+- **Filter server-side** — the public endpoint returns ~7 MB globally; normalize to `{name, lat, lon, device_role, last_seen}` before sending to frontend
 - **Timeout**: use `httpx` with a 10-second timeout (same as `internet_map.py`)
-- **Error handling**: return 503 with a clear message if the hub is unreachable, 401 if the token is rejected
+- **Attribution**: add a comment referencing `https://github.com/ipnet-mesh/meshcore-hub` in any code that implements the hub proxy
 
 ### Files to look at before writing any code
 
