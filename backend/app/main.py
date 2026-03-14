@@ -115,7 +115,7 @@ def _register_w2_routers(app: FastAPI) -> None:
     app.include_router(nodes_router, prefix="/api")
     app.include_router(catalog_router, prefix="/api")
     app.include_router(internet_map_router, prefix="/api")
-    app.include_router(atak_router, prefix="/atak", tags=["atak"])
+    app.include_router(atak_router, prefix="/api/atak", tags=["atak"])
 
     # Mount static files (icons for KML overlays, etc.)
     _static_dir = _os.path.join(_os.path.dirname(__file__), "static")

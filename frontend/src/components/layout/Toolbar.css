@@ -679,8 +679,8 @@
 .toolbar-dropdown-protocol-icons {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  margin: 0 4px;
+  gap: 4px;
+  margin-left: 10px;
   vertical-align: middle;
 }
 
@@ -688,6 +688,7 @@
   width: 14px;
   height: 14px;
   object-fit: contain;
-  filter: brightness(0) invert(0.6);
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
   vertical-align: middle;
 }

@@ -279,9 +279,9 @@
 }
 
 .save-inline-btn {
-  padding: 0 7px;
-  height: 18px;
-  font-size: 0.68rem;
+  padding: 0 6px;
+  height: 15px;
+  font-size: 0.62rem;
   font-weight: 600;
   color: #fff;
   background: #e67e22;
@@ -289,7 +289,7 @@
   border-radius: 3px;
   cursor: pointer;
   flex-shrink: 0;
-  line-height: 18px;
+  line-height: 15px;
 }
 .save-inline-btn:hover {
   background: #cf6d17;
