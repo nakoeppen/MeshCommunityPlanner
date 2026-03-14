@@ -90,6 +90,24 @@ frontend/tests/components/InternetMapImportModal.test.tsx  # test pattern
 
 ---
 
+## Known Issues (Linux / Fresh Install)
+
+### All POST/PUT endpoints return 405
+
+Observed on Arch Linux fresh installs. Root cause: `msgpack` was missing from `requirements.txt`. Fixed in `46b99d0`. Run `pip install -r requirements.txt` after pulling and restart the backend.
+
+To confirm this was the issue, check startup logs for:
+```
+WARNING  W2 routers not available — running without REST API endpoints
+ERROR    Import error details: No module named 'msgpack'
+```
+
+### 49 frontend tests fail on Linux
+
+`mapStore`, `ElevationLegend`, and `CoverageSettings` test files fail on Arch Linux (jsdom 28 + Vitest 4 interaction). All other 269 tests pass. Does not block feature work — the failing tests are for existing v1.2.0 components, not the import modal being built.
+
+---
+
 ## Questions / Blockers
 
 Reach out to the project owner via the repo issues or contact listed in the project README.

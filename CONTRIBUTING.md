@@ -31,7 +31,7 @@ Do **not** report security issues in public GitHub issues. See [SECURITY.md](SEC
 
 ### Prerequisites
 
-- Python 3.9+ with pip
+- Python 3.12 or 3.13 (3.14+ not supported — `pydantic-core` requires PyO3 which lags latest CPython)
 - Node.js 18+ with npm
 - Git
 
@@ -42,6 +42,11 @@ Do **not** report security issues in public GitHub issues. See [SECURITY.md](SEC
 git clone https://github.com/PapaSierra555/MeshCommunityPlanner.git
 cd MeshCommunityPlanner
 
+# Create and activate a virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate   # macOS / Linux
+# venv\Scripts\activate    # Windows
+
 # Backend dependencies
 pip install -r requirements.txt
 
@@ -51,29 +56,61 @@ cd frontend && npm install && cd ..
 
 ### Running in Development
 
+Run both commands from the **repo root** (not from a subdirectory):
+
 **Terminal 1 (Backend):**
 ```bash
-cd backend
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+python -m backend.app.main
 ```
+
+The backend starts on `http://127.0.0.1:8321` and opens a browser tab automatically in production mode. In dev mode, use Terminal 2.
 
 **Terminal 2 (Frontend):**
 ```bash
-cd frontend
-npm run dev
+cd frontend && npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Open `http://localhost:5173` in your browser. The Vite dev server proxies all `/api` requests to the backend on port 8321.
 
 ### Running Tests
 
 ```bash
-# Backend tests
-cd backend && python -m pytest tests/ -v
+# Backend tests (from repo root)
+cd backend && python -m pytest
 
 # Frontend tests
-cd frontend && npm test
+cd frontend && npx vitest run
 ```
+
+All 318 frontend and 154 backend tests should pass on a clean install.
+
+---
+
+## Troubleshooting
+
+### All POST/PUT endpoints return 405 Method Not Allowed
+
+**Symptom:** Creating plans, adding nodes, or any write operation fails with HTTP 405. The backend startup log contains:
+
+```
+WARNING  W2 routers not available — running without REST API endpoints
+ERROR    Import error details: No module named 'msgpack'
+```
+
+**Cause:** A missing Python dependency (`msgpack`) causes the entire REST API router registration to fail silently on startup. This has been observed on fresh Arch Linux installs where `msgpack` is not pre-installed system-wide.
+
+**Fix:**
+```bash
+pip install -r requirements.txt
+```
+
+Then restart the backend. Verify `msgpack==1.1.0` is installed: `python -c "import msgpack; print(msgpack.__version__)"`.
+
+### Frontend test failures on Linux (mapStore, ElevationLegend, CoverageSettings)
+
+**Symptom:** 49 frontend tests fail on Linux (Arch or similar) — specifically `tests/stores/mapStore.test.ts` (4 tests), `tests/components/ElevationLegend.test.tsx` (33 tests), and `tests/components/CoverageSettings.test.tsx` (12 tests). All other tests pass.
+
+**Cause:** Known environment-specific behavior with jsdom 28 and Vitest 4 on certain Linux distributions. These tests pass on Windows and macOS. Investigation ongoing — does not block development of new features.
 
 ---
 
