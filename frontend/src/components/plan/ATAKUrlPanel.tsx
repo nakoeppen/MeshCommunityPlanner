@@ -49,7 +49,7 @@ export function ATAKUrlPanel({ planId }: ATAKUrlPanelProps) {
         <button
           type="button"
           className="sidebar-btn sidebar-btn-secondary"
-          style={{ flex: 1, fontSize: '0.75rem', padding: '3px 0' }}
+          style={{ fontSize: '0.75rem', padding: '3px 16px' }}
           onClick={copy}
           disabled={!url}
         >
