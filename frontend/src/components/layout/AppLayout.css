@@ -280,7 +280,9 @@
 
 .save-inline-btn {
   padding: 0 6px;
-  height: 15px;
+  height: 15px !important;
+  min-height: 15px !important;
+  min-width: 0 !important;
   font-size: 0.62rem;
   font-weight: 600;
   color: #fff;

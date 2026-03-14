@@ -10,10 +10,13 @@ export function ATAKUrlPanel({ planId }: ATAKUrlPanelProps) {
   const [filterPlan, setFilterPlan] = useState(false);
 
   useEffect(() => {
-    fetch('/api/atak/local-url')
+    const token = (window as any).__MESH_PLANNER_AUTH__ || '';
+    fetch('/api/atak/local-url', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
       .then((r) => r.json())
       .then((d) => setBaseUrl(d.url))
-      .catch(() => setBaseUrl(''));
+      .catch(() => setBaseUrl('unavailable'));
   }, []);
 
   const url = filterPlan && planId ? `${baseUrl}?plan_id=${planId}` : baseUrl;
@@ -31,7 +34,7 @@ export function ATAKUrlPanel({ planId }: ATAKUrlPanelProps) {
       <input
         type="text"
         readOnly
-        value={url || 'Loading...'}
+        value={url || 'Detecting local IP...'}
         aria-label="ATAK KML network link URL"
         style={{
           fontSize: '0.7rem',
