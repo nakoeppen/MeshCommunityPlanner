@@ -511,7 +511,6 @@ export function Toolbar({
                       <img src={meshcoreIcon} alt="" className="toolbar-protocol-icon" />
                       <img src={reticulumIcon} alt="" className="toolbar-protocol-icon" />
                     </span>
-                    &#8230;
                   </button>
                   <div className="toolbar-dropdown-separator" />
                   <button

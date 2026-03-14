@@ -256,6 +256,10 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: #ecf0f1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .save-indicator {
@@ -275,16 +279,17 @@
 }
 
 .save-inline-btn {
-  padding: 1px 8px;
-  font-size: 0.7rem;
+  padding: 0 7px;
+  height: 18px;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #fff;
   background: #e67e22;
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   flex-shrink: 0;
-  line-height: 1.6;
+  line-height: 18px;
 }
 .save-inline-btn:hover {
   background: #cf6d17;
