@@ -279,11 +279,11 @@
 }
 
 .save-inline-btn {
-  padding: 0 6px;
-  height: 15px !important;
-  min-height: 15px !important;
+  padding: 0 7px;
+  height: 17px !important;
+  min-height: 17px !important;
   min-width: 0 !important;
-  font-size: 0.62rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: #fff;
   background: #e67e22;
@@ -291,7 +291,9 @@
   border-radius: 3px;
   cursor: pointer;
   flex-shrink: 0;
-  line-height: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .save-inline-btn:hover {
   background: #cf6d17;
