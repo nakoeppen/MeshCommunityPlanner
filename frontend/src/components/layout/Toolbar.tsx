@@ -50,6 +50,8 @@ interface ToolbarProps {
   onFloodSim?: () => void;
   onSuggestPlacement?: () => void;
   onRepeaterChain?: () => void;
+  onMeshCoreAirtime?: () => void;
+  onMeshCoreCapacity?: () => void;
   onReticulumAnnounce?: () => void;
   onSaveScreenshot?: () => void;
   onToggleElevation?: () => void;
@@ -104,6 +106,8 @@ export function Toolbar({
   onFloodSim,
   onSuggestPlacement,
   onRepeaterChain,
+  onMeshCoreAirtime,
+  onMeshCoreCapacity,
   onReticulumAnnounce,
   onSaveScreenshot,
   onToggleElevation,
@@ -1031,7 +1035,18 @@ export function Toolbar({
                     <span className="moretools-btn-name">Repeater Chain Calculator</span>
                     <span className="moretools-btn-desc">Hop-by-hop link budget and signal margin across a chain of MeshCore repeaters</span>
                   </button>
-                  <div className="moretools-coming-soon">More MeshCore tools coming in a future release.</div>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onMeshCoreAirtime?.(); }}
+                    title="Calculate duty cycle compliance and required airtime factor for your MeshCore repeater">
+                    <span className="moretools-btn-name">Airtime &amp; Duty Cycle Calculator</span>
+                    <span className="moretools-btn-desc">Duty cycle budget, EU regulatory compliance, and required AF for your RF profile</span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onMeshCoreCapacity?.(); }}
+                    title="Plan repeater count and flood.max for your MeshCore network density">
+                    <span className="moretools-btn-name">Network Density Planner</span>
+                    <span className="moretools-btn-desc">Client ACL limits, neighbor table saturation, flood traffic load, and flood.max recommendations</span>
+                  </button>
                 </div>
               )}
 
