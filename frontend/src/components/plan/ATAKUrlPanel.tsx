@@ -82,8 +82,18 @@ export function ATAKUrlPanel({ planId }: ATAKUrlPanelProps) {
       <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
         <button
           type="button"
-          className="sidebar-btn sidebar-btn-secondary"
-          style={{ fontSize: '0.75rem', padding: '3px 16px' }}
+          style={{
+            fontSize: '0.72rem',
+            padding: '3px 12px',
+            background: '#2c4a6a',
+            color: '#ecf0f1',
+            border: '1px solid #3d6a96',
+            borderRadius: 4,
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            minHeight: 0,
+            minWidth: 0,
+          }}
           onClick={copy}
           disabled={!finalUrl}
         >
