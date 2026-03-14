@@ -2879,7 +2879,7 @@ export function AppLayout() {
                         Edit Plan Details
                       </button>
                       <div className="config-field" style={{ marginTop: '0.5rem', marginBottom: '0.25rem' }}>
-                        <label>Coverage Environment</label>
+                        <label>Coverage Environment <span style={{ fontWeight: 400, color: '#7f8c8d' }}>(Global Setting)</span></label>
                         <select value={coverageEnv} onChange={(e) => { setCoverageEnv(e.target.value); if (rememberCoverageSettings) localStorage.setItem(COVERAGE_SETTINGS_KEY, JSON.stringify({ env: e.target.value, maxRadiusKm, buildId: BUILD_ID })); }}
                           title="Terrain type affects signal propagation and coverage radius">
                           {Object.entries(COVERAGE_ENVIRONMENTS).map(([key, env]) => (
@@ -2892,6 +2892,12 @@ export function AppLayout() {
                           {COVERAGE_ENVIRONMENTS[coverageEnv].description}
                         </p>
                       )}
+                      <details className="horizon-note" style={{ marginBottom: '0.25rem' }}>
+                        <summary>About the global environment setting</summary>
+                        <div className="horizon-note-body">
+                          This is the default environment used for all nodes in coverage analysis. To override it for a specific node, select that node and set its <strong>Coverage Environment</strong> field individually. Nodes without a per-node setting inherit this global choice.
+                        </div>
+                      </details>
                       {selectedNode && selectedNode.antenna_height_m > 15 && coverageEnv !== 'los_elevated' && (
                         <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
                           Elevated node ({selectedNode.antenna_height_m} m) — use "Clear LOS (Elevated)" for accurate simulation. Current environment underestimates range at height.
@@ -2936,10 +2942,10 @@ export function AppLayout() {
                             </details>
                             {beyondHorizon && (
                               <p className="sidebar-hint" style={{ marginBottom: '0', color: 'var(--color-warning, #e67e22)' }}>
-                                Max radius ({maxRadiusKm} km) exceeds the radio horizon — extra range adds compute time with no additional coverage.{' '}
+                                Max radius ({maxRadiusKm} km) exceeds the radio horizon — extra range adds compute time with no additional coverage.
                                 <button
                                   type="button"
-                                  className="horizon-set-btn"
+                                  className="horizon-set-btn horizon-set-btn-block"
                                   onClick={() => saveAndSet(Math.ceil(horizonKm))}
                                   aria-label={`Set max radius to radio horizon (${Math.ceil(horizonKm)} km)`}
                                 >
@@ -3032,7 +3038,7 @@ export function AppLayout() {
                           <select
                             value={bulkCoverageEnv}
                             onChange={(e) => setBulkCoverageEnv(e.target.value)}
-                            style={{ flex: 1 }}
+                            style={{ flex: 3 }}
                             title="Set coverage environment override on all selected nodes"
                           >
                             {COVERAGE_ENV_OPTIONS.map((opt) => (
@@ -3042,7 +3048,7 @@ export function AppLayout() {
                           <button
                             className="sidebar-btn sidebar-btn-secondary"
                             type="button"
-                            style={{ whiteSpace: 'nowrap', padding: '0.2rem 0.5rem' }}
+                            style={{ flex: 1, whiteSpace: 'nowrap', padding: '0.3rem 0.4rem', fontSize: '0.78rem', marginBottom: 0 }}
                             title="Apply to all selected nodes"
                             onClick={async () => {
                               const val = bulkCoverageEnv || null;
@@ -3081,13 +3087,21 @@ export function AppLayout() {
                             onClick={(e) => handleNodeClick(nodeId, e)}>
                             <div className="node-row">
                               <span className="node-name">{node.name}</span>
-                              {node.coverage_environment && ENV_BADGE[node.coverage_environment] && (
+                              {node.coverage_environment && ENV_BADGE[node.coverage_environment] ? (
                                 <span
                                   className="node-env-badge"
                                   style={{ backgroundColor: ENV_BADGE[node.coverage_environment].color }}
                                   title={`Coverage environment override: ${COVERAGE_ENV_OPTIONS.find((o) => o.value === node.coverage_environment)?.label ?? node.coverage_environment}`}
                                 >
                                   {ENV_BADGE[node.coverage_environment].label}
+                                </span>
+                              ) : (
+                                <span
+                                  className="node-env-badge"
+                                  style={{ backgroundColor: '#4a5568' }}
+                                  title="Using global coverage environment setting"
+                                >
+                                  Global
                                 </span>
                               )}
                               <button className="node-delete-btn" type="button"
