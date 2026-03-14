@@ -18,6 +18,8 @@ import type { Plan, Node, CodingRate } from '../../types';
 import { LinkReportModal } from '../analysis/LinkReportModal';
 import { TimeOnAirModal } from '../analysis/TimeOnAirModal';
 import { RepeaterChainModal } from '../analysis/RepeaterChainModal';
+import { MeshCoreAirtimeModal } from '../analysis/MeshCoreAirtimeModal';
+import { MeshCoreCapacityModal } from '../analysis/MeshCoreCapacityModal';
 import { ChannelCapacityModal } from '../analysis/ChannelCapacityModal';
 import { ReticulumAnnounceModal } from '../analysis/ReticulumAnnounceModal';
 import { BOMModal } from '../bom/BOMModal';
@@ -37,6 +39,7 @@ import { PromptDialog } from '../common/PromptDialog';
 import { NumberInput } from '../common/NumberInput';
 import { WelcomeTour } from '../onboarding/WelcomeTour';
 import { InternetMapImportModal } from '../plan/InternetMapImportModal';
+import { ATAKUrlPanel } from '../plan/ATAKUrlPanel';
 import './AppLayout.css';
 
 // ============================================================================
@@ -290,6 +293,8 @@ export function AppLayout() {
   const [showLinkReport, setShowLinkReport] = useState(false);
   const [showTimeOnAir, setShowTimeOnAir] = useState(false);
   const [showRepeaterChain, setShowRepeaterChain] = useState(false);
+  const [showMeshCoreAirtime, setShowMeshCoreAirtime] = useState(false);
+  const [showMeshCoreCapacity, setShowMeshCoreCapacity] = useState(false);
   const [showChannelCapacity, setShowChannelCapacity] = useState(false);
   const [showReticulumAnnounce, setShowReticulumAnnounce] = useState(false);
   const [showBOM, setShowBOM] = useState(false);
@@ -2662,6 +2667,8 @@ export function AppLayout() {
         onExportNetworkPDF={() => setShowPDFReport(true)}
         onTimeOnAir={() => setShowTimeOnAir(true)}
         onRepeaterChain={() => setShowRepeaterChain(true)}
+        onMeshCoreAirtime={() => setShowMeshCoreAirtime(true)}
+        onMeshCoreCapacity={() => setShowMeshCoreCapacity(true)}
         onChannelCapacity={() => setShowChannelCapacity(true)}
         onReticulumAnnounce={() => setShowReticulumAnnounce(true)}
         onFloodSim={() => setShowFloodingSim(true)}
@@ -2992,6 +2999,22 @@ export function AppLayout() {
               )}
             </div>
 
+            {/* ATAK Integration */}
+            <div className="sidebar-section">
+              <details className="horizon-note" style={{ marginTop: '0.25rem' }}>
+                <summary style={{ fontWeight: 600, cursor: 'pointer' }}>ATAK Integration</summary>
+                <div className="horizon-note-body" style={{ marginTop: '0.4rem' }}>
+                  <p className="sidebar-hint" style={{ marginBottom: '0.4rem' }}>
+                    Point ATAK at this URL to display plan nodes as live map placemarks.
+                  </p>
+                  <ATAKUrlPanel planId={currentPlan?.id} />
+                  <p className="sidebar-hint" style={{ marginTop: '0.4rem', marginBottom: 0 }}>
+                    ATAK: Import Manager &rarr; KML Network Link &rarr; paste URL &rarr; refresh 30s
+                  </p>
+                </div>
+              </details>
+            </div>
+
             {/* Network Radio Settings (plan-level, applies to all nodes) */}
             {renderNetworkRadio()}
 
@@ -3154,6 +3177,8 @@ export function AppLayout() {
       />
       <LinkReportModal isOpen={showLinkReport} onClose={() => setShowLinkReport(false)} onExportPDF={handleExportNetworkPDF} />
       <RepeaterChainModal isOpen={showRepeaterChain} onClose={() => setShowRepeaterChain(false)} />
+      <MeshCoreAirtimeModal isOpen={showMeshCoreAirtime} onClose={() => setShowMeshCoreAirtime(false)} />
+      <MeshCoreCapacityModal isOpen={showMeshCoreCapacity} onClose={() => setShowMeshCoreCapacity(false)} />
       <TimeOnAirModal
         isOpen={showTimeOnAir}
         onClose={() => setShowTimeOnAir(false)}

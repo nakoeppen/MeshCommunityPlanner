@@ -62,6 +62,7 @@ release-assets-backup/
 # Release screenshots (stored in GitHub Releases, not repo)
 *.png
 !branding/**/*.png
+!backend/app/static/icons/*.png
 
 # Commit message staging
 .commitmsg

@@ -101,17 +101,26 @@ async def lifespan(app: FastAPI):
 
 def _register_w2_routers(app: FastAPI) -> None:
     """Register core REST API routers under /api."""
+    import os as _os
+
     from backend.app.api.health import router as health_router
     from backend.app.api.plans import router as plans_router
     from backend.app.api.nodes import router as nodes_router
     from backend.app.api.catalog import router as catalog_router
     from backend.app.api.internet_map import router as internet_map_router
+    from backend.app.api.atak import router as atak_router
 
     app.include_router(health_router, prefix="/api")
     app.include_router(plans_router, prefix="/api")
     app.include_router(nodes_router, prefix="/api")
     app.include_router(catalog_router, prefix="/api")
     app.include_router(internet_map_router, prefix="/api")
+    app.include_router(atak_router, prefix="/atak", tags=["atak"])
+
+    # Mount static files (icons for KML overlays, etc.)
+    _static_dir = _os.path.join(_os.path.dirname(__file__), "static")
+    if _os.path.isdir(_static_dir):
+        app.mount("/static", StaticFiles(directory=_static_dir), name="static")
 
 
 def _register_w3_router(app: FastAPI, ticket_manager: TicketManager) -> None:
