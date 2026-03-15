@@ -14,6 +14,7 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response
 
+from backend.app.config import get_port
 from backend.app.db.connection import get_db_connection
 import sqlite3
 
@@ -82,6 +83,7 @@ def _build_kml(
     nodes_by_plan: list[dict[str, Any]],
     plan_map: dict[str, str],
     lan_ip: str,
+    port: int,
 ) -> str:
     """Build a complete KML document string from a flat list of node rows."""
     mesh_placemarks: list[str] = []
@@ -123,19 +125,19 @@ def _build_kml(
     <name>Mesh Community Planner \u2014 Live Nodes</name>
     <Style id="style-mesh-node">
       <IconStyle><color>ff00cc00</color><scale>1.2</scale>
-        <Icon><href>http://{lan_ip}:8000/static/icons/mesh_node.png</href></Icon>
+        <Icon><href>http://{lan_ip}:{port}/static/icons/mesh_node.png</href></Icon>
         <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
       </IconStyle><LabelStyle><scale>0.9</scale></LabelStyle>
     </Style>
     <Style id="style-repeater">
       <IconStyle><color>ffff8800</color><scale>1.2</scale>
-        <Icon><href>http://{lan_ip}:8000/static/icons/repeater.png</href></Icon>
+        <Icon><href>http://{lan_ip}:{port}/static/icons/repeater.png</href></Icon>
         <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
       </IconStyle><LabelStyle><scale>0.9</scale></LabelStyle>
     </Style>
     <Style id="style-gateway">
       <IconStyle><color>ff0000ff</color><scale>1.4</scale>
-        <Icon><href>http://{lan_ip}:8000/static/icons/gateway.png</href></Icon>
+        <Icon><href>http://{lan_ip}:{port}/static/icons/gateway.png</href></Icon>
         <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
       </IconStyle><LabelStyle><scale>0.9</scale></LabelStyle>
     </Style>
@@ -197,7 +199,8 @@ def get_nodes_kml(
     nodes = [dict(r) for r in rows]
 
     lan_ip = _get_lan_ip()
-    kml_string = _build_kml(nodes, plan_map, lan_ip)
+    port = get_port()
+    kml_string = _build_kml(nodes, plan_map, lan_ip, port)
 
     return Response(
         content=kml_string,
@@ -213,4 +216,5 @@ def get_local_url() -> dict[str, str]:
     ATAK clients on the same network can poll this URL as a Network Link.
     """
     lan_ip = _get_lan_ip()
-    return {"url": f"http://{lan_ip}:8000/atak/nodes.kml"}
+    port = get_port()
+    return {"url": f"http://{lan_ip}:{port}/api/atak/nodes.kml"}

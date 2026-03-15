@@ -30,7 +30,6 @@ import { BOMModal } from '../bom/BOMModal';
 import { exportNodesCSV, parseNodesCSV } from '../../utils/csv';
 import { exportKML, type KMLLink } from '../../utils/kml';
 import { exportGeoJSON, type GeoJSONLink } from '../../utils/geojson';
-import { exportTakDataPackage } from '../../utils/cot';
 import { findKShortestPaths } from '../../utils/routing';
 import { FloodingSimModal } from '../analysis/FloodingSimModal';
 import { PlacementSuggestModal } from '../analysis/PlacementSuggestModal';
@@ -1170,18 +1169,6 @@ export function AppLayout() {
       setStatusMessage(`Exported ${planNodes.length} node(s) as GeoJSON${linkNote}.`);
     } catch (err: any) {
       setErrorMsg(`GeoJSON export error: ${err.message}`);
-    }
-  }, [currentPlan]);
-
-  const handleExportCoT = useCallback(async () => {
-    if (!currentPlan) return;
-    try {
-      const planNodes = usePlanStore.getState().nodes;
-      const blob = await exportTakDataPackage(planNodes, currentPlan.name);
-      triggerDownload(blob, `${sanitizeFilename(currentPlan.name)}.zip`);
-      setStatusMessage(`Exported ${planNodes.length} node(s) as TAK Data Package.`);
-    } catch (err: any) {
-      setErrorMsg(`TAK export error: ${err.message}`);
     }
   }, [currentPlan]);
 
@@ -2659,7 +2646,6 @@ export function AppLayout() {
         onImportFromMap={() => setInternetMapImportOpen(true)}
         onExportKML={handleExportKML}
         onExportGeoJSON={handleExportGeoJSON}
-        onExportCoT={handleExportCoT}
         onDuplicatePlan={handleDuplicatePlan}
         onClosePlan={handleClosePlan}
         onDeletePlan={handleDeletePlan}

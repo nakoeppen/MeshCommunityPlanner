@@ -403,10 +403,8 @@ describe('RNSThroughputModal — accessibility', () => {
       'rnt-path-state',
       'rnt-iface-type-0',
       'rnt-data-rate-0',
-      'rnt-hops-0',
       'rnt-iface-type-1',
       'rnt-data-rate-1',
-      'rnt-hops-1',
     ];
     labeledIds.forEach((id) => {
       const el = document.getElementById(id);

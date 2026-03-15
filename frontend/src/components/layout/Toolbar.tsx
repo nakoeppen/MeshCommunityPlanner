@@ -31,7 +31,6 @@ interface ToolbarProps {
   onImportFromMap?: () => void;
   onExportKML?: () => void;
   onExportGeoJSON?: () => void;
-  onExportCoT?: () => void;
   onDuplicatePlan?: () => void;
   onClosePlan?: () => void;
   onDeletePlan?: () => void;
@@ -92,7 +91,6 @@ export function Toolbar({
   onImportFromMap,
   onExportKML,
   onExportGeoJSON,
-  onExportCoT,
   onDuplicatePlan,
   onClosePlan,
   onDeletePlan,
@@ -329,11 +327,6 @@ export function Toolbar({
                     onClick={() => hasPlan && handleItemClick(onExportGeoJSON)}
                     title="Export plan as GeoJSON for QGIS, ArcGIS, mapbox, and other GIS tools">
                     Export Plan (GeoJSON)
-                  </button>
-                  <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
-                    onClick={() => hasPlan && handleItemClick(onExportCoT)}
-                    title="Export plan as CoT XML for TAK/ATAK military mapping systems">
-                    Export Plan (CoT/TAK)
                   </button>
                   <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
                     onClick={() => hasPlan && handleItemClick(onDuplicatePlan)}
@@ -666,7 +659,6 @@ export function Toolbar({
                       <li><strong>Message Flooding Simulation</strong> &mdash; Visualize how messages propagate hop-by-hop through your mesh; identify bottlenecks and unreachable nodes</li>
                       <li><strong>Automatic Node Placement</strong> &mdash; Get AI-suggested locations for new nodes to maximize coverage across your community area</li>
                       <li><strong>Professional PDF Report</strong> &mdash; Generate multi-page network reports with executive summary, node inventory, link quality, and BOM for stakeholders</li>
-                      <li><strong>CoT/TAK Export</strong> &mdash; Export node positions in Cursor-on-Target XML format for interoperability with ATAK and tactical mapping systems</li>
                       <li><strong>GeoJSON Export</strong> &mdash; Export plan data as GeoJSON for use in GIS tools, web maps, and data analysis workflows</li>
                       <li><strong>Viewshed Analysis</strong> &mdash; Analyze terrain visibility from any node to determine which other nodes have clear line-of-sight</li>
                       <li><strong>Elevation Heatmap</strong> &mdash; Toggle a terrain elevation overlay using NASA SRTM 30m data. The hypsometric color scale runs from steel-blue (below sea level) through greens, yellows, and oranges to snow-white (high peaks), with terrain-type labels (Coastal, Lowland, Mountain, Alpine&hellip;) shown beside each color swatch. Use the dual-handle range slider to stretch the full color spectrum across your local elevation band for maximum contrast in flat terrain &mdash; drag the Min/Max thumbs, type values directly into the number fields (press Enter to apply), or scroll the mouse wheel on a focused thumb for fine 10m adjustments. Page&nbsp;Up/Down moves a focused slider ±100m. Check <em>Remember range</em> to persist your Min/Max settings across browser sessions via localStorage. The opacity slider controls overlay transparency (0&thinsp;%&ndash;100&thinsp;%).</li>

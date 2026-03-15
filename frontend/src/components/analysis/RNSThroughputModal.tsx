@@ -25,7 +25,6 @@ type PathState = 'cold' | 'warm';
 interface Segment {
   interfaceType: InterfaceType;
   dataRate: number;
-  hops: number;
 }
 
 /* ---- Protocol constants ---- */
@@ -75,7 +74,7 @@ function formatTime(ms: number): string {
 /* ---- Default segment factory ---- */
 
 function makeSegment(interfaceType: InterfaceType = 'lora'): Segment {
-  return { interfaceType, dataRate: DEFAULT_RATES[interfaceType], hops: 1 };
+  return { interfaceType, dataRate: DEFAULT_RATES[interfaceType] };
 }
 
 function makeDefaultSegments(count: number): Segment[] {
@@ -200,13 +199,6 @@ export function RNSThroughputModal({ isOpen, onClose }: RNSThroughputModalProps)
   function updateSegmentRate(index: number, dataRate: number) {
     setSegments((prev) =>
       prev.map((seg, i) => (i === index ? { ...seg, dataRate } : seg)),
-    );
-    setCalculated(false);
-  }
-
-  function updateSegmentHops(index: number, hops: number) {
-    setSegments((prev) =>
-      prev.map((seg, i) => (i === index ? { ...seg, hops } : seg)),
     );
     setCalculated(false);
   }
@@ -399,17 +391,6 @@ export function RNSThroughputModal({ isOpen, onClose }: RNSThroughputModalProps)
                           value={seg.dataRate}
                           onChange={(v) => updateSegmentRate(index, Math.round(v))}
                           title={`Data rate for this ${INTERFACE_LABELS[seg.interfaceType]} segment in bps. Range: ${formatRate(range.min)}–${formatRate(range.max)}.`}
-                        />
-                      </div>
-                      <div className="rnt-field rnt-field-narrow">
-                        <label htmlFor={`rnt-hops-${index}`}>Hops</label>
-                        <NumberInput
-                          id={`rnt-hops-${index}`}
-                          min={1}
-                          max={20}
-                          value={seg.hops}
-                          onChange={(v) => updateSegmentHops(index, Math.round(v))}
-                          title="Number of hops on this interface segment (1–20)."
                         />
                       </div>
                     </div>

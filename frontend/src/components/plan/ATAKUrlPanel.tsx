@@ -34,11 +34,11 @@ export function ATAKUrlPanel({ planId }: ATAKUrlPanelProps) {
     if (!ipOverride.trim()) return detectedBase;
     // Replace just the host portion (keep port and path)
     try {
-      const parsed = new URL(detectedBase || 'http://localhost:8000/api/atak/nodes.kml');
+      const parsed = new URL(detectedBase || 'http://localhost:8321/api/atak/nodes.kml');
       parsed.hostname = ipOverride.trim();
       return parsed.toString();
     } catch {
-      return `http://${ipOverride.trim()}:8000/api/atak/nodes.kml`;
+      return `http://${ipOverride.trim()}:8321/api/atak/nodes.kml`;
     }
   })();
 
