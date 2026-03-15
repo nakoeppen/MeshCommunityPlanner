@@ -116,6 +116,7 @@ export function Toolbar({
   onReticulumAnnounce,
   onRNSLinkBudget,
   onRNSTransport,
+  onRNSThroughput,
   onSaveScreenshot,
   onToggleElevation,
   elevationEnabled = false,
@@ -1083,6 +1084,12 @@ export function Toolbar({
                     title="How many transport nodes your RNS network needs and where to place them">
                     <span className="moretools-btn-name">Transport Node Placement Advisor</span>
                     <span className="moretools-btn-desc">Minimum transport nodes, announce budget consumption, interface mode guidance, and SPOF detection</span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onRNSThroughput?.(); }}
+                    title="Calculate end-to-end throughput and LXMF delivery time across multi-interface Reticulum paths">
+                    <span className="moretools-btn-name">Multi-Interface Throughput Analyzer</span>
+                    <span className="moretools-btn-desc">End-to-end throughput, LXMF delivery time, and bottleneck identification across mixed LoRa/WiFi/TCP/I2P paths</span>
                   </button>
                 </div>
               )}

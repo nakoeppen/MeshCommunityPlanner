@@ -25,6 +25,7 @@ import { ChannelCapacityModal } from '../analysis/ChannelCapacityModal';
 import { ReticulumAnnounceModal } from '../analysis/ReticulumAnnounceModal';
 import { RNSLinkBudgetModal } from '../analysis/RNSLinkBudgetModal';
 import { RNSTransportModal } from '../analysis/RNSTransportModal';
+import { RNSThroughputModal } from '../analysis/RNSThroughputModal';
 import { BOMModal } from '../bom/BOMModal';
 import { exportNodesCSV, parseNodesCSV } from '../../utils/csv';
 import { exportKML, type KMLLink } from '../../utils/kml';
@@ -303,6 +304,7 @@ export function AppLayout() {
   const [showReticulumAnnounce, setShowReticulumAnnounce] = useState(false);
   const [showRNSLinkBudget, setShowRNSLinkBudget] = useState(false);
   const [showRNSTransport, setShowRNSTransport] = useState(false);
+  const [showRNSThroughput, setShowRNSThroughput] = useState(false);
   const [showBOM, setShowBOM] = useState(false);
   const [bomData, setBomData] = useState<BOMPlanData[] | null>(null);
   const [bomLoading, setBomLoading] = useState(false);
@@ -2680,6 +2682,7 @@ export function AppLayout() {
         onReticulumAnnounce={() => setShowReticulumAnnounce(true)}
         onRNSLinkBudget={() => setShowRNSLinkBudget(true)}
         onRNSTransport={() => setShowRNSTransport(true)}
+        onRNSThroughput={() => setShowRNSThroughput(true)}
         onFloodSim={() => setShowFloodingSim(true)}
         onSuggestPlacement={() => setShowPlacementSuggest(true)}
         onSaveScreenshot={handleSaveScreenshot}
@@ -3219,6 +3222,10 @@ export function AppLayout() {
       <RNSTransportModal
         isOpen={showRNSTransport}
         onClose={() => setShowRNSTransport(false)}
+      />
+      <RNSThroughputModal
+        isOpen={showRNSThroughput}
+        onClose={() => setShowRNSThroughput(false)}
       />
       <BOMModal
         isOpen={showBOM}
