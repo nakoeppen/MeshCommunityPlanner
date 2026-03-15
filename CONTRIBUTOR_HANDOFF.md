@@ -1,6 +1,6 @@
 # Handoff Notes — MeshCore Third-Party Integration
 **Date:** 2026-03-15
-**Branch:** `main` at `34c5483`
+**Branch:** `main` at `015b1b5`
 
 ---
 
@@ -10,7 +10,7 @@
 git pull origin main
 ```
 
-All 371 frontend + 154 backend tests should pass:
+All 383 frontend + 173 backend tests should pass:
 ```
 cd frontend && npx vitest run
 cd backend && python -m pytest

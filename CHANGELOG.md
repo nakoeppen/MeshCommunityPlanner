@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.2] — 2026-03-15
+
+### Added
+
+#### Post-Deployment Signal Validation — Import Signal Data (CSV)
+- **Import Signal Data (CSV)** in the Plan menu — import real-world RSSI/SNR link observations and compare them against modeled predictions
+- Accepts CSV exports from Meshtastic, MeshCore, or any tool producing node-pair signal data; auto-detects column names (`from`/`to`, `node_a`/`node_b`, `rssi`, `snr`, `timestamp`)
+- Two-phase modal: Phase 1 drag-and-drop or file upload with parse summary (rows parsed, rows skipped, skip reasons); Phase 2 link table with plan node match status and RSSI color coding (green >-85 dBm, yellow -85 to -100 dBm, red <-100 dBm)
+- Matched links are imported as a Signal overlay on the map — colored polylines connect node pairs, hover tooltips show observed RSSI/SNR
+- Unmatched node names shown in gray; at least one matched pair required to enable import
+- Backend validates RSSI (-140 to 0 dBm) and SNR (-20 to +20 dB), truncates at 500 rows, returns skip reasons for out-of-range or malformed rows
+
+### Fixed
+- **ATAK KML feed** — `GET /api/atak/local-url` was returning port 8000 and missing `/api/` path prefix; icon URLs in the KML document also used hardcoded port 8000. Now uses `get_port()` throughout so the URL is always correct regardless of port configuration
+- **RNS Transport Advisor** — removed `clientCount` input that was collected but never used in any calculation
+- **RNS Throughput Analyzer** — removed `hops` field per interface segment that was collected but never factored into bottleneck or timing calculations
+
+### Removed
+- **Static CoT/TAK export** — the live ATAK KML endpoint (`GET /api/atak/nodes.kml`) is the correct integration story; the static one-time CoT XML export was redundant, immediately stale, and sent the wrong message about how to use ATAK integration
+
+### Tests
+- Frontend: 383 passing (Vitest + Testing Library + jest-axe)
+- Backend: 173 passing (pytest)
+
+---
+
 ## [1.3.1] — 2026-03-15
 
 ### Added

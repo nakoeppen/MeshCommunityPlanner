@@ -82,7 +82,7 @@ cd backend && python -m pytest
 cd frontend && npx vitest run
 ```
 
-All 371 frontend and 154 backend tests should pass on a clean install.
+All 383 frontend and 173 backend tests should pass on a clean install.
 
 ---
 
