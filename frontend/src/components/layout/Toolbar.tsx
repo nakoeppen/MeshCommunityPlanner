@@ -132,6 +132,7 @@ export function Toolbar({
   coverageEnv,
 }: ToolbarProps) {
   const [openMenu, setOpenMenu] = useState<null | 'plan' | 'tools' | 'catalog' | 'info' | 'appinfo' | 'moretools'>(null);
+  const [exportSubmenuOpen, setExportSubmenuOpen] = useState(false);
   const [moreToolsProtocol, setMoreToolsProtocol] = useState<'meshtastic' | 'meshcore' | 'reticulum' | null>(null);
   const [expandedPlanIds, setExpandedPlanIds] = useState<Set<string>>(new Set());
   const [expandedHelpSections, setExpandedHelpSections] = useState<Set<string>>(new Set());
@@ -219,6 +220,11 @@ export function Toolbar({
     if (openMenu !== 'moretools') setMoreToolsProtocol(null);
   }, [openMenu]);
 
+  // Close Export Plan As submenu when Plan menu closes
+  useEffect(() => {
+    if (openMenu !== 'plan') setExportSubmenuOpen(false);
+  }, [openMenu]);
+
   const toggleHelpSection = useCallback((id: string) => {
     setExpandedHelpSections(prev => {
       const next = new Set(prev);
@@ -300,38 +306,49 @@ export function Toolbar({
                     title="Save the current plan as a .meshplan.json file for sharing or backup">
                     Export Plan
                   </button>
-                  <div className={`toolbar-submenu-wrapper${!hasPlan ? ' disabled' : ''}`}>
+                  <div
+                    className={`toolbar-submenu-wrapper${!hasPlan ? ' disabled' : ''}`}
+                    onMouseEnter={() => hasPlan && setExportSubmenuOpen(true)}
+                    onMouseLeave={() => setExportSubmenuOpen(false)}
+                    onClick={() => hasPlan && setExportSubmenuOpen(!exportSubmenuOpen)}
+                    onKeyUp={(e) => { if (e.key === ' ') setExportSubmenuOpen(!exportSubmenuOpen); }}
+                  >
                     <button
                       className={`toolbar-dropdown-item toolbar-submenu-trigger${!hasPlan ? ' disabled' : ''}`}
                       type="button"
+                      aria-haspopup="true"
+                      aria-expanded={exportSubmenuOpen}
                       title="Export the current plan in different mapping formats"
                       disabled={!hasPlan}
                     >
                       Export Plan As
                       <span className="toolbar-submenu-arrow" aria-hidden="true">&#9656;</span>
                     </button>
-                    {hasPlan && (
-                      <div className="toolbar-submenu-panel">
+                    {hasPlan && exportSubmenuOpen && (
+                      <div className="toolbar-submenu-panel" role="menu">
                         <button
+                          role="menuitem"
                           className="toolbar-dropdown-item"
                           type="button"
-                          onClick={() => handleItemClick(onExportKML)}
+                          onClick={() => { setExportSubmenuOpen(false); handleItemClick(onExportKML); }}
                           title="Export plan as KML for Google Earth, ArcGIS, and other GIS tools"
                         >
                           KML (Google Earth / GIS)
                         </button>
                         <button
+                          role="menuitem"
                           className="toolbar-dropdown-item"
                           type="button"
-                          onClick={() => handleItemClick(onExportGeoJSON)}
+                          onClick={() => { setExportSubmenuOpen(false); handleItemClick(onExportGeoJSON); }}
                           title="Export plan as GeoJSON for QGIS, ArcGIS, mapbox, and other GIS tools"
                         >
                           GeoJSON (GIS / Web Maps)
                         </button>
                         <button
+                          role="menuitem"
                           className="toolbar-dropdown-item"
                           type="button"
-                          onClick={() => handleItemClick(onExportCoT)}
+                          onClick={() => { setExportSubmenuOpen(false); handleItemClick(onExportCoT); }}
                           title="Export plan as CoT XML for TAK/ATAK military mapping systems"
                         >
                           CoT / TAK (Cursor-on-Target)
