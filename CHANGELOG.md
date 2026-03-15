@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [1.3.1] — 2026-03-15
+
+### Added
+
+#### MeshCore Tools — RF Channel Frequency Coordinator (More Tools → MeshCore)
+- **RF Channel Frequency Coordinator** — assigns non-interfering center frequencies to co-located independent MeshCore networks in metro deployments
+- Inputs: region (US/EU/ANZ), bandwidth (62.5/125/250 kHz), number of zones (2–8), zone names, pairwise geographic overlap matrix
+- Greedy graph coloring assigns the lowest available channel index to each zone; overlapping zones always receive different frequencies
+- Outputs: channel spacing used, available channel count in band, per-zone center frequency table, feasibility (PASS/CONFLICT)
+- Conflict warning when the number of mutually-overlapping zones exceeds available channels in the selected band
+
+#### Reticulum Tools — Multi-Interface Throughput Analyzer (More Tools → Reticulum)
+- **Multi-Interface Throughput Analyzer** — calculates effective end-to-end throughput and LXMF message delivery time across mixed-interface Reticulum paths
+- Up to 4 interface segments: LoRa RNode, WiFi, TCP/IP, I2P — each with configurable data rate; defaults auto-set on type change
+- Transfer types: LXMF Message (adds 80-byte header), Raw Link Data, Announce Packet (fixed 167 bytes)
+- Cold path: adds 297-byte link establishment overhead; warm path: transfer only
+- I2P segments add 5,000 ms tunnel setup latency
+- Outputs: bottleneck interface, effective throughput (auto-scaled bps/kbps/Mbps), link establishment time, transfer time, total delivery time, LXMF overhead %, RNS 5 bps minimum check
+- Bottleneck recommendation identifies which interface is limiting the path
+
+### Tests
+- Frontend: 371 passing (Vitest + Testing Library + jest-axe)
+- Backend: 154 passing (pytest) — unchanged
+
+---
+
 ## [1.3.0] — 2026-03-14
 
 ### Added
