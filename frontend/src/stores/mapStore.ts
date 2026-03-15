@@ -119,6 +119,23 @@ export interface PlacementSuggestion {
   reason: string;
 }
 
+// ---- Signal Overlay (post-deployment validation) ----
+
+export interface SignalObservation {
+  nodeAUuid: string;
+  nodeBUuid: string;
+  nodeAName: string;
+  nodeBName: string;
+  rssi_dbm: number;
+  snr_db: number | null;
+  timestamp: string | null;
+}
+
+export interface SignalOverlay {
+  id: string;
+  observations: SignalObservation[];
+}
+
 // ============================================================================
 // Store Interface
 // ============================================================================
@@ -159,6 +176,9 @@ export interface MapState {
   placement_suggestions: PlacementSuggestion[];
   placement_coverage_radius_m: number;
   placement_search_bounds: { min_lat: number; min_lon: number; max_lat: number; max_lon: number } | null;
+
+  // Signal overlays (post-deployment validation)
+  signal_overlays: SignalOverlay[];
 
   // Elevation heatmap layer
   elevation_layer_enabled: boolean;
@@ -207,6 +227,8 @@ export interface MapState {
   clearPlacementSuggestions: () => void;
   setPlacementSearchBounds: (bounds: { min_lat: number; min_lon: number; max_lat: number; max_lon: number }) => void;
   clearPlacementSearchBounds: () => void;
+  setSignalOverlays: (overlays: SignalOverlay[]) => void;
+  clearSignalOverlays: () => void;
   setCoverageOpacity: (opacity: number) => void;
   setElevationLayerEnabled: (enabled: boolean) => void;
   setElevationOpacity: (opacity: number) => void;
@@ -275,6 +297,7 @@ const initialState = {
   viewshed_overlays: [] as ViewshedOverlay[],
   route_path_overlays: [] as RoutePathOverlay[],
   flooding_overlay: null as FloodingOverlay | null,
+  signal_overlays: [] as SignalOverlay[],
   placement_suggestions: [] as PlacementSuggestion[],
   placement_coverage_radius_m: 1000,
   placement_search_bounds: null as { min_lat: number; min_lon: number; max_lat: number; max_lon: number } | null,
@@ -381,6 +404,8 @@ export const useMapStore = create<MapState>((set) => ({
   clearPlacementSuggestions: () => set({ placement_suggestions: [], placement_search_bounds: null }),
   setPlacementSearchBounds: (bounds) => set({ placement_search_bounds: bounds }),
   clearPlacementSearchBounds: () => set({ placement_search_bounds: null }),
+  setSignalOverlays: (overlays) => set({ signal_overlays: overlays }),
+  clearSignalOverlays: () => set({ signal_overlays: [] }),
   setCoverageOpacity: (opacity) => set({ coverageOpacity: opacity }),
   setElevationLayerEnabled: (enabled) => set({ elevation_layer_enabled: enabled }),
   setElevationOpacity: (opacity) => set({ elevationOpacity: opacity }),

@@ -29,6 +29,7 @@ interface ToolbarProps {
   onImportCSV?: () => void;
   onImportJSON?: () => void;
   onImportFromMap?: () => void;
+  onImportSignal?: () => void;
   onExportKML?: () => void;
   onExportGeoJSON?: () => void;
   onDuplicatePlan?: () => void;
@@ -89,6 +90,7 @@ export function Toolbar({
   onImportCSV,
   onImportJSON,
   onImportFromMap,
+  onImportSignal,
   onExportKML,
   onExportGeoJSON,
   onDuplicatePlan,
@@ -317,6 +319,11 @@ export function Toolbar({
                     onClick={() => hasPlan && handleItemClick(onImportFromMap)}
                     title="Import nodes from online mesh network maps (MeshCore Map, rmap.world)">
                     Import Nodes from Map...
+                  </button>
+                  <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
+                    onClick={() => hasPlan && handleItemClick(onImportSignal)}
+                    title="Import RSSI/SNR signal observations from a CSV export — compare predicted link budgets against real-world measurements">
+                    Import Signal Data (CSV)
                   </button>
                   <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
                     onClick={() => hasPlan && handleItemClick(onExportKML)}

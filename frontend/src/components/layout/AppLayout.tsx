@@ -42,6 +42,7 @@ import { PromptDialog } from '../common/PromptDialog';
 import { NumberInput } from '../common/NumberInput';
 import { WelcomeTour } from '../onboarding/WelcomeTour';
 import { InternetMapImportModal } from '../plan/InternetMapImportModal';
+import { SignalImportModal } from '../plan/SignalImportModal';
 import { ATAKUrlPanel } from '../plan/ATAKUrlPanel';
 import './AppLayout.css';
 
@@ -318,6 +319,7 @@ export function AppLayout() {
   const [showPlacementSuggest, setShowPlacementSuggest] = useState(false);
   const [showPDFReport, setShowPDFReport] = useState(false);
   const [internetMapImportOpen, setInternetMapImportOpen] = useState(false);
+  const [signalImportOpen, setSignalImportOpen] = useState(false);
   const [bulkCoverageEnv, setBulkCoverageEnv] = useState('');
   const [envWarningDialog, setEnvWarningDialog] = useState<{
     nodeNames: string;
@@ -2644,6 +2646,7 @@ export function AppLayout() {
         onImportCSV={handleImportCSV}
         onImportJSON={handleImportJSON}
         onImportFromMap={() => setInternetMapImportOpen(true)}
+        onImportSignal={() => setSignalImportOpen(true)}
         onExportKML={handleExportKML}
         onExportGeoJSON={handleExportGeoJSON}
         onDuplicatePlan={handleDuplicatePlan}
@@ -3229,6 +3232,11 @@ export function AppLayout() {
         isOpen={internetMapImportOpen}
         onClose={() => setInternetMapImportOpen(false)}
         planId={currentPlan?.id ?? null}
+      />
+      <SignalImportModal
+        isOpen={signalImportOpen}
+        onClose={() => setSignalImportOpen(false)}
+        planNodes={nodes.filter((n) => n.plan_id === currentPlan?.id).map((n) => ({ id: String(n.id), name: n.name }))}
       />
       <CatalogModal
         isOpen={catalogModalOpen}
