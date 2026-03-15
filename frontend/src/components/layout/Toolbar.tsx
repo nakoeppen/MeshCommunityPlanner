@@ -52,9 +52,11 @@ interface ToolbarProps {
   onRepeaterChain?: () => void;
   onMeshCoreAirtime?: () => void;
   onMeshCoreCapacity?: () => void;
+  onMeshCoreFreqCoord?: () => void;
   onReticulumAnnounce?: () => void;
   onRNSLinkBudget?: () => void;
   onRNSTransport?: () => void;
+  onRNSThroughput?: () => void;
   onSaveScreenshot?: () => void;
   onToggleElevation?: () => void;
   elevationEnabled?: boolean;
@@ -110,6 +112,7 @@ export function Toolbar({
   onRepeaterChain,
   onMeshCoreAirtime,
   onMeshCoreCapacity,
+  onMeshCoreFreqCoord,
   onReticulumAnnounce,
   onRNSLinkBudget,
   onRNSTransport,
@@ -1050,6 +1053,12 @@ export function Toolbar({
                     title="Plan repeater count and flood.max for your MeshCore network density">
                     <span className="moretools-btn-name">Network Density Planner</span>
                     <span className="moretools-btn-desc">Client ACL limits, neighbor table saturation, flood traffic load, and flood.max recommendations</span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onMeshCoreFreqCoord?.(); }}
+                    title="Coordinate channel frequencies across multiple co-located MeshCore networks">
+                    <span className="moretools-btn-name">RF Channel Frequency Coordinator</span>
+                    <span className="moretools-btn-desc">Assign non-interfering center frequencies to co-located MeshCore networks in metro deployments</span>
                   </button>
                 </div>
               )}

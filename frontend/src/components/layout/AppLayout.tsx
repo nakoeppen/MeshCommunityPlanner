@@ -20,6 +20,7 @@ import { TimeOnAirModal } from '../analysis/TimeOnAirModal';
 import { RepeaterChainModal } from '../analysis/RepeaterChainModal';
 import { MeshCoreAirtimeModal } from '../analysis/MeshCoreAirtimeModal';
 import { MeshCoreCapacityModal } from '../analysis/MeshCoreCapacityModal';
+import { MeshCoreFreqCoordModal } from '../analysis/MeshCoreFreqCoordModal';
 import { ChannelCapacityModal } from '../analysis/ChannelCapacityModal';
 import { ReticulumAnnounceModal } from '../analysis/ReticulumAnnounceModal';
 import { RNSLinkBudgetModal } from '../analysis/RNSLinkBudgetModal';
@@ -297,6 +298,7 @@ export function AppLayout() {
   const [showRepeaterChain, setShowRepeaterChain] = useState(false);
   const [showMeshCoreAirtime, setShowMeshCoreAirtime] = useState(false);
   const [showMeshCoreCapacity, setShowMeshCoreCapacity] = useState(false);
+  const [showMeshCoreFreqCoord, setShowMeshCoreFreqCoord] = useState(false);
   const [showChannelCapacity, setShowChannelCapacity] = useState(false);
   const [showReticulumAnnounce, setShowReticulumAnnounce] = useState(false);
   const [showRNSLinkBudget, setShowRNSLinkBudget] = useState(false);
@@ -2673,6 +2675,7 @@ export function AppLayout() {
         onRepeaterChain={() => setShowRepeaterChain(true)}
         onMeshCoreAirtime={() => setShowMeshCoreAirtime(true)}
         onMeshCoreCapacity={() => setShowMeshCoreCapacity(true)}
+        onMeshCoreFreqCoord={() => setShowMeshCoreFreqCoord(true)}
         onChannelCapacity={() => setShowChannelCapacity(true)}
         onReticulumAnnounce={() => setShowReticulumAnnounce(true)}
         onRNSLinkBudget={() => setShowRNSLinkBudget(true)}
@@ -3185,6 +3188,7 @@ export function AppLayout() {
       <RepeaterChainModal isOpen={showRepeaterChain} onClose={() => setShowRepeaterChain(false)} />
       <MeshCoreAirtimeModal isOpen={showMeshCoreAirtime} onClose={() => setShowMeshCoreAirtime(false)} />
       <MeshCoreCapacityModal isOpen={showMeshCoreCapacity} onClose={() => setShowMeshCoreCapacity(false)} />
+      <MeshCoreFreqCoordModal isOpen={showMeshCoreFreqCoord} onClose={() => setShowMeshCoreFreqCoord(false)} />
       <TimeOnAirModal
         isOpen={showTimeOnAir}
         onClose={() => setShowTimeOnAir(false)}
