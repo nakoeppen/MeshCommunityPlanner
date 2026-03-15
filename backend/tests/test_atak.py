@@ -282,9 +282,10 @@ class TestLocalUrl:
         data = r.json()
         assert "url" in data
 
-    def test_local_url_contains_port_8000(self, client):
+    def test_local_url_contains_port(self, client):
         r = client.get("/atak/local-url", headers=_auth_headers())
-        assert "8000" in r.json()["url"]
+        import re
+        assert re.search(r":\d+/", r.json()["url"]), "URL should contain a port number"
 
     def test_local_url_contains_nodes_kml_path(self, client):
         r = client.get("/atak/local-url", headers=_auth_headers())

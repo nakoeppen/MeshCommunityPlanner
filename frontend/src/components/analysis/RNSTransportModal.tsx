@@ -33,7 +33,6 @@ export function RNSTransportModal({ isOpen, onClose }: RNSTransportModalProps) {
   const { handleDragStart, modalRef, resetDrag, dragStyle } = useDraggable();
 
   // Inputs
-  const [clientCount, setClientCount] = useState(10);
   const [coverageZones, setCoverageZones] = useState(2);
   const [dataRateBps, setDataRateBps] = useState(1172);
   const [announceRateSec, setAnnounceRateSec] = useState(900);
@@ -44,7 +43,6 @@ export function RNSTransportModal({ isOpen, onClose }: RNSTransportModalProps) {
   // Reset on open
   useEffect(() => {
     if (isOpen) {
-      setClientCount(10);
       setCoverageZones(2);
       setDataRateBps(1172);
       setAnnounceRateSec(900);
@@ -187,17 +185,6 @@ export function RNSTransportModal({ isOpen, onClose }: RNSTransportModalProps) {
 
             <div className="rnt-inputs-row">
               <div className="rnt-field">
-                <label htmlFor="rnt-client-count">Client node count</label>
-                <NumberInput
-                  id="rnt-client-count"
-                  min={1}
-                  max={10000}
-                  value={clientCount}
-                  onChange={(v) => setClientCount(Math.round(v))}
-                  title="Total number of client nodes in the network. (1–10,000)"
-                />
-              </div>
-              <div className="rnt-field">
                 <label htmlFor="rnt-coverage-zones">Coverage zones</label>
                 <NumberInput
                   id="rnt-coverage-zones"
@@ -208,6 +195,7 @@ export function RNSTransportModal({ isOpen, onClose }: RNSTransportModalProps) {
                   title="Distinct areas separated by terrain or distance requiring separate transport nodes. (1–50)"
                 />
               </div>
+              <div className="rnt-field" />
             </div>
 
             <div className="rnt-inputs-row">

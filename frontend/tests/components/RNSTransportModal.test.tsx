@@ -37,9 +37,9 @@ describe('RNSTransportModal — rendering', () => {
     expect(screen.getByText(/Transport Node Placement Advisor/i)).toBeTruthy();
   });
 
-  it('shows Client node count input', () => {
+  it('shows Coverage zones input', () => {
     renderOpen();
-    expect(screen.getByLabelText('Client node count')).toBeTruthy();
+    expect(screen.getByLabelText('Coverage zones')).toBeTruthy();
   });
 
   it('shows Coverage zones input', () => {
@@ -249,7 +249,7 @@ describe('RNSTransportModal — accessibility', () => {
   it('all labeled inputs have associated label elements', () => {
     renderOpen();
     const labeledIds = [
-      'rnt-client-count', 'rnt-coverage-zones', 'rnt-data-rate',
+      'rnt-coverage-zones', 'rnt-data-rate',
       'rnt-announce-rate', 'rnt-active-dest', 'rnt-interface-config',
       'rnt-interface-mode',
     ];

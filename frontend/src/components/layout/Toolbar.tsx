@@ -29,9 +29,9 @@ interface ToolbarProps {
   onImportCSV?: () => void;
   onImportJSON?: () => void;
   onImportFromMap?: () => void;
+  onImportSignal?: () => void;
   onExportKML?: () => void;
   onExportGeoJSON?: () => void;
-  onExportCoT?: () => void;
   onDuplicatePlan?: () => void;
   onClosePlan?: () => void;
   onDeletePlan?: () => void;
@@ -52,9 +52,11 @@ interface ToolbarProps {
   onRepeaterChain?: () => void;
   onMeshCoreAirtime?: () => void;
   onMeshCoreCapacity?: () => void;
+  onMeshCoreFreqCoord?: () => void;
   onReticulumAnnounce?: () => void;
   onRNSLinkBudget?: () => void;
   onRNSTransport?: () => void;
+  onRNSThroughput?: () => void;
   onSaveScreenshot?: () => void;
   onToggleElevation?: () => void;
   elevationEnabled?: boolean;
@@ -88,9 +90,9 @@ export function Toolbar({
   onImportCSV,
   onImportJSON,
   onImportFromMap,
+  onImportSignal,
   onExportKML,
   onExportGeoJSON,
-  onExportCoT,
   onDuplicatePlan,
   onClosePlan,
   onDeletePlan,
@@ -110,9 +112,11 @@ export function Toolbar({
   onRepeaterChain,
   onMeshCoreAirtime,
   onMeshCoreCapacity,
+  onMeshCoreFreqCoord,
   onReticulumAnnounce,
   onRNSLinkBudget,
   onRNSTransport,
+  onRNSThroughput,
   onSaveScreenshot,
   onToggleElevation,
   elevationEnabled = false,
@@ -344,16 +348,7 @@ export function Toolbar({
                         >
                           GeoJSON (GIS / Web Maps)
                         </button>
-                        <button
-                          role="menuitem"
-                          className="toolbar-dropdown-item"
-                          type="button"
-                          onClick={() => { setExportSubmenuOpen(false); handleItemClick(onExportCoT); }}
-                          title="Export plan as CoT XML for TAK/ATAK military mapping systems"
-                        >
-                          CoT / TAK (Cursor-on-Target)
-                        </button>
-                      </div>
+                       </div>
                     )}
                   </div>
                   <div className="toolbar-dropdown-separator" />
@@ -371,6 +366,11 @@ export function Toolbar({
                     onClick={() => hasPlan && handleItemClick(onImportFromMap)}
                     title="Import nodes from online mesh network maps (MeshCore Map, rmap.world)">
                     Import Nodes (Internet)
+                  </button>
+                  <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
+                    onClick={() => hasPlan && handleItemClick(onImportSignal)}
+                    title="Import RSSI/SNR signal observations from a CSV export — compare predicted link budgets against real-world measurements">
+                    Import Signal Data (CSV)
                   </button>
                   <button className={`toolbar-dropdown-item${!hasPlan ? ' disabled' : ''}`} type="button"
                     onClick={() => hasPlan && handleItemClick(onExportCSV)}
@@ -692,7 +692,6 @@ export function Toolbar({
                       <li><strong>Message Flooding Simulation</strong> &mdash; Visualize how messages propagate hop-by-hop through your mesh; identify bottlenecks and unreachable nodes</li>
                       <li><strong>Automatic Node Placement</strong> &mdash; Get AI-suggested locations for new nodes to maximize coverage across your community area</li>
                       <li><strong>Professional PDF Report</strong> &mdash; Generate multi-page network reports with executive summary, node inventory, link quality, and BOM for stakeholders</li>
-                      <li><strong>CoT/TAK Export</strong> &mdash; Export node positions in Cursor-on-Target XML format for interoperability with ATAK and tactical mapping systems</li>
                       <li><strong>GeoJSON Export</strong> &mdash; Export plan data as GeoJSON for use in GIS tools, web maps, and data analysis workflows</li>
                       <li><strong>Viewshed Analysis</strong> &mdash; Analyze terrain visibility from any node to determine which other nodes have clear line-of-sight</li>
                       <li><strong>Elevation Heatmap</strong> &mdash; Toggle a terrain elevation overlay using NASA SRTM 30m data. The hypsometric color scale runs from steel-blue (below sea level) through greens, yellows, and oranges to snow-white (high peaks), with terrain-type labels (Coastal, Lowland, Mountain, Alpine&hellip;) shown beside each color swatch. Use the dual-handle range slider to stretch the full color spectrum across your local elevation band for maximum contrast in flat terrain &mdash; drag the Min/Max thumbs, type values directly into the number fields (press Enter to apply), or scroll the mouse wheel on a focused thumb for fine 10m adjustments. Page&nbsp;Up/Down moves a focused slider ±100m. Check <em>Remember range</em> to persist your Min/Max settings across browser sessions via localStorage. The opacity slider controls overlay transparency (0&thinsp;%&ndash;100&thinsp;%).</li>
@@ -1081,6 +1080,12 @@ export function Toolbar({
                     <span className="moretools-btn-name">Network Density Planner</span>
                     <span className="moretools-btn-desc">Client ACL limits, neighbor table saturation, flood traffic load, and flood.max recommendations</span>
                   </button>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onMeshCoreFreqCoord?.(); }}
+                    title="Coordinate channel frequencies across multiple co-located MeshCore networks">
+                    <span className="moretools-btn-name">RF Channel Frequency Coordinator</span>
+                    <span className="moretools-btn-desc">Assign non-interfering center frequencies to co-located MeshCore networks in metro deployments</span>
+                  </button>
                 </div>
               )}
 
@@ -1104,6 +1109,12 @@ export function Toolbar({
                     title="How many transport nodes your RNS network needs and where to place them">
                     <span className="moretools-btn-name">Transport Node Placement Advisor</span>
                     <span className="moretools-btn-desc">Minimum transport nodes, announce budget consumption, interface mode guidance, and SPOF detection</span>
+                  </button>
+                  <button className="moretools-btn" type="button"
+                    onClick={() => { setOpenMenu(null); onRNSThroughput?.(); }}
+                    title="Calculate end-to-end throughput and LXMF delivery time across multi-interface Reticulum paths">
+                    <span className="moretools-btn-name">Multi-Interface Throughput Analyzer</span>
+                    <span className="moretools-btn-desc">End-to-end throughput, LXMF delivery time, and bottleneck identification across mixed LoRa/WiFi/TCP/I2P paths</span>
                   </button>
                 </div>
               )}

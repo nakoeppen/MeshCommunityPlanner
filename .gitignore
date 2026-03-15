@@ -4,6 +4,11 @@ MeshPlanner-W2/
 MeshPlanner-W3/
 MeshPlanner-W4/
 MeshPlanner-W5/
+.claude/worktrees/
+
+# Claude Code / MCP tooling
+.playwright-mcp/
+CLAUDE.md
 
 # Python
 __pycache__/

@@ -109,6 +109,7 @@ def _register_w2_routers(app: FastAPI) -> None:
     from backend.app.api.catalog import router as catalog_router
     from backend.app.api.internet_map import router as internet_map_router
     from backend.app.api.atak import router as atak_router
+    from backend.app.api.signal_import import router as signal_import_router
 
     app.include_router(health_router, prefix="/api")
     app.include_router(plans_router, prefix="/api")
@@ -116,6 +117,7 @@ def _register_w2_routers(app: FastAPI) -> None:
     app.include_router(catalog_router, prefix="/api")
     app.include_router(internet_map_router, prefix="/api")
     app.include_router(atak_router, prefix="/api/atak", tags=["atak"])
+    app.include_router(signal_import_router, prefix="/api")
 
     # Mount static files (icons for KML overlays, etc.)
     _static_dir = _os.path.join(_os.path.dirname(__file__), "static")

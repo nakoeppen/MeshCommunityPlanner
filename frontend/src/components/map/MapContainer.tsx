@@ -9,7 +9,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { usePlanStore } from '../../stores/planStore';
 import { useMapStore } from '../../stores/mapStore';
-import type { TerrainCoverageOverlay, ViewshedOverlay, RoutePathOverlay, FloodingOverlay, PlacementSuggestion } from '../../stores/mapStore';
+import type { TerrainCoverageOverlay, ViewshedOverlay, RoutePathOverlay, FloodingOverlay, PlacementSuggestion, SignalOverlay } from '../../stores/mapStore';
 import { CoverageLegend } from './CoverageLegend';
 import { ElevationLegend } from './ElevationLegend';
 import { getAPIClient } from '../../services/api';
@@ -55,6 +55,7 @@ export function MapContainer({ className = '' }: MapContainerProps) {
   const routePathLayerRef = useRef<L.LayerGroup | null>(null);
   const floodingLayerRef = useRef<L.LayerGroup | null>(null);
   const placementLayerRef = useRef<L.LayerGroup | null>(null);
+  const signalLayerRef = useRef<L.LayerGroup | null>(null);
   const elevationTileLayerRef = useRef<L.TileLayer | null>(null);
   const elevationEnsureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragStartPosRef = useRef<L.LatLng | null>(null);
@@ -74,6 +75,7 @@ export function MapContainer({ className = '' }: MapContainerProps) {
   const routePathOverlays = useMapStore((s) => s.route_path_overlays);
   const floodingOverlay = useMapStore((s) => s.flooding_overlay);
   const placementSuggestions = useMapStore((s) => s.placement_suggestions);
+  const signalOverlays = useMapStore((s) => s.signal_overlays);
   const placementCoverageRadiusM = useMapStore((s) => s.placement_coverage_radius_m);
   const placementSearchBounds = useMapStore((s) => s.placement_search_bounds);
   const coverageOpacity = useMapStore((s) => s.coverageOpacity);
@@ -255,6 +257,9 @@ export function MapContainer({ className = '' }: MapContainerProps) {
 
     const placementLayer = L.layerGroup().addTo(map);
     placementLayerRef.current = placementLayer;
+
+    const signalLayer = L.layerGroup().addTo(map);
+    signalLayerRef.current = signalLayer;
 
     map.on('click', handleMapClick);
 
@@ -956,6 +961,50 @@ export function MapContainer({ className = '' }: MapContainerProps) {
       placementLayerRef.current!.addLayer(marker);
     });
   }, [placementSuggestions, placementCoverageRadiusM, placementSearchBounds, nodes]);
+
+  // Draw signal overlays — RSSI/SNR observations as colored polylines
+  useEffect(() => {
+    if (!signalLayerRef.current) return;
+    signalLayerRef.current.clearLayers();
+
+    signalOverlays.forEach((overlay: SignalOverlay) => {
+      overlay.observations.forEach((obs) => {
+        const nodeA = nodes.find((n) => String(n.id) === obs.nodeAUuid);
+        const nodeB = nodes.find((n) => String(n.id) === obs.nodeBUuid);
+        if (!nodeA || !nodeB) return;
+
+        // Color by RSSI strength
+        let color: string;
+        if (obs.rssi_dbm > -85) {
+          color = '#2ecc71';   // green — strong
+        } else if (obs.rssi_dbm >= -100) {
+          color = '#f1c40f';   // yellow — marginal
+        } else {
+          color = '#e74c3c';   // red — weak
+        }
+
+        const coords: L.LatLngExpression[] = [
+          [nodeA.latitude, nodeA.longitude],
+          [nodeB.latitude, nodeB.longitude],
+        ];
+
+        const line = L.polyline(coords, {
+          color,
+          weight: 3,
+          opacity: 0.8,
+          interactive: true,
+        });
+
+        const snrPart = obs.snr_db !== null ? ` / ${obs.snr_db.toFixed(1)} dB SNR` : '';
+        line.bindTooltip(
+          `${obs.nodeAName} \u2192 ${obs.nodeBName}: ${obs.rssi_dbm.toFixed(1)} dBm${snrPart}`,
+          { sticky: true }
+        );
+
+        signalLayerRef.current!.addLayer(line);
+      });
+    });
+  }, [signalOverlays, nodes]);
 
   // Change cursor based on mode
   useEffect(() => {

@@ -1,6 +1,6 @@
 # Handoff Notes — MeshCore Third-Party Integration
-**Date:** 2026-03-14
-**Branch:** `main` at `162d916`
+**Date:** 2026-03-15
+**Branch:** `main` at `015b1b5`
 
 ---
 
@@ -10,7 +10,7 @@
 git pull origin main
 ```
 
-All 318 frontend + 154 backend tests should pass:
+All 383 frontend + 173 backend tests should pass:
 ```
 cd frontend && npx vitest run
 cd backend && python -m pytest
@@ -18,13 +18,13 @@ cd backend && python -m pytest
 
 ---
 
-## What Was Just Built (v1.3.0)
+## What Was Just Built (v1.3.1)
 
 Full details in `CHANGELOG.md`. Short version:
 
 - **ATAK Live KML endpoint** — `GET /api/atak/nodes.kml` serves plan nodes to ATAK with no TAK Server needed
-- **MeshCore tools** — Airtime & Duty Cycle Calculator, Network Density Planner (both in More Tools → MeshCore tab)
-- **Reticulum tools** — RNode Link Budget & Range Estimator, Transport Node Placement Advisor (More Tools → Reticulum tab)
+- **MeshCore tools** — Airtime & Duty Cycle Calculator, Network Density Planner, RF Channel Frequency Coordinator (More Tools → MeshCore tab)
+- **Reticulum tools** — RNode Link Budget & Range Estimator, Transport Node Placement Advisor, Multi-Interface Throughput Analyzer (More Tools → Reticulum tab)
 - **Per-node coverage environment** — each node can override the global propagation environment
 - **Internet Map import** — import nodes from MeshCore's live map (`map.meshcore.dev`)
 

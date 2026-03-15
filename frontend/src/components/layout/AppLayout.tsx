@@ -20,15 +20,16 @@ import { TimeOnAirModal } from '../analysis/TimeOnAirModal';
 import { RepeaterChainModal } from '../analysis/RepeaterChainModal';
 import { MeshCoreAirtimeModal } from '../analysis/MeshCoreAirtimeModal';
 import { MeshCoreCapacityModal } from '../analysis/MeshCoreCapacityModal';
+import { MeshCoreFreqCoordModal } from '../analysis/MeshCoreFreqCoordModal';
 import { ChannelCapacityModal } from '../analysis/ChannelCapacityModal';
 import { ReticulumAnnounceModal } from '../analysis/ReticulumAnnounceModal';
 import { RNSLinkBudgetModal } from '../analysis/RNSLinkBudgetModal';
 import { RNSTransportModal } from '../analysis/RNSTransportModal';
+import { RNSThroughputModal } from '../analysis/RNSThroughputModal';
 import { BOMModal } from '../bom/BOMModal';
 import { exportNodesCSV, parseNodesCSV } from '../../utils/csv';
 import { exportKML, type KMLLink } from '../../utils/kml';
 import { exportGeoJSON, type GeoJSONLink } from '../../utils/geojson';
-import { exportTakDataPackage } from '../../utils/cot';
 import { findKShortestPaths } from '../../utils/routing';
 import { FloodingSimModal } from '../analysis/FloodingSimModal';
 import { PlacementSuggestModal } from '../analysis/PlacementSuggestModal';
@@ -41,6 +42,7 @@ import { PromptDialog } from '../common/PromptDialog';
 import { NumberInput } from '../common/NumberInput';
 import { WelcomeTour } from '../onboarding/WelcomeTour';
 import { InternetMapImportModal } from '../plan/InternetMapImportModal';
+import { SignalImportModal } from '../plan/SignalImportModal';
 import { ATAKUrlPanel } from '../plan/ATAKUrlPanel';
 import './AppLayout.css';
 
@@ -297,10 +299,12 @@ export function AppLayout() {
   const [showRepeaterChain, setShowRepeaterChain] = useState(false);
   const [showMeshCoreAirtime, setShowMeshCoreAirtime] = useState(false);
   const [showMeshCoreCapacity, setShowMeshCoreCapacity] = useState(false);
+  const [showMeshCoreFreqCoord, setShowMeshCoreFreqCoord] = useState(false);
   const [showChannelCapacity, setShowChannelCapacity] = useState(false);
   const [showReticulumAnnounce, setShowReticulumAnnounce] = useState(false);
   const [showRNSLinkBudget, setShowRNSLinkBudget] = useState(false);
   const [showRNSTransport, setShowRNSTransport] = useState(false);
+  const [showRNSThroughput, setShowRNSThroughput] = useState(false);
   const [showBOM, setShowBOM] = useState(false);
   const [bomData, setBomData] = useState<BOMPlanData[] | null>(null);
   const [bomLoading, setBomLoading] = useState(false);
@@ -315,6 +319,7 @@ export function AppLayout() {
   const [showPlacementSuggest, setShowPlacementSuggest] = useState(false);
   const [showPDFReport, setShowPDFReport] = useState(false);
   const [internetMapImportOpen, setInternetMapImportOpen] = useState(false);
+  const [signalImportOpen, setSignalImportOpen] = useState(false);
   const [bulkCoverageEnv, setBulkCoverageEnv] = useState('');
   const [envWarningDialog, setEnvWarningDialog] = useState<{
     nodeNames: string;
@@ -1166,18 +1171,6 @@ export function AppLayout() {
       setStatusMessage(`Exported ${planNodes.length} node(s) as GeoJSON${linkNote}.`);
     } catch (err: any) {
       setErrorMsg(`GeoJSON export error: ${err.message}`);
-    }
-  }, [currentPlan]);
-
-  const handleExportCoT = useCallback(async () => {
-    if (!currentPlan) return;
-    try {
-      const planNodes = usePlanStore.getState().nodes;
-      const blob = await exportTakDataPackage(planNodes, currentPlan.name);
-      triggerDownload(blob, `${sanitizeFilename(currentPlan.name)}.zip`);
-      setStatusMessage(`Exported ${planNodes.length} node(s) as TAK Data Package.`);
-    } catch (err: any) {
-      setErrorMsg(`TAK export error: ${err.message}`);
     }
   }, [currentPlan]);
 
@@ -2653,9 +2646,9 @@ export function AppLayout() {
         onImportCSV={handleImportCSV}
         onImportJSON={handleImportJSON}
         onImportFromMap={() => setInternetMapImportOpen(true)}
+        onImportSignal={() => setSignalImportOpen(true)}
         onExportKML={handleExportKML}
         onExportGeoJSON={handleExportGeoJSON}
-        onExportCoT={handleExportCoT}
         onDuplicatePlan={handleDuplicatePlan}
         onClosePlan={handleClosePlan}
         onDeletePlan={handleDeletePlan}
@@ -2673,10 +2666,12 @@ export function AppLayout() {
         onRepeaterChain={() => setShowRepeaterChain(true)}
         onMeshCoreAirtime={() => setShowMeshCoreAirtime(true)}
         onMeshCoreCapacity={() => setShowMeshCoreCapacity(true)}
+        onMeshCoreFreqCoord={() => setShowMeshCoreFreqCoord(true)}
         onChannelCapacity={() => setShowChannelCapacity(true)}
         onReticulumAnnounce={() => setShowReticulumAnnounce(true)}
         onRNSLinkBudget={() => setShowRNSLinkBudget(true)}
         onRNSTransport={() => setShowRNSTransport(true)}
+        onRNSThroughput={() => setShowRNSThroughput(true)}
         onFloodSim={() => setShowFloodingSim(true)}
         onSuggestPlacement={() => setShowPlacementSuggest(true)}
         onSaveScreenshot={handleSaveScreenshot}
@@ -3185,6 +3180,7 @@ export function AppLayout() {
       <RepeaterChainModal isOpen={showRepeaterChain} onClose={() => setShowRepeaterChain(false)} />
       <MeshCoreAirtimeModal isOpen={showMeshCoreAirtime} onClose={() => setShowMeshCoreAirtime(false)} />
       <MeshCoreCapacityModal isOpen={showMeshCoreCapacity} onClose={() => setShowMeshCoreCapacity(false)} />
+      <MeshCoreFreqCoordModal isOpen={showMeshCoreFreqCoord} onClose={() => setShowMeshCoreFreqCoord(false)} />
       <TimeOnAirModal
         isOpen={showTimeOnAir}
         onClose={() => setShowTimeOnAir(false)}
@@ -3216,6 +3212,10 @@ export function AppLayout() {
         isOpen={showRNSTransport}
         onClose={() => setShowRNSTransport(false)}
       />
+      <RNSThroughputModal
+        isOpen={showRNSThroughput}
+        onClose={() => setShowRNSThroughput(false)}
+      />
       <BOMModal
         isOpen={showBOM}
         onClose={() => setShowBOM(false)}
@@ -3232,6 +3232,11 @@ export function AppLayout() {
         isOpen={internetMapImportOpen}
         onClose={() => setInternetMapImportOpen(false)}
         planId={currentPlan?.id ?? null}
+      />
+      <SignalImportModal
+        isOpen={signalImportOpen}
+        onClose={() => setSignalImportOpen(false)}
+        planNodes={nodes.filter((n) => n.plan_id === currentPlan?.id).map((n) => ({ id: String(n.id), name: n.name }))}
       />
       <CatalogModal
         isOpen={catalogModalOpen}
